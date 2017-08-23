@@ -1,0 +1,15 @@
+Package: TcT
+Type: Package
+Title: Trait-based Comparative Transcriptomics
+Version: 0.1.0
+Authors@R: c(person("Joris", "van Steenbrugge", email="joris.vansteenbrugge@wur.nl", role = c("cre", "aut")),
+             person("Ben", "Oyserman", email="ben.oyserman@wur.nl", role = c("aut")))
+Maintainer: Joris van Steenbrugge <joris.vansteenbrugge@wur.nl>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports: Rcpp (>= 0.12.12)
+LinkingTo: Rcpp
+RoxygenNote: 6.0.1
