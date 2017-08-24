@@ -1,0 +1,15 @@
+---
+title: "vignette"
+author: "Joris van Steenbrugge"
+date: "August 23, 2017"
+output: html_document
+---
+
+
+#Loading Data
+
+```{r}
+
+RNAseq.table <- read.csv2("/home/joris/tools/samplematrix.csv")
+
+```
