@@ -1,5 +1,5 @@
 ---
-title: "vignette"
+title: "Trait-based Comparative Transcriptomics Analysis"
 author: "Joris van Steenbrugge"
 date: "August 23, 2017"
 output: html_document
@@ -7,9 +7,17 @@ output: html_document
 
 
 #Loading Data
+The data set should containt the following Elements:
 
+* A collumn named **Gene**
+* Sample columns that have at least the word **Sample** in it
+* A collumn named **Annotation**
+* A collumn named **Bin**
+
+Additional columns may be added but are not used in the analysis.
 ```{r}
 
 RNAseq.table <- read.csv2("/home/joris/tools/samplematrix.csv")
 
+knitr::kable(RNAseq.table[1:10,])
 ```
