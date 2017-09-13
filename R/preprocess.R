@@ -34,12 +34,12 @@ Get_matrix_features <- function(RNAseq.table){
   }
 
   sample_columns <- .Get_sample_columns(colnames(RNAseq.table))
-
+  bins <- sort(unique(RNAseq.table$Bin))
   return(list(
-    "bins"                = sort(unique(RNAseq.table$Bin)),
+    "bins"                = bins,
     "sample_columns"      = sample_columns,
     "rank_columns"        = ncol(RNAseq.table)+1:length(sample_columns),
-    "KO_presense_absense" = NA
+    "annotation_presence_absence" = Get_annotation_presence_absence(RNAseq.table, bins)
   ))
 }
 
@@ -52,20 +52,23 @@ Normalization <- function(RNAseq.table, normalize_function){
   }
 }
 
-#
-# edgeRmethods <- function(SS, SE, method_name, RNAseq_Annotated_Matrix){
-#   library(edgeR)
-#   RNAseq_Annotated_Matrix1<-DGEList(counts=RNAseq_Annotated_Matrix[, SS:SE],lib.size=library_size)
-#   norm_factors <- calcNormFactors(RNAseq_Annotated_Matrix1, method=method_name)
-#   RNAseq_Annotated_Matrix[, SS:SE] <- t(t(as.matrix(norm_factors)) / norm_factors$samples[,3])
-#   return(RNAseq_Annotated_Matrix)
-# }
+
+# Calculate which KO is present for each Bin
+Get_annotation_presence_absence <- function(RNAseq.table, bins){
+  annotation_terms <- unique(RNAseq.table$Annotation)
+
+  .Lookup_bin <- function(bin){
+
+    present_bins <- RNAseq.table[which(RNAseq.table$Bin == bin), "Annotation"]
+
+    return(annotation_terms %in% present_bins)
+  }
+
+  annotation_presence_absence <- sapply(bins, .Lookup_bin)
 
 
+  colnames(annotation_presence_absence) <- bins
+  rownames(annotation_presence_absence) <- annotation_terms
 
-# setClass('General_features', representation(name                = 'character',
-#                                             bins                = 'vector',
-#                                             sample_columns      = 'vector',
-#                                             rank_columns        = 'vector',
-#                                             KO_presence_absence = 'matrix'),
-#          prototype(name = 'matrix_features'))
+  return(annotation_presence_absence)
+}
