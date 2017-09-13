@@ -4,20 +4,81 @@ author: "Joris van Steenbrugge"
 date: "August 23, 2017"
 output: html_document
 ---
-
-
-#Loading Data
-The data set should containt the following Elements:
-
-* A collumn named **Gene**
-* Sample columns that have at least the word **Sample** in it
-* A collumn named **Annotation**
-* A collumn named **Bin**
-
-Additional columns may be added but are not used in the analysis.
-```{r}
-
-RNAseq.table <- read.csv2("/home/joris/tools/samplematrix.csv")
-
-knitr::kable(RNAseq.table[1:10,])
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 1400)
 ```
+<style>
+  .col2 {
+    columns: 2 200px;         /* number of columns and width in pixels*/
+    -webkit-columns: 2 200px; /* chrome, safari */
+    -moz-columns: 2 200px;    /* firefox */
+  }
+  .col3 {
+    columns: 3 100px;
+    -webkit-columns: 3 100px;
+    -moz-columns: 3 100px;
+  }
+</style>
+
+```{r}
+source('~/tools/tct/R/preprocess.R')
+```
+#Loading and Preprocessing Data
+
+
+All of the preprocessing is handled by the `Pre_process_input` function.
+This function consequtively performs the following tasks:
+
+1. Data Loading
+2. Normalization
+3. Filtering
+
+
+### Data loading
+The data set should contain the following Elements:
+
+* A column named **Gene**
+* Multiple expression data columns that have at least the word **Sample** in it
+* A column named **Annotation**
+* A column named **Bin**
+
+Additional columns may be present but are not used in the analysis.
+Loading of data is done by assigning a file.path to the function's `filepath`
+variable.
+```{r}
+file.path   <- "/home/joris/tools/samplematrix.csv"
+RNAseq.data <- Pre_process_input(filepath = file.path)
+
+#Visualize 
+knitr::kable(RNAseq.data$table[1:10, ])
+```
+### Normalization
+The package supports different options for normalization. By default the `Pre_process_input` function
+does not normalize the data. To indicate if normalization should be performed, the function parameter 
+`normalize.var` may be used. The variable can either left out, set to 'default' or to a custom, user-defined, function.
+
+**No normalization**
+```{r, results='hide'}
+Pre_process_input(file.path)
+```
+**With the default normalization method**
+```{r, eval = F}
+Pre_process_input(file.path, normalize.var = 'default')
+```
+**User defined method**
+```{r, eval = F}
+My_normalization_method <- function(RNAseq.table){
+   #.......
+  
+  return(normalized.table)
+}
+
+Pre_process_input(file.path, normalize.var = My_normalization_method)
+
+```
+
+
+### Filtering
+Removing rows without standard deviation
+```
+
