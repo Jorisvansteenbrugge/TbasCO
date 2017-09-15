@@ -127,6 +127,7 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
     }
     MADs <- apply(RNAseq.table[, sample.columns], 1, .Get.MAD)
     return( RNAseq.table[which(MADs > 1 ), ] ) #maybe a bigger number than 1
-
+  } else if(typeof(filter.method) == 'closure') {
+    filter.method(RNAseq.table)
   }
 }
