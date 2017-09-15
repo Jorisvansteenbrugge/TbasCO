@@ -1,37 +1,41 @@
 
 #' Pre-processing of RNAseq data
+#' @param filepath RNAseq data file
+#' @param normalize.method Variable
 #' @export
-Pre_process_input <- function(filepath, normalize.var = FALSE){
+#' @author JJM van Steenbrugge
+Pre_process_input <- function(filepath, normalize.method = FALSE,
+                              filter.method = "stdev"){
   RNAseq.table <- read.csv2(filepath)
-
-  # To be sure the corresponding collumns are converted to their correct type
-  # TODO: also for sample columns
-  RNAseq.table$Bin <- as.character(RNAseq.table$Bin)
-
-
   # Identify some basic features of the table
   RNAseq.features <- .Get_matrix_features(RNAseq.table)
 
-  # Combine the table and the features in one object
-  RNAseq.data <- list("table"    = RNAseq.table,
-                      "features" = RNAseq.features)
+  # To be sure the corresponding collumns are converted to their correct type
+  RNAseq.table$Bin <- as.character(RNAseq.table$Bin)
 
-
-  return(RNAseq.data)
-
-
-  if(! normalize.var){
-    # Skip
-  } else{
-    RNAseq.data$table <- .Normalization(RNAseq.data$table, normalize.var)
+  for(sample_col in RNAseq.features$sample_columns){
+    RNAseq.table[, sample_col] <- as.numeric(RNAseq.table[, sample_col])
   }
 
-  print("filter")
-  RNAseq.data$table <- .Remove_sd_zero(RNAseq.data)
+  if(normalize.method != FALSE){
+    RNAseq.table <- .Normalization(RNAseq.table,
+                                   RNAseq.features,
+                                   normalize.method)
+  }
+  RNAseq.table   <- .filter(RNAseq.table,
+                            RNAseq.features$sample.columns,
+                            filter.method)
+
+  # Combine the table and the features in one object
+  return(list("table"    = RNAseq.table,
+              "features" = RNAseq.features))
 }
 
-
-
+#' Aumatically identify features based on column names
+#' @param RNAseq.table
+#' @return A list containing a vector of unique bins, a vector with the sample column
+#' numbers, a vector containing the rank column numbers and a annotation_presence_absence matrix
+#' @author JJM van Steenbrugge
 .Get_matrix_features <- function(RNAseq.table){
 
   .Get_sample_columns <- function(column.names){
@@ -42,17 +46,20 @@ Pre_process_input <- function(filepath, normalize.var = FALSE){
     return( as.numeric(which(column_contains_Sample == TRUE)) )
   }
 
-  sample_columns <- .Get_sample_columns(colnames(RNAseq.table))
+  sample.columns <- .Get_sample_columns(colnames(RNAseq.table))
   bins <- sort(unique(RNAseq.table$Bin))
   return(list(
     "bins"                        = bins,
-    "sample_columns"              = sample_columns,
-    "rank_columns"                = ncol(RNAseq.table)+1:length(sample_columns),
+    "sample.columns"              = sample.columns,
+    "rank.columns"                = ncol(RNAseq.table)+1:length(sample.columns),
     "annotation_presence_absence" = .Get_annotation_presence_absence(RNAseq.table, bins)
   ))
 }
 
-# Calculate which KO is present for each Bin
+#' Calculate which KO is present for each Bin
+#' @param RNAseq.table
+#' @param bins a vector with all unique bins
+#' @author JJM van Steenbrugge
 .Get_annotation_presence_absence <- function(RNAseq.table, bins){
   annotation_terms <- unique(RNAseq.table$Annotation)
 
@@ -72,26 +79,39 @@ Pre_process_input <- function(filepath, normalize.var = FALSE){
   return(annotation_presence_absence)
 }
 
-.Normalization <- function(RNAseq.table, normalize.var){
-  if(typeof(normalize.var) == "closure"){
-    normalize.var(RNAseq.table)
+#' Normalize RNAseq data
+#' @param RNAseq.table
+#' @param normalize.method variable that is either a string (default method) or a function to be applied
+#' for normalization of RNAseq data.
+#' @author JJM van Steenbrugge
+#' @return
+.Normalization <- function(RNAseq.table, RNAseq.features, normalize.method){
+  if(typeof(normalize.method) == "closure"){
+    normalize.method(RNAseq.table)
   } else{
-    #default normalization
+    require(edgeR)
+    print('edgeR')
+    sample.columns <- RNAseq.features$sample.columns
+
+    DGEobj <- DGEList(counts=RNAseq.table[, sample.columns])
+
+    norm_factors      <- calcNormFactors(DGEobj, method='TMM')
+
+    RNAseq.table[, sample.columns] <- t(t(as.matrix(norm_factors)) /
+                                            norm_factors$samples[,3])
+    return(RNAseq.table)
   }
 }
+#' Remove data rows that have a stdev of zero.
+#' @param RNAseq.table
+#' @param sample.columns a vector with the collumns that contain RNAseq data.
+#' @author JJM van Steenbrugge
+.filter <- function(RNAseq.table, sample.columns,
+                    filter.method){
+  if(filter.method == "stdev"){
+    stdevs <- apply(RNAseq.table[, sample.columns], 1, sd)
+    return(RNAseq.table[which(stdevs > 0),])
+  }else if(filter.method == 'MAD'){
 
-
-.Remove_sd_zero <- function(RNAseq.data){
-  sample_cols <- RNAseq.data$features$sample_columns
-
-  data_matrix <- matrix(apply(RNAseq.data$table[, sample_cols], 2, as.numeric),
-                        ncol = length(sample_cols) )
-
-  stdev_vector <- Calc_stdev_rows(data_matrix)
-
-  RNAseq.data$table <- cbind(RNAseq.data$table, stdev_vector)
-  print("filter baby")
-  return( RNAseq.data$table[which(RNAseq.data$table[, ncol(RNAseq.data$table)] != 0), ] )
-
-
+  }
 }

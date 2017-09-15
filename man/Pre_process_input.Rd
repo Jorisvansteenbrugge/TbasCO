@@ -6,6 +6,11 @@
 \usage{
 Pre_process_input(filepath, normalize.var = FALSE)
 }
+\arguments{
+\item{filepath}{RNAseq data file}
+
+\item{normalize.var}{Variable}
+}
 \description{
 Pre-processing of RNAseq data
 }
