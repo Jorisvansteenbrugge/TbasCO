@@ -90,7 +90,7 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
     normalize.method(RNAseq.table)
   } else{
     require(edgeR)
-    print('edgeR')
+
     sample.columns <- RNAseq.features$sample.columns
 
     DGEobj <- DGEList(counts=RNAseq.table[, sample.columns])
@@ -102,6 +102,7 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
     return(RNAseq.table)
   }
 }
+
 #' Remove data rows that have a stdev of zero.
 #' @param RNAseq.table
 #' @param sample.columns a vector with the collumns that contain RNAseq data.
@@ -109,9 +110,23 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
 .filter <- function(RNAseq.table, sample.columns,
                     filter.method){
   if(filter.method == "stdev"){
+
     stdevs <- apply(RNAseq.table[, sample.columns], 1, sd)
+
     return(RNAseq.table[which(stdevs > 0),])
-  }else if(filter.method == 'MAD'){
+
+  } else if(filter.method == 'MAD'){
+
+    .Get.MAD <- function(row){
+
+      avg <- mean(row)
+      mean.abs.deviations <- sapply(row, function(x) abs(x - avg))
+
+      return( sum(mean.abs.deviations) / length(row) )
+
+    }
+    MADs <- apply(RNAseq.table[, sample.columns], 1, .Get.MAD)
+    return( RNAseq.table[which(MADs > 1 ), ] ) #maybe a bigger number than 1
 
   }
 }
