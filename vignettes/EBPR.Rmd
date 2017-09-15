@@ -51,34 +51,13 @@ RNAseq.data <- Pre_process_input(filepath = file.path)
 
 #Visualize 
 knitr::kable(RNAseq.data$table[1:10, ])
+
 ```
 ### Normalization
 The package supports different options for normalization. By default the `Pre_process_input` function
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either left out, set to 'default' or to a custom, user-defined, function.
 
-**No normalization**
-```{r, results='hide'}
-Pre_process_input(file.path)
-```
-**With the default normalization method**
-```{r, eval = F}
-Pre_process_input(file.path, normalize.var = 'default')
-```
-**User defined method**
-```{r, eval = F}
-My_normalization_method <- function(RNAseq.table){
-   #.......
-  
-  return(normalized.table)
-}
-
-Pre_process_input(file.path, normalize.var = My_normalization_method)
-
-```
 
 
-### Filtering
-Removing rows without standard deviation
-```
 
