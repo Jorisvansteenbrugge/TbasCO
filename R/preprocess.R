@@ -131,3 +131,29 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
     filter.method(RNAseq.table)
   }
 }
+
+.Create.Rank.Columns <- function(RNAseq.table, RNAseq.features){
+  header <- sapply( 1: length(RNAseq.features$rank.columns),
+                    function(x) paste("rank", x, sep = "") )
+
+
+  for ( sample_col in RNAseq.features$sample.columns) {
+    for( bin in RNAseq.features$bins ) {
+      current_bin <-  RNAseq.table[ which( RNAseq.table$Bin == bin ), ]
+    }
+  }
+
+  for (sample_col in RNAseq.features$sample.columns) {
+    for (s in 1: length(all_bins)) {
+      matrix_bins <- RNAseq.table[which(RNAseq.table$Bin == all_bins[s]), ]
+      matrix_bins[, matrix_features@bin_column_index + i]<- rank(-matrix_bins[, sample_col + 1],
+                                                                   na.last     = TRUE,
+                                                                   ties.method = "random") /
+                                                            max(rank(-matrix_bins[, sample_col + 1],
+                                                                   na.last     = TRUE,
+                                                                   ties.method = "random"))
+
+      RNAseq.table[which(RNAseq.table$Bin == all_bins[s]), ] <- matrix_bins
+    }
+  }
+}

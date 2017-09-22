@@ -47,7 +47,9 @@ Loading of data is done by assigning a file.path to the function's `filepath`
 variable.
 ```{r}
 file.path   <- "/home/joris/tools/samplematrix.csv"
-RNAseq.data <- Pre_process_input(filepath = file.path)
+RNAseq.data <- Pre_process_input(filepath = file.path,
+                                 normalize.method = 'default',
+                                 filter.method = 'MAD')
 
 #Visualize 
 knitr::kable(RNAseq.data$table[1:10, ])
