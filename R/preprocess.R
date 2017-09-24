@@ -8,35 +8,38 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
                               filter.method = "stdev"){
   RNAseq.table <- read.csv2(filepath)
   # Identify some basic features of the table
-  RNAseq.features <- .Get_matrix_features(RNAseq.table)
+  RNAseq.features <- Get_matrix_features(RNAseq.table)
 
   # To be sure the corresponding collumns are converted to their correct type
   RNAseq.table$Bin <- as.character(RNAseq.table$Bin)
 
-  for(sample_col in RNAseq.features$sample_columns){
-    RNAseq.table[, sample_col] <- as.numeric(RNAseq.table[, sample_col])
+  for(sample.col in RNAseq.features$sample.columns){
+    RNAseq.table[, sample.col] <- as.numeric(RNAseq.table[, sample.col])
   }
 
   if(normalize.method != FALSE){
-    RNAseq.table <- .Normalization(RNAseq.table,
+    RNAseq.table <- Normalization(RNAseq.table,
                                    RNAseq.features,
                                    normalize.method)
   }
-  RNAseq.table   <- .filter(RNAseq.table,
+  RNAseq.table   <- Filter(RNAseq.table,
                             RNAseq.features$sample.columns,
                             filter.method)
+  RNAseq.table   <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
   # Combine the table and the features in one object
   return(list("table"    = RNAseq.table,
               "features" = RNAseq.features))
 }
 
-#' Aumatically identify features based on column names
+#' Automatically identify features based on column names
+#' @name Get_matrix_features
+#' @description Robust method to infer information from matrix column names
 #' @param RNAseq.table
 #' @return A list containing a vector of unique bins, a vector with the sample column
 #' numbers, a vector containing the rank column numbers and a annotation_presence_absence matrix
 #' @author JJM van Steenbrugge
-.Get_matrix_features <- function(RNAseq.table){
+Get_matrix_features <- function(RNAseq.table){
 
   .Get_sample_columns <- function(column.names){
 
@@ -57,10 +60,12 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
 }
 
 #' Calculate which KO is present for each Bin
+#' @name Get_annotation_presence_absence
+#' @description Calculate which KO is present for each Bin
 #' @param RNAseq.table
 #' @param bins a vector with all unique bins
 #' @author JJM van Steenbrugge
-.Get_annotation_presence_absence <- function(RNAseq.table, bins){
+Get_annotation_presence_absence <- function(RNAseq.table, bins){
   annotation_terms <- unique(RNAseq.table$Annotation)
 
   .Lookup_bin <- function(bin){
@@ -84,8 +89,7 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
 #' @param normalize.method variable that is either a string (default method) or a function to be applied
 #' for normalization of RNAseq data.
 #' @author JJM van Steenbrugge
-#' @return
-.Normalization <- function(RNAseq.table, RNAseq.features, normalize.method){
+Normalization <- function(RNAseq.table, RNAseq.features, normalize.method){
   if(typeof(normalize.method) == "closure"){
     normalize.method(RNAseq.table)
   } else{
@@ -107,7 +111,7 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
 #' @param RNAseq.table
 #' @param sample.columns a vector with the collumns that contain RNAseq data.
 #' @author JJM van Steenbrugge
-.filter <- function(RNAseq.table, sample.columns,
+Filter <- function(RNAseq.table, sample.columns,
                     filter.method){
   if(filter.method == "stdev"){
 
@@ -131,29 +135,41 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
     filter.method(RNAseq.table)
   }
 }
-
-.Create.Rank.Columns <- function(RNAseq.table, RNAseq.features){
+#' Add a ranking collumn for each sample that holds the negative rank of transcripts
+#' assigned to each gene, per bin. Normalized on the highest negative rank.
+#' @param RNAseq.table
+#' @param RNAseq.features
+#' @author JJM van Steenbrugge
+#' @author BO Oyserman
+Create.Rank.Columns <- function(RNAseq.table, RNAseq.features){
   header <- sapply( 1: length(RNAseq.features$rank.columns),
-                    function(x) paste("rank", x, sep = "") )
+                    function(x) paste("Rank", x, sep = "") )
 
 
-  for ( sample_col in RNAseq.features$sample.columns) {
-    for( bin in RNAseq.features$bins ) {
-      current_bin <-  RNAseq.table[ which( RNAseq.table$Bin == bin ), ]
+  for (sample.idx in 1:length(RNAseq.features$sample.columns)) {
+    sample.col <- RNAseq.features$sample.columns[sample.idx]
+    rank.col   <- rep(NA, length(sample.col))
+
+
+    for (bin in RNAseq.features$bins) {
+      sample.bin.expr <- RNAseq.table[which(RNAseq.table$Bin == bin), sample.col]
+
+      sample.bin.rank <- rank(-sample.bin.expr,
+                              na.last     = TRUE,
+                              ties.method = "random")
+
+      sample.bin.norm.rank <- sample.bin.rank / max(sample.bin.rank)
+
+
+      rank.col[which(RNAseq.table$Bin == bin)] <- sample.bin.norm.rank
     }
-  }
 
-  for (sample_col in RNAseq.features$sample.columns) {
-    for (s in 1: length(all_bins)) {
-      matrix_bins <- RNAseq.table[which(RNAseq.table$Bin == all_bins[s]), ]
-      matrix_bins[, matrix_features@bin_column_index + i]<- rank(-matrix_bins[, sample_col + 1],
-                                                                   na.last     = TRUE,
-                                                                   ties.method = "random") /
-                                                            max(rank(-matrix_bins[, sample_col + 1],
-                                                                   na.last     = TRUE,
-                                                                   ties.method = "random"))
+    RNAseq.table <- cbind(RNAseq.table, rank.col)
 
-      RNAseq.table[which(RNAseq.table$Bin == all_bins[s]), ] <- matrix_bins
-    }
   }
+  current.cols <- colnames(RNAseq.table)
+  current.cols[RNAseq.features$rank.columns] <- header
+  colnames(RNAseq.table) <- current.cols
+
+  return(RNAseq.table)
 }
