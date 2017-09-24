@@ -4,13 +4,17 @@
 \alias{Pre_process_input}
 \title{Pre-processing of RNAseq data}
 \usage{
-Pre_process_input(filepath, normalize.var = FALSE)
+Pre_process_input(filepath, normalize.method = FALSE,
+  filter.method = "stdev")
 }
 \arguments{
 \item{filepath}{RNAseq data file}
 
-\item{normalize.var}{Variable}
+\item{normalize.method}{Variable}
 }
 \description{
 Pre-processing of RNAseq data
+}
+\author{
+JJM van Steenbrugge
 }
