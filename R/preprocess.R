@@ -55,7 +55,7 @@ Get_matrix_features <- function(RNAseq.table){
     "bins"                        = bins,
     "sample.columns"              = sample.columns,
     "rank.columns"                = ncol(RNAseq.table)+1:length(sample.columns),
-    "annotation_presence_absence" = .Get_annotation_presence_absence(RNAseq.table, bins)
+    "annotation_presence_absence" = Get_annotation_presence_absence(RNAseq.table, bins)
   ))
 }
 
