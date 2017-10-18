@@ -17,14 +17,16 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
     RNAseq.table[, sample.col] <- as.numeric(RNAseq.table[, sample.col])
   }
 
-  if(normalize.method != FALSE){
+  if (normalize.method != FALSE){
     RNAseq.table <- Normalization(RNAseq.table,
-                                   RNAseq.features,
-                                   normalize.method)
+                                  RNAseq.features,
+                                  normalize.method)
   }
-  RNAseq.table   <- Filter(RNAseq.table,
-                            RNAseq.features$sample.columns,
-                            filter.method)
+  if (filter.method    != FALSE){
+    RNAseq.table <- Filter(RNAseq.table,
+                           RNAseq.features$sample.columns,
+                           filter.method)
+  }
   RNAseq.table   <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
   # Combine the table and the features in one object
