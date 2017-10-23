@@ -7,7 +7,7 @@
 #' metrics
 Individual_Annotation_Background <- function(RNAseq.data,
                                              N       = 1000,
-                                             threads   = 3,
+                                             threads = 3,
                                              metrics = list("PC"   = PC,
                                                             "NRED" = NRED)){
   require(doSNOW)

@@ -16,6 +16,11 @@ Pre_process_input(filepath, normalize.method = FALSE,
 Wrapper of preprocess functions, including: Identifying Matrix features
 , Normalization, Filtering for non informative lines
 }
+\examples{
+Pre_process_input(filepath, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
+Pre_process_input(filepath, normalize.method = TRUE, filter.method = 'MAD') # Default Normalization, and MAD filtering
+Pre_process_input(filepath, normalize.method = custom_function_name, filter.method = FALSE) # Custom Normalization, no filtering
+}
 \author{
 JJM van Steenbrugge
 }

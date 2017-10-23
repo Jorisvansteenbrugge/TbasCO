@@ -5,6 +5,10 @@
 #' @param filepath RNAseq data file
 #' @param normalize.method Variable
 #' @export
+#' @examples
+#' Pre_process_input(filepath, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
+#' Pre_process_input(filepath, normalize.method = TRUE, filter.method = 'MAD') # Default Normalization, and MAD filtering
+#' Pre_process_input(filepath, normalize.method = custom_function_name, filter.method = FALSE) # Custom Normalization, no filtering
 #' @author JJM van Steenbrugge
 Pre_process_input <- function(filepath, normalize.method = FALSE,
                               filter.method = "stdev"){
