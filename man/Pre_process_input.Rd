@@ -13,7 +13,8 @@ Pre_process_input(filepath, normalize.method = FALSE,
 \item{normalize.method}{Variable}
 }
 \description{
-Pre-processing of RNAseq data
+Wrapper of preprocess functions, including: Identifying Matrix features
+, Normalization, Filtering for non informative lines
 }
 \author{
 JJM van Steenbrugge

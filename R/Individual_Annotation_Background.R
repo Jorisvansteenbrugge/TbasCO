@@ -1,11 +1,17 @@
 #' Individual Random Background distributions
+#' @author JJM van Steenbrugge
+#' @param RNAseq.data
+#' @param N Number of iterations
+#' @param threads Number of cpu cores to be used
+#' @param metrics Named list containing possibly multiple functions for distance
+#' metrics
 Individual_Annotation_Background <- function(RNAseq.data,
                                              N       = 1000,
-                                             cores   = 2,
+                                             threads   = 3,
                                              metrics = list("PC"   = PC,
                                                             "NRED" = NRED)){
   require(doSNOW)
-  cl <- makeSOCKcluster(3)
+  cl <- makeSOCKcluster(threads)
   registerDoSNOW(cl)
 
 
@@ -31,6 +37,8 @@ Individual_Annotation_Background <- function(RNAseq.data,
 
 
 
+
+
 Random.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
   # Creating the output format
@@ -51,13 +59,11 @@ Random.Genes.bkgd <- function(RNAseq.data, metrics, N){
     position.B         <- sample(positions.genome.B, 1)
 
     for(metric.current in names(metrics)){
-      print(metric.current)
       row.A <- RNAseq.data$table[position.A, ]
       row.B <- RNAseq.data$table[position.B, ]
 
       # Call the distance metric function
       distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
-      print(distance)
       output[[metric.current]][i] <- distance
     }
   }
@@ -89,13 +95,11 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
 
     for(metric.current in names(metrics)){
-      print(metric.current)
       row.A <- RNAseq.data$table[position.A, ]
       row.B <- RNAseq.data$table[position.B, ]
 
       # Call the distance metric function
       distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
-      print(distance)
       output[[metric.current]][i] <- distance
     }
 
@@ -142,13 +146,13 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
 
     for(metric.current in names(metrics)){
-      print(metric.current)
+
       row.A <- position.A
       row.B <- position.B
 
       # Call the distance metric function
       distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
-      print(distance)
+
       output[[metric.current]][i] <- distance
     }
 
@@ -174,3 +178,7 @@ NRED <- function(rowA, rowB, RNAseq.features) {
     sum((r.A - r.B) * (r.A - r.B))
   )
 }
+
+
+
+

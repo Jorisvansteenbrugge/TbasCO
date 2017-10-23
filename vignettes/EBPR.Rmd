@@ -20,8 +20,8 @@ options(width = 1400)
   }
 </style>
 
-```{r}
-source('~/tools/tct/R/preprocess.R')
+```{r,results='hide'}
+library(TcT)
 ```
 #Loading and Preprocessing Data
 
@@ -45,6 +45,11 @@ The data set should contain the following Elements:
 Additional columns may be present but are not used in the analysis.
 Loading of data is done by assigning a file.path to the function's `filepath`
 variable.
+
+### Normalization
+The package supports different options for normalization. By default the `Pre_process_input` function
+does not normalize the data. To indicate if normalization should be performed, the function parameter 
+`normalize.var` may be used. The variable can either left out, set to 'default' or to a custom, user-defined, function.
 ```{r}
 file.path   <- "/home/joris/tools/samplematrix.csv"
 RNAseq.data <- Pre_process_input(filepath = file.path,
@@ -55,10 +60,12 @@ RNAseq.data <- Pre_process_input(filepath = file.path,
 knitr::kable(RNAseq.data$table[1:10, ])
 
 ```
-### Normalization
-The package supports different options for normalization. By default the `Pre_process_input` function
-does not normalize the data. To indicate if normalization should be performed, the function parameter 
-`normalize.var` may be used. The variable can either left out, set to 'default' or to a custom, user-defined, function.
+
+```{r}
+a <- Individual_Annotation_Background(RNAseq.data, N= 1000)
+
+```
+
 
 
 

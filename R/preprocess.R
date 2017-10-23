@@ -1,5 +1,7 @@
 
 #' Pre-processing of RNAseq data
+#' @description Wrapper of preprocess functions, including: Identifying Matrix features
+#' , Normalization, Filtering for non informative lines
 #' @param filepath RNAseq data file
 #' @param normalize.method Variable
 #' @export
