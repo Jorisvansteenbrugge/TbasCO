@@ -5,6 +5,7 @@
 #' @param threads Number of cpu cores to be used
 #' @param metrics Named list containing possibly multiple functions for distance
 #' metrics
+#' @export
 Individual_Annotation_Background <- function(RNAseq.data,
                                              N       = 1000,
                                              threads = 3,
@@ -21,9 +22,10 @@ Individual_Annotation_Background <- function(RNAseq.data,
                                                    'N',
                                                    'RNAseq.data',
                                                    'metrics')) %dopar% {
-    if(i == 1){
+    RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
+    if (i == 1){
       Random.Genes.bkgd(RNAseq.data, metrics, N)
-    }else if(i == 2){
+    }else if (i == 2){
       Random.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
     }else if (i == 3){
       Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
@@ -35,10 +37,11 @@ Individual_Annotation_Background <- function(RNAseq.data,
   return(result)
 }
 
-
-
-
-
+#' Background distribution of any two random genes in two random genomes
+#' @author JJM van Steenbrugge
+#' @param RNAseq.data
+#' @param metrics
+#' @param N
 Random.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
   # Creating the output format
@@ -71,6 +74,12 @@ Random.Genes.bkgd <- function(RNAseq.data, metrics, N){
   return(output)
 }
 
+#' Background distribution of any two random genes with an annotation in two
+#' random genomes
+#' @author JJM van Steenbrugge
+#' @param RNAseq.data
+#' @param metrics
+#' @param N
 Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
   # Creating the output format
@@ -79,24 +88,21 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
     output[[metric]] <- rep(NA, N)
   }
 
-
     for(i in 1:N){
 
     random.genomes     <- sample(RNAseq.data$features$bins, 2)
 
-    positions.genome.A <- which(RNAseq.data$table$Bin == random.genomes[1] &
-                                RNAseq.data$table$Annotation != "")
+    positions.genome.A <- which(RNAseq.data$annotation.only$Bin == random.genomes[1])
 
-    positions.genome.B <- which(RNAseq.data$table$Bin == random.genomes[2] &
-                                RNAseq.data$table$Annotation != "")
+    positions.genome.B <- which(RNAseq.data$annotation.only$Bin == random.genomes[2])
 
     position.A         <- sample(positions.genome.A, 1)
     position.B         <- sample(positions.genome.B, 1)
 
 
     for(metric.current in names(metrics)){
-      row.A <- RNAseq.data$table[position.A, ]
-      row.B <- RNAseq.data$table[position.B, ]
+      row.A <- RNAseq.data$annotation.only[position.A, ]
+      row.B <- RNAseq.data$annotation.only[position.B, ]
 
       # Call the distance metric function
       distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
@@ -108,6 +114,12 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
   return(output)
 }
 
+#' Background distribution of two random random genes with the same
+#' random annotation in two random genomes
+#' @author JJM van Steenbrugge
+#' @param RNAseq.data
+#' @param metrics
+#' @param N
 Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
   # Creating the output format
@@ -121,11 +133,9 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
     random.genomes     <- sample(RNAseq.data$features$bins, 2)
 
-    positions.genome.A <- RNAseq.data$table[which(RNAseq.data$table$Bin == random.genomes[1] &
-                                  RNAseq.data$table$Annotation != ""), ]
+    positions.genome.A <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[1]), ]
 
-    positions.genome.B <- RNAseq.data$table[which(RNAseq.data$table$Bin == random.genomes[2] &
-                                  RNAseq.data$table$Annotation != ""), ]
+    positions.genome.B <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[2]), ]
 
     pool.A <- as.character(positions.genome.A$Annotation)
     pool.B <- as.character(positions.genome.B$Annotation)
@@ -164,13 +174,16 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 
 
 # Example metrics
+
+#' Calculates the Pearson Correlation between two lines from RNAseq.data$table
 PC <- function(rowA, rowB, RNAseq.features){
   return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
              as.numeric(rowB[RNAseq.features$sample.columns])
              )
          )
 }
-
+#' Calculates the Normalized Rank Euclidean Distance of two lines from
+#' RNAseq.data$table
 NRED <- function(rowA, rowB, RNAseq.features) {
   r.A <- as.numeric(rowA[RNAseq.features$rank.columns])
   r.B <- as.numeric(rowB[RNAseq.features$rank.columns])
