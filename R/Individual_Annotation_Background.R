@@ -172,26 +172,3 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 }
 
 
-
-# Example metrics
-
-#' Calculates the Pearson Correlation between two lines from RNAseq.data$table
-PC <- function(rowA, rowB, RNAseq.features){
-  return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
-             as.numeric(rowB[RNAseq.features$sample.columns])
-             )
-         )
-}
-#' Calculates the Normalized Rank Euclidean Distance of two lines from
-#' RNAseq.data$table
-NRED <- function(rowA, rowB, RNAseq.features) {
-  r.A <- as.numeric(rowA[RNAseq.features$rank.columns])
-  r.B <- as.numeric(rowB[RNAseq.features$rank.columns])
-  return(
-    sum((r.A - r.B) * (r.A - r.B))
-  )
-}
-
-
-
-
