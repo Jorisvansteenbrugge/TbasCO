@@ -57,13 +57,41 @@ RNAseq.data <- Pre_process_input(filepath = file.path,
                                  filter.method = 'MAD')
 
 #Visualize 
-knitr::kable(RNAseq.data$table[1:10, ])
+#knitr::kable(RNAseq.data$table[1:10, ])
 
 ```
 
+### Define the distance metrics to be used
+In this vignette, the Pearson Correlation and the Normalized Rank Euclidean Distance are used.
+The user is free to implement different metrics, as long as the function parameters
+are identical to the ones in the example PC and NRED functions.
+In these examples, rowA and rowB are rows from RNAseq.data$table.
 ```{r}
-a <- Individual_Annotation_Background(RNAseq.data, N= 1000)
+# Calculates the Pearson Correlation
+PC <- function(rowA, rowB, RNAseq.features){
+  return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
+             as.numeric(rowB[RNAseq.features$sample.columns])
+             )
+         )
+}
 
+# Calculates the Normalized Rank Euclidean Distance
+NRED <- function(rowA, rowB, RNAseq.features) {
+  r.A <- as.numeric(rowA[ RNAseq.features$rank.columns ])
+  r.B <- as.numeric(rowB[ RNAseq.features$rank.columns ])
+  return(
+    sum((r.A - r.B) * (r.A - r.B))
+  )
+}
+
+# This variable will be used.
+distance.metrics <- list("PC"   = PC,
+                         "NRED" = NRED)
+
+bkgd.individual <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
+                                                    N           = 1000, 
+                                                    metrics     = distance.metrics)
+bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 ```
 
 

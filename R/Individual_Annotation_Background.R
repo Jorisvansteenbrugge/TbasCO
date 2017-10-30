@@ -1,4 +1,11 @@
 #' Individual Random Background distributions
+#' @name Individual Random Background distributions
+#' @description A function that creates three different random background distributions
+#' For each of them, two different genomes are sampled. Then for the first distribution,
+#' from each of the two genomes, a random gene is selected. For the second distribution,
+#' from each of the two genomes, a random gene that has an annotation is selected.
+#' For the third distribution, an annotation is selected that is present in both genomes.
+#' Then for each of the two genomes, a gene is selected with that annotation.
 #' @author JJM van Steenbrugge
 #' @param RNAseq.data
 #' @param N Number of iterations
