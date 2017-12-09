@@ -57,7 +57,7 @@ RNAseq.data <- Pre_process_input(filepath = file.path,
                                  filter.method = 'MAD')
 
 #Visualize 
-#knitr::kable(RNAseq.data$table[1:10, ])
+knitr::kable(RNAseq.data$table[1:10, ])
 
 ```
 
