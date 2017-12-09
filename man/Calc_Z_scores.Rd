@@ -6,6 +6,11 @@
 \usage{
 Calc_Z_scores(bkgd.individual, metrics)
 }
+\arguments{
+\item{bkgd.individual}{Named list containing (three) different background distributions.}
+
+\item{metrics}{Named list containing possibly multiple functions for distance.}
+}
 \description{
-Calculate Z scores of individual background distributions
+Function to convert different random background distribution values of possible different distance metrics into Z_scores
 }

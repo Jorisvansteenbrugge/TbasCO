@@ -1,6 +1,12 @@
 
 #' Calculate Z scores of individual background distributions
+#' @description Function to convert different random background distribution values of possible different distance metrics into Z_scores
+#' @param bkgd.individual Named list containing (three) different background distributions.
+#' @param metrics Named list containing possibly multiple functions for distance.
 #' @export
+#' @example Calc_Z_scores(bkgd.individual, metrics)
+#' @authors JJM van Steenbrugge
+#' BO Oyserman
 Calc_Z_scores <- function(bkgd.individual, metrics){
   mu.values <- list()
   sd.values <- list()
