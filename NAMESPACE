@@ -2,4 +2,6 @@
 
 export(Calc_Z_scores)
 export(Individual_Annotation_Background)
+export(Module_Background)
 export(Pre_process_input)
+export(Random.Identical.Annotated.Genes.bkgd)

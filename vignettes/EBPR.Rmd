@@ -4,22 +4,6 @@ author: "Joris van Steenbrugge"
 date: "August 23, 2017"
 output: html_document
 ---
-```{r set-options, echo=FALSE, cache=FALSE}
-options(width = 1400)
-```
-<style>
-  .col2 {
-    columns: 2 200px;         /* number of columns and width in pixels*/
-    -webkit-columns: 2 200px; /* chrome, safari */
-    -moz-columns: 2 200px;    /* firefox */
-  }
-  .col3 {
-    columns: 3 100px;
-    -webkit-columns: 3 100px;
-    -moz-columns: 3 100px;
-  }
-</style>
-
 ```{r,results='hide'}
 library(TcT)
 ```
@@ -49,9 +33,9 @@ variable.
 ### Normalization
 The package supports different options for normalization. By default the `Pre_process_input` function
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
-`normalize.var` may be used. The variable can either left out, set to 'default' or to a custom, user-defined, function.
+`normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
-file.path   <- "/home/joris/tools/samplematrix.csv"
+file.path   <- "D:/Users/JorisS/Downloads/PortableGit/sample_data.csv"
 RNAseq.data <- Pre_process_input(filepath = file.path,
                                  normalize.method = 'default',
                                  filter.method = 'MAD')
@@ -84,13 +68,14 @@ NRED <- function(rowA, rowB, RNAseq.features) {
   )
 }
 
-# This variable will be used.
+# Combine multiple distance metrics to complement each other.
 distance.metrics <- list("PC"   = PC,
                          "NRED" = NRED)
 
 bkgd.individual <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
                                                     N           = 1000, 
                                                     metrics     = distance.metrics)
+
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 ```
 

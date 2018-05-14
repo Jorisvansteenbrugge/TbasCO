@@ -126,8 +126,14 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 #' @author JJM van Steenbrugge
 #' @param RNAseq.data
 #' @param metrics
+#' @export
 #' @param N
-Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
+Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
+
+  #Pre select N pairs of two random genomes each
+  if(missing(random.genomes)){
+    random.genomes <- rep(list(sample(RNAseq.data$features$bins, 2)), N)
+  }
 
   # Creating the output format
   output <- list()
@@ -136,13 +142,14 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
   }
 
 
+
   for(i in 1:N){
 
-    random.genomes     <- sample(RNAseq.data$features$bins, 2)
+    #random.genomes     <- sample(RNAseq.data$features$bins, 2)
 
-    positions.genome.A <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[1]), ]
+    positions.genome.A <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][1]), ]
 
-    positions.genome.B <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[2]), ]
+    positions.genome.B <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][2]), ]
 
     pool.A <- as.character(positions.genome.A$Annotation)
     pool.B <- as.character(positions.genome.B$Annotation)

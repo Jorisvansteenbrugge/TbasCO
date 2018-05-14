@@ -138,7 +138,10 @@ Filter <- function(RNAseq.table, sample.columns,
 
     }
     MADs <- apply(RNAseq.table[, sample.columns], 1, .Get.MAD)
-    return( RNAseq.table[which(MADs > 1 ), ] ) #maybe a bigger number than 1
+
+    return(
+      RNAseq.table[which(MADs > 1 ), ] ) #maybe a bigger number than 1
+
   } else if(typeof(filter.method) == 'closure') {
     filter.method(RNAseq.table)
   }
@@ -167,17 +170,15 @@ Create.Rank.Columns <- function(RNAseq.table, RNAseq.features){
                               ties.method = "random")
 
       sample.bin.norm.rank <- sample.bin.rank / max(sample.bin.rank)
-
-
       rank.col[which(RNAseq.table$Bin == bin)] <- sample.bin.norm.rank
     }
 
     RNAseq.table <- cbind(RNAseq.table, rank.col)
 
   }
-  current.cols <- colnames(RNAseq.table)
+  current.cols                               <- colnames(RNAseq.table)
   current.cols[RNAseq.features$rank.columns] <- header
-  colnames(RNAseq.table) <- current.cols
+  colnames(RNAseq.table)                     <- current.cols
 
   return(RNAseq.table)
 }
