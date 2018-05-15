@@ -89,7 +89,7 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins){
   colnames(annotation_presence_absence) <- bins
   rownames(annotation_presence_absence) <- annotation_terms
 
-  return(annotation_presence_absence)
+  return( as.data.frame(annotation_presence_absence) )
 }
 
 #' Normalize RNAseq data
