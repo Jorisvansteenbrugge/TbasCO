@@ -49,5 +49,8 @@ Calc_Z_scores <- function(bkgd.individual, metrics){
         current.sd
     }
   }
-  return(Z_scores.output)
+  return(list("mu"      = mu.values,
+              "sd"      = sd.values,
+              "zscores" = Z_scores.output)
+         )
 }
