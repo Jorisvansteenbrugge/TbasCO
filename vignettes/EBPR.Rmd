@@ -35,10 +35,13 @@ The package supports different options for normalization. By default the `Pre_pr
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
-file.path   <- "D:/Users/JorisS/Downloads/PortableGit/sample_data.csv"
-RNAseq.data <- Pre_process_input(filepath         = file.path,
-                                 normalize.method = FALSE,
-                                 filter.method    = 'MAD')
+file.path          <- "D:/Users/JorisS/Downloads/PortableGit/sample_data.csv"
+annotation.db.path <- "D:/Users/JorisS/Downloads/PortableGit/TcT/data/KEGG_modules.tsv"
+
+RNAseq.data <- Pre_process_input(file.path,
+                                 annotation.db.path,
+                                 normalize.method  = FALSE,
+                                 filter.method     = 'MAD')
 
 #Visualize 
 #knitr::kable(RNAseq.data$table[1:10, ])
@@ -73,13 +76,11 @@ distance.metrics <- list("PC"   = PC,
                          "NRED" = NRED)
 ```
 
-
-
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
-                                                    N           = 1000, 
-                                                    metrics     = distance.metrics)
+                                                            N           = 1000, 
+                                                            metrics     = distance.metrics)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
@@ -90,6 +91,12 @@ bkgd.modules            <- Module_Background(RNAseq.data, bkgd.individual.Zscore
 ```
 
 
+```{r}
+#Testing purposes
+polyP_module <- c("K00937","K02040","K02037","K02038","K02036","K07636","K07657","K03306")
+RNAseq.data$features$annotation.db <- list("module.dict" = list("PolyP" = polyP_module),
+                                           "all annotations in a module" = polyP_module)
 
-
+Calc_Pairwise_Annotation_Distance(RNAseq.data)
+```
 

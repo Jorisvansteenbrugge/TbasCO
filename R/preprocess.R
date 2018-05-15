@@ -6,15 +6,16 @@
 #' @param normalize.method Variable
 #' @export
 #' @examples
-#' Pre_process_input(filepath, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
-#' Pre_process_input(filepath, normalize.method = TRUE, filter.method = 'MAD') # Default Normalization, and MAD filtering
-#' Pre_process_input(filepath, normalize.method = custom_function_name, filter.method = FALSE) # Custom Normalization, no filtering
+#' Pre_process_input(file.path, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
+#' Pre_process_input(file.path, normalize.method = TRUE, filter.method = 'MAD') # Default Normalization, and MAD filtering
+#' Pre_process_input(file.path, normalize.method = custom_function_name, filter.method = FALSE) # Custom Normalization, no filtering
 #' @author JJM van Steenbrugge
-Pre_process_input <- function(filepath, normalize.method = FALSE,
+Pre_process_input <- function(file.path, annotation.db.path, normalize.method = FALSE,
                               filter.method = "stdev"){
-  RNAseq.table <- read.csv2(filepath)
+
+  RNAseq.table     <- read.csv2(file.path)
   # Identify some basic features of the table
-  RNAseq.features <- Get_matrix_features(RNAseq.table)
+  RNAseq.features  <- Get_matrix_features(RNAseq.table)
 
   # To be sure the corresponding collumns are converted to their correct type
   RNAseq.table$Bin <- as.character(RNAseq.table$Bin)
@@ -33,7 +34,13 @@ Pre_process_input <- function(filepath, normalize.method = FALSE,
                            RNAseq.features$sample.columns,
                            filter.method)
   }
-  RNAseq.table   <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
+
+  RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
+
+  # Read annotation DB
+  annotation.db    <- read.table(annotation.db.path, sep = "\t",
+                                 quote = "", stringsAsFactors = F)
+  RNAseq.features$annotation.db  <- Create.Module.groups(annotation.db)
 
   # Combine the table and the features in one object
   return(list("table"    = RNAseq.table,
@@ -181,4 +188,16 @@ Create.Rank.Columns <- function(RNAseq.table, RNAseq.features){
   colnames(RNAseq.table)                     <- current.cols
 
   return(RNAseq.table)
+}
+
+Create.Module.groups <- function(annotation.db){
+  module.dict <- list()
+  for(module in unique(annotation.db[,2])){
+    module.dict[[module]] <- annotation.db[ which(annotation.db[,2] == module), 4]
+  }
+  return(list("module.dict" = module.dict,
+              "all annotations in a module" = unique(unlist(module.dict, use.names = FALSE)))
+         )
+
+
 }

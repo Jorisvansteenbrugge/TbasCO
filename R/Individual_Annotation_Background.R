@@ -7,6 +7,7 @@
 #' For the third distribution, an annotation is selected that is present in both genomes.
 #' Then for each of the two genomes, a gene is selected with that annotation.
 #' @author JJM van Steenbrugge
+#' BO Oyserman
 #' @param RNAseq.data
 #' @param N Number of iterations
 #' @param threads Number of cpu cores to be used
