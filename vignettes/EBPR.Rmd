@@ -71,14 +71,22 @@ NRED <- function(rowA, rowB, RNAseq.features) {
 # Combine multiple distance metrics to complement each other.
 distance.metrics <- list("PC"   = PC,
                          "NRED" = NRED)
+```
 
-bkgd.individual <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
+
+
+### Actual Analysis
+```{r}
+bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
                                                     N           = 1000, 
                                                     metrics     = distance.metrics)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
-Module_Background(RNAseq.data, bkgd.individual.Zscores, 1000,5, distance.metrics)
+bkgd.modules            <- Module_Background(RNAseq.data, bkgd.individual.Zscores,
+                                             N = 1000, Z = 5, distance.metrics,
+                                             threads = 4)
+
 ```
 
 

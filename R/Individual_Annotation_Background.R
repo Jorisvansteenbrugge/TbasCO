@@ -25,10 +25,11 @@ Individual_Annotation_Background <- function(RNAseq.data,
 
   result <- foreach::foreach(i = 1: 3, .export = c('Random.Genes.bkgd',
                                                    'Random.Annotated.Genes.bkgd',
-                                                   'Random.Identical.Annotated.Genes.bkgd',
-                                                   'N',
-                                                   'RNAseq.data',
-                                                   'metrics')) %dopar% {
+                                                   'Random.Identical.Annotated.Genes.bkgd'#,
+                                                   # 'N',
+                                                   # 'RNAseq.data',
+                                                   # 'metrics'
+                                                   )) %dopar% {
     RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
     if (i == 1){
       Random.Genes.bkgd(RNAseq.data, metrics, N)
@@ -122,12 +123,14 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 }
 
 #' Background distribution of two random random genes with the same
-#' random annotation in two random genomes
+#' random annotation in two random genomes.
+#' @name Random.Identical.Annotated.Genes.bkgd
 #' @author JJM van Steenbrugge
 #' @param RNAseq.data
 #' @param metrics
-#' @export
 #' @param N
+#' @param random.genomes Slight modification to allow reuse of this function in the module background function @see@seealso \code{\link{Random Background distributions of modules}}
+#' @export
 Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
   out.terms = T
   #Pre select N pairs of two random genomes each

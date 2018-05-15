@@ -3,13 +3,16 @@
 \name{Random.Identical.Annotated.Genes.bkgd}
 \alias{Random.Identical.Annotated.Genes.bkgd}
 \title{Background distribution of two random random genes with the same
-random annotation in two random genomes}
+random annotation in two random genomes.}
 \usage{
 Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, N, random.genomes)
 }
+\arguments{
+\item{random.genomes}{Slight modification to allow reuse of this function in the module background function @see@seealso \code{\link{Random Background distributions of modules}}}
+}
 \description{
 Background distribution of two random random genes with the same
-random annotation in two random genomes
+random annotation in two random genomes.
 }
 \author{
 JJM van Steenbrugge

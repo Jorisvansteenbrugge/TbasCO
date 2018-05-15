@@ -1,6 +1,7 @@
 #' Generate a background distibution of composite Z scores
 #' @name Random Background distributions of modules
 #' @author JJM van Steenbrugge
+#' @author BO Oyserman
 #' @param RNAseq.data
 #' @param N Number of genes to include in the random module
 #' @param Z Number of iterations
