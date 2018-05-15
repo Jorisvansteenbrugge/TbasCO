@@ -73,6 +73,7 @@ Module_Background <- function(RNAseq.data,
   return(bkgd.modules)
 }
 
+#' @export
 .Convert_zscores <- function(distances, metrics, bkgd.individual.Zscores){
   Zscores <- bkgd.individual.Zscores
 

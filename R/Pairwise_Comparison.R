@@ -6,7 +6,7 @@
 #' @export
 #' @author JJM van Steenbrugge
 Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
-                                              distance.metrics){
+                                              distance.metrics, bkgd.individual.Zscores){
   if(missing(annotation.db)){
     annotation.db <- RNAseq.data$features$annotation.db
   }
@@ -17,7 +17,7 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
 
   distances <- list()
 
-  combined <- matrix(data = NA, nrow = nbins, ncol = nbins)
+
   #combined[x,y] <- 1
   for(metric in names(distance.metrics)){
     distances[[metric]] <- matrix(data = NA, nrow = nbins, ncol = nbins)
@@ -40,6 +40,9 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
     }
   }
 
-  #Zscore the metrics
+  distances.Z <- .Convert_zscores(distances, distance.metrics, bkgd.individual.Zscores)
+
+  #Quick and dirty
+  composite.distance <- (-distances.Z$PC) + distances.Z$NRED
   # combine them yo
 }
