@@ -16,10 +16,10 @@ Calc_Z_scores <- function(bkgd.individual, metrics){
 
     mu.values[[distribution]] <- list()
     sd.values[[distribution]] <- list()
-
     current.bkgd <- bkgd.individual[[distribution]]
 
     for(metric in names(metrics)){
+
       mu    <- mean(current.bkgd[[metric]])
       stdev <- sd(current.bkgd[[metric]])
 
@@ -36,19 +36,21 @@ Calc_Z_scores <- function(bkgd.individual, metrics){
   Z_scores.output <- list()
 
   for(distribution in distributions){
-    Z_scores.output[[distribution]] <- list()
 
+    Z_scores.output[[distribution]] <- list()
     current.bkgd <- bkgd.individual[[distribution]]
+
     for(metric in names(metrics)){
 
       current.idv.bkgd <- bkgd.individual[[distribution]][[metric]]
-      current.mu <- mu.values[[distribution]][[metric]]
-      current.sd <- sd.values[[distribution]][[metric]]
+      current.mu       <- mu.values[[distribution]][[metric]]
+      current.sd       <- sd.values[[distribution]][[metric]]
 
       Z_scores.output[[distribution]][[metric]] <- (current.idv.bkgd - current.mu) /
         current.sd
     }
   }
+
   return(list("mu"      = mu.values,
               "sd"      = sd.values,
               "zscores" = Z_scores.output)
