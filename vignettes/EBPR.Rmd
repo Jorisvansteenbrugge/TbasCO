@@ -36,12 +36,12 @@ does not normalize the data. To indicate if normalization should be performed, t
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
 file.path   <- "D:/Users/JorisS/Downloads/PortableGit/sample_data.csv"
-RNAseq.data <- Pre_process_input(filepath = file.path,
-                                 normalize.method = 'default',
-                                 filter.method = 'MAD')
+RNAseq.data <- Pre_process_input(filepath         = file.path,
+                                 normalize.method = FALSE,
+                                 filter.method    = 'MAD')
 
 #Visualize 
-knitr::kable(RNAseq.data$table[1:10, ])
+#knitr::kable(RNAseq.data$table[1:10, ])
 
 ```
 
@@ -77,6 +77,8 @@ bkgd.individual <- Individual_Annotation_Background(RNAseq.data = RNAseq.data,
                                                     metrics     = distance.metrics)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
+
+Module_Background(RNAseq.data, bkgd.individual.Zscores, 1000,5, distance.metrics)
 ```
 
 

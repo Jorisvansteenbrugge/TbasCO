@@ -129,10 +129,11 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 #' @export
 #' @param N
 Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
-
+  out.terms = T
   #Pre select N pairs of two random genomes each
   if(missing(random.genomes)){
     random.genomes <- rep(list(sample(RNAseq.data$features$bins, 2)), N)
+    out.terms = F
   }
 
   # Creating the output format
@@ -141,7 +142,7 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
     output[[metric]] <- rep(NA, N)
   }
 
-
+  used.terms <- rep(NA, N)
 
   for(i in 1:N){
 
@@ -156,7 +157,7 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
 
     annotations.overlap <- pool.A[pool.A %in% pool.B]
     random.annotation   <- sample(annotations.overlap, 1)
-
+    used.terms[i]       <- random.annotation
     # Take the first occurence
     position.genome.A <-
       positions.genome.A[which(positions.genome.A$Annotation == random.annotation), ] [1,]
@@ -181,8 +182,12 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
     }
 
   }
-
-  return(output)
+  if(out.terms){
+    return(list("used terms" = used.terms,
+                "scores"  = output))
+  }else{
+    return(output)
+  }
 }
 
 

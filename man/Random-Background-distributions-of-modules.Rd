@@ -5,7 +5,8 @@
 \alias{Module_Background}
 \title{Generate a background distibution of composite Z scores}
 \usage{
-Module_Background(RNAseq.data, Z_scores, N, Z, metrics, threads = 2)
+Module_Background(RNAseq.data, bkgd.individual.Zscores, N, Z, metrics,
+  threads = 2)
 }
 \arguments{
 \item{N}{Number of genes to include in the random module}
