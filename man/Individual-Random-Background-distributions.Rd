@@ -26,4 +26,5 @@ Then for each of the two genomes, a gene is selected with that annotation.
 }
 \author{
 JJM van Steenbrugge
+BO Oyserman
 }

@@ -4,22 +4,22 @@
 \alias{Pre_process_input}
 \title{Pre-processing of RNAseq data}
 \usage{
-Pre_process_input(filepath, normalize.method = FALSE,
+Pre_process_input(file.path, annotation.db.path, normalize.method = FALSE,
   filter.method = "stdev")
 }
 \arguments{
-\item{filepath}{RNAseq data file}
-
 \item{normalize.method}{Variable}
+
+\item{filepath}{RNAseq data file}
 }
 \description{
 Wrapper of preprocess functions, including: Identifying Matrix features
 , Normalization, Filtering for non informative lines
 }
 \examples{
-Pre_process_input(filepath, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
-Pre_process_input(filepath, normalize.method = TRUE, filter.method = 'MAD') # Default Normalization, and MAD filtering
-Pre_process_input(filepath, normalize.method = custom_function_name, filter.method = FALSE) # Custom Normalization, no filtering
+Pre_process_input(file.path, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
+Pre_process_input(file.path, normalize.method = TRUE, filter.method = 'MAD') # Default Normalization, and MAD filtering
+Pre_process_input(file.path, normalize.method = custom_function_name, filter.method = FALSE) # Custom Normalization, no filtering
 }
 \author{
 JJM van Steenbrugge

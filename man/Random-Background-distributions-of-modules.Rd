@@ -24,4 +24,5 @@ Generate a background distibution of composite Z scores
 }
 \author{
 JJM van Steenbrugge
+BO Oyserman
 }

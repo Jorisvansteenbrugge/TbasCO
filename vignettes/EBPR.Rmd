@@ -97,6 +97,14 @@ polyP_module <- c("K00937","K02040","K02037","K02038","K02036","K07636","K07657"
 RNAseq.data$features$annotation.db <- list("module.dict" = list("PolyP" = polyP_module),
                                            "all annotations in a module" = polyP_module)
 
-Calc_Pairwise_Annotation_Distance(RNAseq.data)
+pairwise.distances <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distance.metrics =distance.metrics,
+                                  bkgd.individual.Zscores =  bkgd.individual.Zscores,
+                                  show.progress = T)
+clustered.distances <- 
+```
+
+
+```{r}
+
 ```
 

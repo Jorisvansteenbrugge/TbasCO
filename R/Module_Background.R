@@ -23,7 +23,7 @@ Module_Background <- function(RNAseq.data,
                          Z,
                          metrics){
 
-
+    #Runs in parallel
     result <- foreach::foreach(i = 1: N, .export = c("Random.Identical.Annotated.Genes.bkgd",
                                                      ".Convert_zscores",
                                                      ".Calc_Jaccard")) %dopar% {
