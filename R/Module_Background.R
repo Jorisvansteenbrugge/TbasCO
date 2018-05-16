@@ -87,6 +87,7 @@ Module_Background <- function(RNAseq.data,
   return(distances.Z)
 }
 
+#' @export
 .Calc_Jaccard <- function(RNAseq.data, random.genomes, used.terms){
   row.idxs <- RNAseq.data$features$annotation_presence_absence
   PA.genome.A <- RNAseq.data$features$annotation_presence_absence[used.terms, as.character(random.genomes[1])]
