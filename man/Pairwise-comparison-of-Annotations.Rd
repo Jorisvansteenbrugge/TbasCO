@@ -6,7 +6,7 @@
 \title{Create an all versus all comparison for each annotation term}
 \usage{
 Calc_Pairwise_Annotation_Distance(RNAseq.data, annotation.db, distance.metrics,
-  bkgd.individual.Zscores, show.progress = F)
+  bkgd.individual.Zscores, show.progress = F, threads = 4)
 }
 \arguments{
 \item{distance.metrics}{Variable}

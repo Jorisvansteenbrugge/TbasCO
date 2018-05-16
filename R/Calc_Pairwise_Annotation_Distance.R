@@ -31,25 +31,28 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
         genome.A       <- RNAseq.data$table[which(RNAseq.data$table$Bin == RNAseq.data$features$bins[x]),]
         genome.A.genes <- genome.A[which(genome.A$Annotation == annotation_term),]
 
+
         #In case you have multiple, sample 1
         genome.A.gene  <- genome.A.genes[sample(nrow(genome.A.genes),size=1),]
-
         for (y in (x + 1): nbins) {
 
-          genome.B       <- RNAseq.data$table[which(RNAseq.data$table$Bin == RNAseq.data$features$bins[x]),]
+          genome.B       <- RNAseq.data$table[which(RNAseq.data$table$Bin == RNAseq.data$features$bins[y]),]
           genome.B.genes <- genome.B[which(genome.B$Annotation == annotation_term),]
 
           #In case you have multiple, sample 1
           genome.B.gene  <- genome.B.genes[sample(nrow(genome.B.genes),size=1),]
 
-          distances[[metric]][x, y] <- distance.metrics[[metric]](genome.A.gene,genome.B.gene, RNAseq.data$features)
+          distance <- distance.metrics[[metric]](genome.A.gene,genome.B.gene, RNAseq.data$features)
+          distances[[metric]][x, y] <- distance#distance.metrics[[metric]](genome.A.gene,genome.B.gene, RNAseq.data$features)
         }
       }
+
+
     }
 
     distances.Z <- .Convert_zscores(distances, distance.metrics, bkgd.individual.Zscores)
 
-    #Quick and dirty
+    #Quick and dirty  should be z and with NRED
     return( (-distances.Z$PC) + distances.Z$NRED)
   }
 

@@ -36,8 +36,6 @@ Identify_Trait_Attributes <- function(RNAseq_Annotated_Matrix,pairwise.distances
       jpe.distance             <- avg.zscore.module * pairwise.module.distance
   }
 
-
-
   stopCluster(cl)
 
 }
@@ -64,6 +62,7 @@ Identify_Trait_Attributes <- function(RNAseq_Annotated_Matrix,pairwise.distances
   return(jaccard.module.distance)
 }
 
+#' @export
 .Calc_Avg_Zscore_Module <- function(RNAseq.data, pairwise.distances,
                                     module.terms){
 
@@ -75,13 +74,14 @@ Identify_Trait_Attributes <- function(RNAseq_Annotated_Matrix,pairwise.distances
                                               RNAseq.data$features$bins))
 
   for (x in 1: (nbins - 1)) {
-    bin.a <- RNAseq.data$features$bins[x]
     for (y in (x + 1): nbins) {
-      bin.b <- RNAseq.data$features$bins[y]
 
-      avg.zscore.module[x,y] <- mean(unlist(pairwise.distances[module.terms]),
-                                     na.rm = TRUE)
+      print(paste(bin.a, ';', bin.b,':'))
 
+        d <- mean(lapply(module.terms, function(term) pairwise.distances[[term]][x,y] ),
+                                     na.rm = T)
+        print(d)
+        avg.zscore.module[x,y] <- d
     }
   }
 

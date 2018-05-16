@@ -4,7 +4,7 @@
 \alias{Get_annotation_presence_absence}
 \title{Calculate which KO is present for each Bin}
 \usage{
-Get_annotation_presence_absence(RNAseq.table, bins)
+Get_annotation_presence_absence(RNAseq.table, bins, annotation.db)
 }
 \arguments{
 \item{bins}{a vector with all unique bins}

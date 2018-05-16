@@ -14,9 +14,13 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
                               filter.method = "stdev"){
 
   RNAseq.table     <- read.csv2(file.path)
-  # Identify some basic features of the table
-  RNAseq.features  <- Get_matrix_features(RNAseq.table)
 
+  # Identify some basic features of the table
+  annotation.db    <- read.table(annotation.db.path, sep = "\t",
+                                 quote = "", stringsAsFactors = F)
+  annotation.db  <- Create.Module.groups(annotation.db)
+  RNAseq.features  <- Get_matrix_features(RNAseq.table,annotation.db)
+  RNAseq.features$annotation.db <- annotation.db
   # To be sure the corresponding collumns are converted to their correct type
   RNAseq.table$Bin <- as.character(RNAseq.table$Bin)
 
@@ -38,9 +42,8 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
   RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
   # Read annotation DB
-  annotation.db    <- read.table(annotation.db.path, sep = "\t",
-                                 quote = "", stringsAsFactors = F)
-  RNAseq.features$annotation.db  <- Create.Module.groups(annotation.db)
+
+
 
   # Combine the table and the features in one object
   return(list("table"    = RNAseq.table,
@@ -54,7 +57,7 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
 #' @return A list containing a vector of unique bins, a vector with the sample column
 #' numbers, a vector containing the rank column numbers and a annotation_presence_absence matrix
 #' @author JJM van Steenbrugge
-Get_matrix_features <- function(RNAseq.table){
+Get_matrix_features <- function(RNAseq.table,annotation.db){
 
   .Get_sample_columns <- function(column.names){
 
@@ -70,7 +73,7 @@ Get_matrix_features <- function(RNAseq.table){
     "bins"                        = bins,
     "sample.columns"              = sample.columns,
     "rank.columns"                = ncol(RNAseq.table)+1:length(sample.columns),
-    "annotation_presence_absence" = Get_annotation_presence_absence(RNAseq.table, bins)
+    "annotation_presence_absence" = Get_annotation_presence_absence(RNAseq.table, bins,annotation.db)
   ))
 }
 
@@ -80,8 +83,8 @@ Get_matrix_features <- function(RNAseq.table){
 #' @param RNAseq.table
 #' @param bins a vector with all unique bins
 #' @author JJM van Steenbrugge
-Get_annotation_presence_absence <- function(RNAseq.table, bins){
-  annotation_terms <- unique(RNAseq.table$Annotation)
+Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
+  annotation_terms <- annotation.db$`all annotations in a module`
 
   .Lookup_bin <- function(bin){
 
@@ -196,7 +199,8 @@ Create.Module.groups <- function(annotation.db){
     module.dict[[module]] <- annotation.db[ which(annotation.db[,2] == module), 4]
   }
   return(list("module.dict" = module.dict,
-              "all annotations in a module" = unique(unlist(module.dict, use.names = FALSE)))
+              "all annotations in a module" = unique(unlist(module.dict, use.names = FALSE))
+              )
          )
 
 

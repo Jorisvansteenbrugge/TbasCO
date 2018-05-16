@@ -4,7 +4,7 @@
 \alias{Get_matrix_features}
 \title{Automatically identify features based on column names}
 \usage{
-Get_matrix_features(RNAseq.table)
+Get_matrix_features(RNAseq.table, annotation.db)
 }
 \value{
 A list containing a vector of unique bins, a vector with the sample column

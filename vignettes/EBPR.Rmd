@@ -87,7 +87,6 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 bkgd.modules            <- Module_Background(RNAseq.data, bkgd.individual.Zscores,
                                              N = 1000, Z = 5, distance.metrics,
                                              threads = 4)
-
 ```
 
 
@@ -105,7 +104,4 @@ clustered.distances <- Identify_Trait_Attributes()
 ```
 
 
-```{r}
-
-```
 
