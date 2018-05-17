@@ -17,10 +17,12 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
 
   # Identify some basic features of the table
   annotation.db    <- read.table(annotation.db.path, sep = "\t",
-                                 quote = "", stringsAsFactors = F)
-  annotation.db  <- Create.Module.groups(annotation.db)
+                                 quote = "", stringsAsFactors = F,
+                                 header = T)
+  annotation.db    <- Create.Module.groups(annotation.db)
   RNAseq.features  <- Get_matrix_features(RNAseq.table,annotation.db)
   RNAseq.features$annotation.db <- annotation.db
+
   # To be sure the corresponding collumns are converted to their correct type
   RNAseq.table$Bin <- as.character(RNAseq.table$Bin)
 
@@ -84,7 +86,10 @@ Get_matrix_features <- function(RNAseq.table,annotation.db){
 #' @param bins a vector with all unique bins
 #' @author JJM van Steenbrugge
 Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
-  annotation_terms <- annotation.db$`all annotations in a module`
+
+  a <- unique(annotation.db$`all annotations in a module`)
+  b <- unique(as.character(RNAseq.table$Annotation))
+  annotation_terms <- unique(c(a,b))
 
   .Lookup_bin <- function(bin){
 
@@ -195,8 +200,8 @@ Create.Rank.Columns <- function(RNAseq.table, RNAseq.features){
 
 Create.Module.groups <- function(annotation.db){
   module.dict <- list()
-  for(module in unique(annotation.db[,2])){
-    module.dict[[module]] <- annotation.db[ which(annotation.db[,2] == module), 4]
+  for(module in unique(annotation.db$Module)){
+    module.dict[[module]] <- annotation.db[which(annotation.db$Module == module), 'Annotation']
   }
   return(list("module.dict" = module.dict,
               "all annotations in a module" = unique(unlist(module.dict, use.names = FALSE))

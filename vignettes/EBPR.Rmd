@@ -36,7 +36,7 @@ does not normalize the data. To indicate if normalization should be performed, t
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
 file.path          <- "D:/Users/JorisS/Downloads/PortableGit/sample_data.csv"
-annotation.db.path <- "D:/Users/JorisS/Downloads/PortableGit/TcT/data/KEGG_modules.tsv"
+annotation.db.path <- "D:/Users/JorisS/Downloads/PortableGit/TcT/data/updated_KO_modules.tsv"
 
 RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
@@ -93,8 +93,11 @@ bkgd.modules            <- Module_Background(RNAseq.data, bkgd.individual.Zscore
 ```{r}
 ###### Testing purposes
 polyP_module <- c("K00937","K02040","K02037","K02038","K02036","K07636","K07657","K03306")
-RNAseq.data$features$annotation.db <- list("module.dict" = list("PolyP" = polyP_module),
-                                           "all annotations in a module" = polyP_module)
+vancomycin <- RNAseq.data$features$annotation.db$module.dict[['M00115']]
+RNAseq.data$features$annotation.db <- list("module.dict" = list("vancomycin" = vancomycin),
+                                           "all annotations in a module" = vancomycin)
+
+
 ######
 pairwise.distances <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distance.metrics =distance.metrics,
                                   bkgd.individual.Zscores =  bkgd.individual.Zscores,

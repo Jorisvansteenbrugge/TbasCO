@@ -24,37 +24,38 @@ Module_Background <- function(RNAseq.data,
                          metrics){
 
     #Runs in parallel
-    result <- foreach::foreach(i = 1: N, .export = c("Random.Identical.Annotated.Genes.bkgd",
+    result <- foreach::foreach(i = 1:N, .export = c("Random.Identical.Annotated.Genes.bkgd",
                                                      ".Convert_zscores",
                                                      ".Calc_Jaccard")) %dopar% {
       #pick two genomes
       RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
-      random.genomes <- sample(RNAseq.data$features$bins, 2)
-      random.genomes.combis <- rep(list(random.genomes), Z) #Workaround to re-use function below
-
-      distances <- Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
-
+      random.genomes              <- sample(RNAseq.data$features$bins, 2)
+      random.genomes.combis       <- rep(list(random.genomes), Z) #Workaround to re-use function below
+      ###########
+      print(random.genomes)
+      ###########
+      distances   <- Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
+      print(distances)
       distances.Z <- .Convert_zscores(distances$scores, metrics, bkgd.individual.Zscores)
 
 
       # This is quick and dirty composition
-      composite.distance <- mean( (-distances.Z$PC) + distances.Z$NRED,
-                                  na.rm = T)[1]
+      composite.distance          <- mean( (-distances.Z$PC) + distances.Z$NRED,
+                                           na.rm = T)[1]
 
       # Jaccard distance
-      jaccard.distance   <- .Calc_Jaccard(RNAseq.data, random.genomes,
-                                          distances$`used terms`)
+      jaccard.distance            <- .Calc_Jaccard(RNAseq.data, random.genomes,
+                                                   distances$`used terms`)
 
       #normalize composite scores with jaccard distance
       return( composite.distance * (1 - jaccard.distance) )
     }
-
   }
 
 
 
   require(doSNOW)
-  cl <- makeSOCKcluster(threads)
+  cl <- snow::makeSOCKcluster(threads)
   registerDoSNOW(cl)
 
   bkgd.modules <- list()
@@ -69,7 +70,7 @@ Module_Background <- function(RNAseq.data,
 
 
 
-  stopCluster(cl)
+  snow::stopCluster(cl)
   return(bkgd.modules)
 }
 
@@ -89,9 +90,9 @@ Module_Background <- function(RNAseq.data,
 
 #' @export
 .Calc_Jaccard <- function(RNAseq.data, random.genomes, used.terms){
-  row.idxs <- RNAseq.data$features$annotation_presence_absence
-  PA.genome.A <- RNAseq.data$features$annotation_presence_absence[used.terms, as.character(random.genomes[1])]
-  PA.genome.B <- RNAseq.data$features$annotation_presence_absence[used.terms, as.character(random.genomes[2])]
+  presence.absence <- RNAseq.data$features$annotation_presence_absence
+  PA.genome.A <- presence.absence[used.terms, as.character(random.genomes[1])]
+  PA.genome.B <- presence.absence[used.terms, as.character(random.genomes[2])]
 
   Jaccard_Distance <- 1 - (sum(which(PA.genome.A == 1) %in% which(PA.genome.A == 1))  /
                              (sum(which(PA.genome.A == 0) %in% which(PA.genome.A == 1))  +
