@@ -7,10 +7,10 @@
 #' @param bkgd.individual.Zscores
 #' @export
 #' @author JJM van Steenbrugge
-Identify_Trait_Attributes <- function(RNAseq_Annotated_Matrix,pairwise.distances,
+Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
                                       annotation.db, threads = 4){
   require(doSNOW)
-  cl <- makeSOCKcluster(threads)
+  cl <- snow::makeSOCKcluster(threads)
   registerDoSNOW(cl)
 
   # Allows for easy subset testing
@@ -33,7 +33,7 @@ Identify_Trait_Attributes <- function(RNAseq_Annotated_Matrix,pairwise.distances
                                                          pairwise.distances,
                                                          module.terms)
       pairwise.module.distance <- (1-jaccard.module.distance)
-      jpe.distance             <- avg.zscore.module * pairwise.module.distance
+      module.distances         <- avg.zscore.module * pairwise.module.distance
   }
 
   stopCluster(cl)
@@ -76,9 +76,7 @@ Identify_Trait_Attributes <- function(RNAseq_Annotated_Matrix,pairwise.distances
   for (x in 1: (nbins - 1)) {
     for (y in (x + 1): nbins) {
 
-      print(paste(bin.a, ';', bin.b,':'))
-
-        d <- mean(lapply(module.terms, function(term) pairwise.distances[[term]][x,y] ),
+        d <- mean(sapply(module.terms, function(term) pairwise.distances[[term]][x,y] ),
                                      na.rm = T)
         print(d)
         avg.zscore.module[x,y] <- d
