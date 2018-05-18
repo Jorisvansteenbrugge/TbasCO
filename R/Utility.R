@@ -117,7 +117,7 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores){
 
   plot(random.genes.hexb,
        colramp=rf,mincnt=1, maxcnt=max(random.identical.annotated.genes.hexb@count),
-       xlab="PC",ylab="NRED", main="Random Annotated Genes")
+       xlab="PC",ylab="NRED", main="Random Genes")
 
   plot(random.annotated.genes.hexb,
        colramp=rf,mincnt=1, maxcnt=max(random.identical.annotated.genes.hexb@count),
