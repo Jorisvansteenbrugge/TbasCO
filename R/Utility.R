@@ -148,6 +148,8 @@ Plot_Background_Modules          <- function(bkgd.modules){
                na.rm=TRUE),
        ylim     = c(0, 1),
        xlim     = c(-4, 4),
+       ylab     = "Density",
+       xlab     = "Composite Zscore",
        cex.main = 0.75,
        col      = colours[1],
        main     = "Random background distributions of module sizes 2 - 20")
