@@ -104,9 +104,9 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distanc
                                                              bkgd.individual.Zscores =  bkgd.individual.Zscores,
                                                              show.progress = F)
 
-trait.attributes2        <- Identify_Trait_Attributes(RNAseq.data, pairwise.distances)
-trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.modules, RNAseq.data$features$annotation.db,
-                                                  p.threshold = 0.05)
+trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, pairwise.distances)
+trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.modules, RNAseq.data$features,
+                                                  p.threshold = 0.05, completion.threshold = 0.75)
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, RNAseq.data$features$bins)
 
 save.image('bgsAndPairwiseDistances.RData')
@@ -124,7 +124,7 @@ Plot_Background_Modules(bkgd.modules)
 
 ```{r}
 require(arules)
-ba <- apriori(sbs.trait.attributes,parameter = list(support = 0.3,
+ba <- apriori(sbs.trait.attributes,parameter = list(support = 0.2,
                                                    confidence = 0.9))
 
 ```
