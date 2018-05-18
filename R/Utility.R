@@ -129,5 +129,39 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores){
 
 }
 
+#' Plot_Background_Modules
+#' @name Plot Background Modules
+#' @description Plotting of each background distribution.
+#' @param bkgd.modules
+#' @export
+#' @author JJM van Steenbrugge
+Plot_Background_Modules          <- function(bkgd.modules){
+  if(length(bkgd.modules) < 1 ){
+    return("There are no random background distributions calculated")
+  }
+  colours           <- rainbow(length(bkgd.modules))
+  bkgd.names        <- names(bkgd.modules)
+  legend            <- sapply(bkgd.names,
+                              function(x) paste('N = ', x, sep=""))
 
+  plot(density(bkgd.modules[[1]],
+               na.rm=TRUE),
+       ylim     = c(0, 1),
+       xlim     = c(-4, 4),
+       cex.main = 0.75,
+       col      = colours[1],
+       main     = "Random background distributions of module sizes 2 - 20")
 
+  for(i in 2: length(bkgd.modules)){
+    points(density(bkgd.modules[[i]],
+                   na.rm=TRUE),
+           type = "l",
+           col  = colours[i])
+  }
+
+  legend("topleft",
+         legend = legend,
+         col    = colours,
+         pch    = 1,
+         cex    = 0.7)
+}
