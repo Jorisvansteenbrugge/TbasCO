@@ -31,7 +31,8 @@ Calc_Z_scores <- function(bkgd.individual, metrics){
 
 
   #applying them
-  distributions <- c("Random Annotated Genes",
+  distributions <- c("Random Genes",
+                     "Random Annotated Genes",
                      "Genes with the same annotation")
   Z_scores.output <- list()
 

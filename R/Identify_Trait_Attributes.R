@@ -7,9 +7,11 @@
 #' @param bkgd.individual.Zscores
 #' @export
 #' @author JJM van Steenbrugge
+#' BO Oyserman
 Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
                                       annotation.db, threads = 4){
   require(doSNOW)
+
   cl <- snow::makeSOCKcluster(threads)
   registerDoSNOW(cl)
 
@@ -18,11 +20,16 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
     annotation.db <- RNAseq.data$features$annotation.db
   }
 
+
+
+
   trait.names <- names(annotation.db$module.dict)
 
-  foreach::foreach(i = 1: length(trait.names),
-                          .export = c(),
-                          .verbose = show.progress) %dopar%{
+  output.list <- foreach::foreach(i = 1: length(trait.names),
+                          .export = c('.Calc_Jaccard_Module',
+                                      '.Calc_Jaccard',
+                                      '.Calc_Avg_Zscore_Module'),
+                          .verbose = F) %dopar%{
 
       module.terms             <- annotation.db$module.dict[[i]]
 
@@ -34,10 +41,29 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
                                                          module.terms)
       pairwise.module.distance <- (1-jaccard.module.distance)
       module.distances         <- avg.zscore.module * pairwise.module.distance
-  }
+      module.distances.table   <- as.data.frame(subset(reshape2::melt(module.distances),
+                                         value != 0))
+      colnames(module.distances.table)      <- c("Genome_1","Genome_2","Distance")
+      module.distances.table.reduced        <- module.distances.table[which(
+                                                module.distances.table[, 3] < 0), ]
+      module.distances.table.reduced[, 3]   <- (-module.distances.table.reduced[, 3])
+
+      graph                    <- igraph::graph_from_data_frame(module.distances.table.reduced,
+                                                                directed = FALSE)
+      clusters                 <- igraph::cluster_louvain(graph,
+                                                          weights = igraph::E(graph)$Distance)
+
+      return( list("avg.zscore.module"        = avg.zscore.module,
+                   "module.distances"         = module.distances,
+                   "pairwise.module.distance" = pairwise.module.distance,
+                   "JPE_distance_Table"       = module.distances.table,
+                   "clusters"                 = clusters)
+      )
+                          }
 
   stopCluster(cl)
-
+  names(output.list) <- trait.names
+  return(output.list)
 }
 
 

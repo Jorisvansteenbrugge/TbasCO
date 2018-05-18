@@ -5,8 +5,8 @@
 \alias{Identify_Trait_Attributes}
 \title{Identify Trait Attributes}
 \usage{
-Identify_Trait_Attributes(RNAseq_Annotated_Matrix, pairwise.distances,
-  annotation.db, threads = 4)
+Identify_Trait_Attributes(RNAseq.data, pairwise.distances, annotation.db,
+  threads = 4)
 }
 \arguments{
 \item{filepath}{RNAseq data file}
@@ -18,4 +18,5 @@ For each trait (or module) Attributes are calculated
 }
 \author{
 JJM van Steenbrugge
+BO Oyserman
 }

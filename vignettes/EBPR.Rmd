@@ -79,32 +79,56 @@ distance.metrics <- list("PC"   = PC,
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
-                                                            N           = 1000, 
+                                                            N           = 10000, 
                                                             metrics     = distance.metrics)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.modules            <- Module_Background(RNAseq.data, bkgd.individual.Zscores,
-                                             N = 1000, Z = 5, distance.metrics,
+                                             N = 10000, Z = 1:20, distance.metrics,
                                              threads = 4)
-```
 
 
-```{r}
+
 ###### Testing purposes
-polyP_module <- c("K00937","K02040","K02037","K02038","K02036","K07636","K07657","K03306")
-vancomycin <- RNAseq.data$features$annotation.db$module.dict[['M00115']]
-RNAseq.data$features$annotation.db <- list("module.dict" = list("vancomycin" = vancomycin),
-                                           "all annotations in a module" = vancomycin)
+#polyP_module <- c("K00937","K02040","K02037","K02038","K02036")
+#test_module <- c("K15634", "K16305", "K00873", "K15916", "K00850")
+#Glycolysis <- RNAseq.data$features$annotation.db$module.dict[['M00740']]
+#RNAseq.data$features$annotation.db <- list("module.dict" = list("polyP_module" = polyP_module,
+#                                                                "test_module"  = test_module),
+#                                           "all annotations in a module" = c(polyP_module, test_module))
 
 
 ######
-pairwise.distances <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distance.metrics =distance.metrics,
-                                  bkgd.individual.Zscores =  bkgd.individual.Zscores,
-                                  show.progress = T)
+pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distance.metrics =distance.metrics,
+                                                             bkgd.individual.Zscores =  bkgd.individual.Zscores,
+                                                             show.progress = F)
 
-clustered.distances <- Identify_Trait_Attributes()
+trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, pairwise.distances)
+trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.modules, RNAseq.data$features$annotation.db,
+                                                  p.threshold = 0.05)
+sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, RNAseq.data$features$bins)
+
+save.image('bgsAndPairwiseDistances.RData')
+
 ```
+
+## Plotting
+```{r}
+Plot_Trait_Attribute('M00027.2', trait.attributes.pruned, RNAseq.data)
+
+```
+
+## Apriori
+
+```{r}
+require(arules)
+a <- apriori(sbs.trait.attributes,parameter = list(support = 0.4,
+                                                   confidence = 0.9))
+
+```
+
+
 
 
 
