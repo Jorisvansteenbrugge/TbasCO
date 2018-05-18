@@ -7,15 +7,31 @@
 #' @param bkgd.individual.Zscores
 #' @export
 #' @author JJM van Steenbrugge
-Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, annotation.db,
-                                   p.threshold = 0.05, threads = 4){
+Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
+                                   p.threshold = 0.05, completion.threshold = 0.75,
+                                   threads = 4){
 
-  .Calc_P <- function(trait, p.threshold){
+  annotation.db <- features$annotation.db
+
+  .Filter_Completion <- function(trait.terms, bins, features, completion.threshold){
+    n <- length(trait.terms)
+    pa.current <- features$annotation_presence_absence[trait.terms,bins]
+
+    if(n == 1){
+      completion <- sum(pa.current) / n
+    }else{
+      complete <- apply(pa.current,1,function(x){if(sum(x)>=1){return(1)}else{return(0)}})
+      completion <- sum(complete) / n
+    }
+    return(completion >= 0.75)
+
+  }
+
+  .Calc_P <- function(trait, p.threshold, annotation.db){
     n.genes <- length(annotation.db$module.dict[[trait]])
     trait.attributes.current <- trait.attributes[[trait]]
 
     cluster.attributes <- list()
-
 
     clusters <- levels(as.factor(trait.attributes.current$clusters$membership))
 
@@ -23,6 +39,16 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, annotation.db
 
     for(cluster in clusters){
       bins.cluster <- bins[which(trait.attributes.current$clusters$membership == cluster)]
+
+
+      #Filter for completion
+      if(! .Filter_Completion(annotation.db$module.dict[[trait]], bins, features, 0.75 )){
+        next()
+      }
+
+
+      #
+
       bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
       p.val = tryCatch({
@@ -38,7 +64,6 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, annotation.db
         cluster.attributes[[cluster]] <- list("genomes"= bins.cluster,
                                               "p-val"  = p.val)
       }
-
     }
     return(cluster.attributes)
   }
@@ -47,9 +72,12 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, annotation.db
 
 
   trait.attributes.pruned <- foreach::foreach(i = 1: length(trait.names)) %do%{
-    .Calc_P(trait.names[i], p.threshold)
+    .Calc_P(trait.names[i], p.threshold, annotation.db)
   }
 
+  # for(i in 1:length(trait.names)){
+  #   .Calc_P(trait.names[i], p.threshold, annotation.db)
+  # }
 
   names(trait.attributes.pruned) <- trait.names
   return(trait.attributes.pruned)
