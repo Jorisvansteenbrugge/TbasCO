@@ -166,3 +166,60 @@ Plot_Background_Modules          <- function(bkgd.modules){
          pch    = 1,
          cex    = 0.7)
 }
+
+
+Association_Rules <- function(sbs.trait.attributes,
+                              lhs, rhs, N, CONF){
+  require(arules)
+
+  .Reach_N <- function(N, CONF, lhs = c(), rhs= c()){
+    n <- 0
+    support = 1.0
+    while (n < N) {
+      apri <- apriori(sbs.trait.attributes,
+                      parameter = list(support    = support,
+                                       confidence = CONF,
+                                       minlen     = 2),
+                      appearance = list(lhs = lhs,
+                                        rhs = rhs)
+                      )
+
+      rules <- as(apri, 'data.frame')
+      n <- nrow(rules)
+      print(n)
+      support <- support - 0.1
+      if(support <= 0){
+        support <- 1.0
+        CONF <- CONF - 0.1
+      }
+    }
+    return(rules)
+  }
+
+
+
+
+  if (missing(lhs) && missing(rhs)) {
+    rules <- .Reach_N(N, CONF)
+
+  }else if (!missing(lhs) && !missing(rhs)) {
+
+    rules1 <- .Reach_N(N/2, CONF, lhs = lhs)
+    rules2 <- .Reach_N(N/2, CONF, rhs = rhs)
+
+    rules1 <- rules1[order(rules1[,1]), ]
+    rules2 <- rules2[order(rules2[,1]), ]
+
+    rules  <- rbind(rules1[1:(N/2),], rules2[1:(N/2),])
+
+
+
+  }else if (!missing(lhs)) {
+    rules <- .Reach_N(N, CONF, lhs = lhs)
+  }else if (!missing(rhs)) {
+    rules <- .Reach_N(N, CONF, rhs = rhs)
+  }
+
+  return(rules)
+
+}
