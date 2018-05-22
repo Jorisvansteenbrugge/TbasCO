@@ -10,7 +10,7 @@
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
                                    p.threshold = 0.05, completion.threshold = 0.75,
                                    threads = 4){
-
+  require(doSNOW)
   annotation.db <- features$annotation.db
 
   .Filter_Completion <- function(trait.terms, bins, features, completion.threshold){
@@ -27,7 +27,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
 
   }
 
-  .Calc_P <- function(trait, p.threshold, annotation.db){
+  .Calc_P <- function(trait, p.threshold, annotation.db, n.attributes){
     n.genes <- length(annotation.db$module.dict[[trait]])
     trait.attributes.current <- trait.attributes[[trait]]
 
@@ -53,6 +53,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
 
       p.val = tryCatch({
       p.val <- t.test(bin.zscores,bkgd.modules[[as.character(n.genes)]], alternative = 'less')$p.value
+      p.val <- p.adjust(p.val, method = 'BH', n.attributes)
       }, warning = function(w){
         return(w)
       }, error = function(e){
@@ -69,10 +70,10 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
   }
 
   trait.names <- names(annotation.db$module.dict)
-
+  n.attributes <- sum(sapply(trait.attributes, function(x) length(levels(as.factor(x$clusters$membership)))))
 
   trait.attributes.pruned <- foreach::foreach(i = 1: length(trait.names)) %do%{
-    .Calc_P(trait.names[i], p.threshold, annotation.db)
+    .Calc_P(trait.names[i], p.threshold, annotation.db, n.attributes)
   }
 
   # for(i in 1:length(trait.names)){
