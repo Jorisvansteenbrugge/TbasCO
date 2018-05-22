@@ -21,7 +21,6 @@ Traitattributes_To_Sbsmatrix <- function(trait.attributes, bins) {
       cols <- c(cols, paste(trait.name,'.',i, sep = ''))
       #include names
     }
-    print(trait.name)
   }
   colnames(sbs.matrix) <- cols
   sbs.matrix <- as.data.frame(sbs.matrix)
