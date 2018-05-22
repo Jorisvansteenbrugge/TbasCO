@@ -88,17 +88,6 @@ bkgd.modules            <- Module_Background(RNAseq.data, bkgd.individual.Zscore
                                              N = 10000, Z = 1:20, distance.metrics,
                                              threads = 4)
 
-
-
-###### Testing purposes
-#polyP_module <- c("K00937","K02040","K02037","K02038","K02036")
-#test_module <- c("K15634", "K16305", "K00873", "K15916", "K00850")
-#Glycolysis <- RNAseq.data$features$annotation.db$module.dict[['M00740']]
-#RNAseq.data$features$annotation.db <- list("module.dict" = list("polyP_module" = polyP_module,
-#                                                                "test_module"  = test_module),
-#                                           "all annotations in a module" = c(polyP_module, test_module))
-
-
 ######
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distance.metrics =distance.metrics,
                                                              bkgd.individual.Zscores =  bkgd.individual.Zscores,
@@ -123,10 +112,19 @@ Plot_Background_Modules(bkgd.modules)
 ## Apriori
 
 ```{r}
-require(arules)
-ba <- apriori(sbs.trait.attributes,parameter = list(support = 0.2,
-                                                   confidence = 0.9))
 
+rules <- apriori(sbs.trait.attributes,
+              parameter = list(support    = 0.3,
+                               confidence = 0.4,
+                               minlen     = 3,
+                               maxlen     = 4
+                               ),
+               appearance = list(lhs        = c()
+                                 )
+              )
+
+Draw_Network(as(rules, 'data.frame'),annotation.db = RNAseq.data$features$annotation.db,
+             N = 30)
 ```
 
 
