@@ -1,3 +1,4 @@
+
 ---
 title: "Trait-based Comparative Transcriptomics Analysis"
 author: "Joris van Steenbrugge"
@@ -35,7 +36,7 @@ The package supports different options for normalization. By default the `Pre_pr
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
-file.path          <- "D:/Users/JorisS/Downloads/PortableGit/sample_data.csv"
+file.path          <- "D:/Users/JorisS/Downloads/PortableGit/TcT/data/sample_data.csv"
 annotation.db.path <- "D:/Users/JorisS/Downloads/PortableGit/TcT/data/updated_KO_modules.tsv"
 
 RNAseq.data <- Pre_process_input(file.path,
@@ -47,6 +48,25 @@ RNAseq.data <- Pre_process_input(file.path,
 #knitr::kable(RNAseq.data$table[1:10, ])
 
 ```
+
+#### Additional Filter step
+```{r}
+single.copy.genes <- read.csv("D:/Users/JorisS/Downloads/PortableGit/TcT/data/SCG_KOterms.txt", stringsAsFactors = F)[,1]
+single.copy.genes.n <- length(single.copy.genes)
+
+matches.per.genome <- sapply(RNAseq.data$features$bins,
+       function(bin){
+         bin.annotations <- unique(RNAseq.data$table[which(RNAseq.data$table$Bin == bin), 'Annotation'])
+         total.scg <- sum(single.copy.genes %in% bin.annotations)
+         total.scg
+         } 
+       )
+
+#Filter out low quality bins 
+RNAseq.data$features$bins <- RNAseq.data$features$bins[-which(matches.per.genome != 11 )]
+
+```
+
 
 ### Define the distance metrics to be used
 In this vignette, the Pearson Correlation and the Normalized Rank Euclidean Distance are used.
@@ -85,7 +105,7 @@ bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.modules            <- Module_Background(RNAseq.data, bkgd.individual.Zscores,
-                                             N = 10000, Z = 1:20, distance.metrics,
+                                             N = 10000, Z = 1:30, distance.metrics,
                                              threads = 4)
 
 ######

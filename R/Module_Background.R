@@ -1,20 +1,24 @@
 #' Generate a background distibution of composite Z scores
-#' @name Random Background distributions of modules
-#' @author JJM van Steenbrugge
-#' BO Oyserman
-#' @param RNAseq.data
+#' @name Random Background distributions of Traits
+#' @description Create a random background distribution of distances between genes in a random trait. When multiple distance metrics
+#' are provided, a composite Z score is calculated. The background distribution is determined by first random sampling two genomes.
+#' Between the two genomes the overlap in annotations is determined. Based on the overlap a trait
+#' is artificially created containing N annotations. For each annotation in the trait, the distances are
+#' calculated between Genome A and Genome B, as described in the previous section
+#' @param RNAseq.data Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
 #' @param N Number of genes to include in the random module
 #' @param Z Number of iterations
-#' @param range NOT SUPPORTED YET
 #' @param metrics Named list containing possibly multiple functions for distance
 #' @param threads Number of cpu cores to be used
 #' @export
-Module_Background <- function(RNAseq.data,
-                              bkgd.individual.Zscores,
-                              N,
-                              Z,
-                              metrics,
-                              threads = 2){
+#' @author JJM van Steenbrugge
+#' BO Oyserman
+Random_Trait_Background <- function(RNAseq.data,
+                                    bkgd.individual.Zscores,
+                                    N,
+                                    Z,
+                                    metrics,
+                                    threads = 4){
 
 
   .Procedure <- function(RNAseq.data,
@@ -31,9 +35,7 @@ Module_Background <- function(RNAseq.data,
       RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
       random.genomes              <- sample(RNAseq.data$features$bins, 2)
       random.genomes.combis       <- rep(list(random.genomes), Z) #Workaround to re-use function below
-      ###########
-      print(random.genomes)
-      ###########
+
       distances   <- Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
       print(distances)
       distances.Z <- .Convert_zscores(distances$scores, metrics, bkgd.individual.Zscores)

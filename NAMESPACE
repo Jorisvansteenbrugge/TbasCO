@@ -3,6 +3,7 @@
 export(.Calc_Avg_Zscore_Module)
 export(.Calc_Jaccard)
 export(.Convert_zscores)
+export(Association_Rules)
 export(Calc_Pairwise_Annotation_Distance)
 export(Calc_Z_scores)
 export(Draw_Network)

@@ -26,11 +26,11 @@ Traitattributes_To_Sbsmatrix <- function(trait.attributes, bins) {
   sbs.matrix <- as.data.frame(sbs.matrix)
   cols <- sapply(sbs.matrix, is.logical)
   sbs.matrix[,cols] <- lapply(sbs.matrix[,cols], as.numeric)
+
+  rownames(sbs.matrix) <- bins
   return(as.matrix(sbs.matrix))
 }
 
-
-#' @author Thomas Schlesinger
 calcmfrow<- function(x){
   temp <- sqrt(x)
 
@@ -130,20 +130,23 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores){
 
 #' Plot_Background_Modules
 #' @name Plot Background Modules
-#' @description Plotting of each background distribution.
-#' @param bkgd.modules
+#' @description Plotting of all background distributions of different sizes together.
+#' Each distribution is represented by a different colour. This plot hints wether or not the background
+#' distribution is indeed random.
+#' @param bkgd.traits A collection of random background distributions of traits.
+#' See \code{\link{Random_Trait_Background}}.
 #' @export
 #' @author JJM van Steenbrugge
-Plot_Background_Modules          <- function(bkgd.modules){
-  if(length(bkgd.modules) < 1 ){
+Plot_Background_Modules          <- function(bkgd.traits){
+  if(length(bkgd.traits) < 1 ){
     return("There are no random background distributions calculated")
   }
-  colours           <- rainbow(length(bkgd.modules))
-  bkgd.names        <- names(bkgd.modules)
+  colours           <- rainbow(length(bkgd.traits))
+  bkgd.names        <- names(bkgd.traits)
   legend            <- sapply(bkgd.names,
                               function(x) paste('N = ', x, sep=""))
 
-  plot(density(bkgd.modules[[1]],
+  plot(density(bkgd.traits[[1]],
                na.rm=TRUE),
        ylim     = c(0, 1),
        xlim     = c(-4, 4),
@@ -153,8 +156,8 @@ Plot_Background_Modules          <- function(bkgd.modules){
        col      = colours[1],
        main     = "Random background distributions of module sizes 2 - 20")
 
-  for(i in 2: length(bkgd.modules)){
-    points(density(bkgd.modules[[i]],
+  for(i in 2: length(bkgd.traits)){
+    points(density(bkgd.traits[[i]],
                    na.rm=TRUE),
            type = "l",
            col  = colours[i])
@@ -167,18 +170,29 @@ Plot_Background_Modules          <- function(bkgd.modules){
          cex    = 0.7)
 }
 
-
+#' Calculate Association Rules
+#' @name Calculate Association Rules
+#' @description Calculate Association Rules using the apriori algorithm (as implemented in the arules package).
+#' This function lets the user decide on the number of rules to produce and estimates parameters to produce those results.
+#' @param sbs.trait.attributes Matrix where each collumn is a trait attribute and each row a genome. Presence or absence is indicated with
+#' either a zero (0) or one (1).
+#' @param lhs A vector containing one or multiple terms for the left-hand-side (antecedent) of the association rules. For more information see \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
+#' @param rhs A vector containing one or multiple terms for the right-hand-side (consequent) of the association rules. For more information see \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
+#' @param N The number of association rules to create (e.g. N = 100 will result in 100 association rules).
+#' @export
+#' @author JJM van Steenbrugge
 Association_Rules <- function(sbs.trait.attributes,
-                              lhs, rhs, N, CONF){
+                              lhs, rhs, N){
   require(arules)
 
-  .Reach_N <- function(N, CONF, lhs = c(), rhs= c()){
+  .Reach_N <- function(N, lhs = c(), rhs= c()){
     n <- 0
     support = 1.0
+    confidence = 1.0
     while (n < N) {
       apri <- apriori(sbs.trait.attributes,
                       parameter = list(support    = support,
-                                       confidence = CONF,
+                                       confidence = confidence,
                                        minlen     = 2),
                       appearance = list(lhs = lhs,
                                         rhs = rhs)
@@ -190,7 +204,7 @@ Association_Rules <- function(sbs.trait.attributes,
       support <- support - 0.1
       if(support <= 0){
         support <- 1.0
-        CONF <- CONF - 0.1
+        confidence <- confidence - 0.1
       }
     }
     return(rules)
@@ -200,12 +214,12 @@ Association_Rules <- function(sbs.trait.attributes,
 
 
   if (missing(lhs) && missing(rhs)) {
-    rules <- .Reach_N(N, CONF)
+    rules <- .Reach_N(N)
 
   }else if (!missing(lhs) && !missing(rhs)) {
 
-    rules1 <- .Reach_N(N/2, CONF, lhs = lhs)
-    rules2 <- .Reach_N(N/2, CONF, rhs = rhs)
+    rules1 <- .Reach_N(N/2, lhs = lhs)
+    rules2 <- .Reach_N(N/2, rhs = rhs)
 
     rules1 <- rules1[order(rules1[,1]), ]
     rules2 <- rules2[order(rules2[,1]), ]
@@ -215,9 +229,11 @@ Association_Rules <- function(sbs.trait.attributes,
 
 
   }else if (!missing(lhs)) {
-    rules <- .Reach_N(N, CONF, lhs = lhs)
+
+    rules <- .Reach_N (N,lhs = lhs)
   }else if (!missing(rhs)) {
-    rules <- .Reach_N(N, CONF, rhs = rhs)
+
+    rules <- .Reach_N (N,rhs = rhs)
   }
 
   return(rules)
