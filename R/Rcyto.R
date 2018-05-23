@@ -41,7 +41,7 @@ Parse_ruleframe <- function(rules.dataframe){
 }
 
 #' Draw a network of association rules in Cytoscape
-#' @name Draw_Network
+#' @name Network_Association_Rules
 #' @description Association rules between trait-attributes can be visualized in
 #' a directed graph network.
 #' @param rules.dataframe A dataframe containing association rules,
@@ -51,7 +51,7 @@ Parse_ruleframe <- function(rules.dataframe){
 #' @param N The number of association rules to visualise
 #' @export
 #' @author JJM van Steenbrugge
-Draw_Network <- function(rules.dataframe, annotation.db, N = 200){
+Network_Association_Rules <- function(rules.dataframe, annotation.db, N = 200){
   g <- new('graphNEL', edgemode='directed')
   g <- initNodeAttribute(graph = g,
                          attribute.name  = 'attribute',

@@ -65,7 +65,7 @@ calcmfrow<- function(x){
 #' @example Plot_Trait_Attribute('M00027.2', trait.attributes.pruned, RNAseq.data)
 #' @export
 #' @author JJM van Steenbrugge
-Plot_Trait_Attribute <- function(trait.attribute, trait.attributes,
+Plot_Trait_Attribute_Expression <- function(trait.attribute, trait.attributes,
                                  RNAseq.data){
 
   trait.attribute.s <- unlist(strsplit(x = trait.attribute,split = '[.]'))
@@ -104,6 +104,53 @@ Plot_Trait_Attribute <- function(trait.attribute, trait.attributes,
     }
   }
 }
+
+Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned){
+  require(RCy3)
+  g <- new('graphNEL', edgemode = 'undirected')
+  df <- matrix(nrow=0,ncol=2)
+
+  added_nodes <- c()
+
+  for(trait in trait.names) {
+    attributes <- trait.attributes.pruned[[trait]]
+
+    for(attribute in names(attributes)) {
+
+      name <- paste(trait, attribute,
+                    sep = '.')
+      g <- graph::addNode(name,g)
+      df <- rbind(df, c(name, 'trait'))
+
+      for(genome in attributes[[attribute]]$genomes) {
+
+        if(! genome %in% added_nodes ) {
+          g <- graph::addNode(genome, g)
+          added_nodes <- c(added_nodes, genome)
+          df <- rbind(df, c(genome, 'genome'))
+        }
+
+        g <- graph::addEdge(genome, name,g)
+      }
+    }
+
+
+
+  }
+
+  createNetworkFromGraph(g, title = 'test')
+
+
+  df <- data.frame(df[,2], row.names = df[,1], stringsAsFactors = F)
+  colnames(df) <- c("type")
+
+  loadTableData (df)
+
+
+
+  displayGraph(cw)
+}
+
 #' Plot_Background_Individual_Genes
 #' @name Plot Background Individual Genes
 #' @description Plotting of each background distribution.
