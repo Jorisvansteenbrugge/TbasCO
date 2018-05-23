@@ -40,8 +40,17 @@ Parse_ruleframe <- function(rules.dataframe){
               "interaction_list" = rule_list))
 }
 
+#' Draw a network of association rules in Cytoscape
+#' @name Draw_Network
+#' @description Association rules between trait-attributes can be visualized in
+#' a directed graph network.
+#' @param rules.dataframe A dataframe containing association rules,
+#' as calculated by \code{\link{Association_Rules}}.
+#' @param annotation.db List containing a dictionary like structure with traits as
+#' names and annotation as values.
+#' @param N The number of association rules to visualise
 #' @export
-#' @author  JJM van Steenbrugge
+#' @author JJM van Steenbrugge
 Draw_Network <- function(rules.dataframe, annotation.db, N = 200){
   g <- new('graphNEL', edgemode='directed')
   g <- initNodeAttribute(graph = g,

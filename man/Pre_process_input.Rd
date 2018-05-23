@@ -12,6 +12,11 @@ Pre_process_input(file.path, annotation.db.path, normalize.method = FALSE,
 
 \item{filepath}{RNAseq data file}
 }
+\value{
+RNAseq.data A list object containin the RNAseq table with ranked expression collumns possible filtered and normalized,
+together with some features (position of expression collumns, rank collumns, annotation database, a list of the genomes, and
+a presence absence table of all annotations)
+}
 \description{
 Wrapper of preprocess functions, including: Identifying Matrix features
 , Normalization, Filtering for non informative lines

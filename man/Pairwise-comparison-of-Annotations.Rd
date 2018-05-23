@@ -9,9 +9,18 @@ Calc_Pairwise_Annotation_Distance(RNAseq.data, annotation.db, distance.metrics,
   bkgd.individual.Zscores, show.progress = F, threads = 4)
 }
 \arguments{
-\item{distance.metrics}{Variable}
+\item{RNAseq.data}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
 
-\item{filepath}{RNAseq data file}
+\item{annotation.db}{List containing a dictionary like structure with trait as names
+and annotation as values.}
+
+\item{distance.metrics}{Named list containing distance functions as values}
+
+\item{bkgd.individual.Zscores}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
+
+\item{show.progress}{Boolean indicating werther or not to show progress.}
+
+\item{threads}{The number of cpu threads to run the function in parallel .}
 }
 \description{
 For each annotation term, a comparison is done for each genome
