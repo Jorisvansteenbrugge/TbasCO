@@ -1,9 +1,10 @@
 #' Identify Trait Attributes
 #' @name Identify Trait Attributes
 #' @description For each trait (or module) Attributes are calculated
-#' @param filepath RNAseq data file
-#' @param distance.metrics Variable
-#' @param annotation.db
+#' @param RNAseq.data Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
+#' @param pairwise.distances Named list containing possibly multiple functions for distance
+#' @param annotation.db List containing a dictionary like structure with trait as names
+#' and annotation as values.
 #' @param bkgd.individual.Zscores
 #' @export
 #' @author JJM van Steenbrugge

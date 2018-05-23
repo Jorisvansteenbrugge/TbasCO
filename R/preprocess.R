@@ -9,6 +9,9 @@
 #' Pre_process_input(file.path, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
 #' Pre_process_input(file.path, normalize.method = TRUE, filter.method = 'MAD') # Default Normalization, and MAD filtering
 #' Pre_process_input(file.path, normalize.method = custom_function_name, filter.method = FALSE) # Custom Normalization, no filtering
+#' @return RNAseq.data A list object containin the RNAseq table with ranked expression collumns possible filtered and normalized,
+#' together with some features (position of expression collumns, rank collumns, annotation database, a list of the genomes, and
+#' a presence absence table of all annotations)
 #' @author JJM van Steenbrugge
 Pre_process_input <- function(file.path, annotation.db.path, normalize.method = FALSE,
                               filter.method = "stdev"){

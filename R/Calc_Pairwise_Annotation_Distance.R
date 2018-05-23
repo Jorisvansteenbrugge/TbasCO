@@ -2,10 +2,13 @@
 #' @name Pairwise comparison of Annotations
 #' @description For each annotation term, a comparison is done for each genome
 #' versus all other genomes, 1 versus 1.
-#' @param filepath RNAseq data file
-#' @param distance.metrics Variable
-#' @param annotation.db
-#' @param bkgd.individual.Zscores
+#' @param RNAseq.data Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
+#' @param annotation.db List containing a dictionary like structure with trait as names
+#' and annotation as values.
+#' @param distance.metrics Named list containing distance functions as values
+#' @param bkgd.individual.Zscores Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
+#' @param show.progress Boolean indicating werther or not to show progress.
+#' @param threads The number of cpu threads to run the function in parallel .
 #' @export
 #' @author JJM van Steenbrugge
 Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
