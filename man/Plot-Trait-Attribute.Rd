@@ -2,24 +2,41 @@
 % Please edit documentation in R/Utility.R
 \name{Plot Trait Attribute}
 \alias{Plot Trait Attribute}
+\alias{Traitattributes_To_Sbsmatrix}
+\alias{Plot Trait Attribute}
 \alias{Plot_Trait_Attribute}
 \title{Plot Trait Attribute}
 \usage{
+Traitattributes_To_Sbsmatrix(trait.attributes, genomes)
+
 Plot_Trait_Attribute(trait.attribute, trait.attributes, RNAseq.data)
 }
 \arguments{
-\item{trait.attribute}{The name of the trait attribute (as character string)}
-
 \item{trait.attributes}{The full list of all trait attributes}
 
-\item{RNAseq}{data}
+\item{genomes}{A vector containing the names of all genomes present in the
+sample.}
+
+\item{trait.attribute}{The name of the trait attribute (as character string)}
+
+\item{RNAseq.data}{Collection of multple components, include RNA seq data,
+annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
+
+\item{trait.attributes}{The full list of all trait attributes}
 }
 \description{
-Plot the expression profile for all genomes expressing that attribute.
-For each annotation a separate plot is created where the thick black line represents
-the mean expression of all genomes with that annotation. The dashed blue and red lines
-represent the mean + 0.5*sd and the mean - 0.5 * sd, respectively
+Convert a list with trait attributes to a matrix where each
+collumn is a trait attribute and each row a genome. Presence or absence is
+indicated with either a zero (0) or one (1).
+
+Plot the expression profile for all genomes expressing that
+attribute. For each annotation a separate plot is created where the thick
+black line represents the mean expression of all genomes with that annotation.
+The dashed blue and red lines represent the mean + 0.5*sd and the mean -
+0.5 * sd, respectively.
 }
 \author{
+JJM van Steenbrugge
+
 JJM van Steenbrugge
 }

@@ -5,10 +5,16 @@
 \alias{Plot_Background_Modules}
 \title{Plot_Background_Modules}
 \usage{
-Plot_Background_Modules(bkgd.modules)
+Plot_Background_Modules(bkgd.traits)
+}
+\arguments{
+\item{bkgd.traits}{A collection of random background distributions of traits.
+See \code{\link{Random_Trait_Background}}.}
 }
 \description{
-Plotting of each background distribution.
+Plotting of all background distributions of different sizes
+together. Each distribution is represented by a different colour. This plot
+hints wether or not the background distribution is indeed random.
 }
 \author{
 JJM van Steenbrugge

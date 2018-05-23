@@ -7,6 +7,11 @@
 \usage{
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 }
+\arguments{
+\item{bkgd.individual.Zscores}{A list containing (composite) Zscores based on
+a random background distribution.
+See \code{\link{Calc_Z_scores}} for more information.}
+}
 \description{
 Plotting of each background distribution.
 }

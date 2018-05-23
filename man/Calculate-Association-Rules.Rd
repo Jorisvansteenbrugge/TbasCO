@@ -8,14 +8,25 @@
 Association_Rules(sbs.trait.attributes, lhs, rhs, N)
 }
 \arguments{
-\item{sbs.trait.attributes}{Matrix where each collumn is a trait attribute and each row a genome. Presence or absence is indicated with
-either a zero (0) or one (1).}
+\item{sbs.trait.attributes}{Matrix where each collumn is a trait attribute
+and each row a genome. Presence or absence is indicated with either a zero
+(0) or one (1).}
 
-\item{lhs}{A vector containing one or multiple terms for the Left-hand-side (antecedent) of the association rules. For more info see \url{https://en.wikipedia.org/wiki/Association_rule_learning}}
+\item{lhs}{A vector containing one or multiple terms for the left-hand-side
+(antecedent) of the association rules. For more information see
+\url{https://en.wikipedia.org/wiki/Association_rule_learning}.}
+
+\item{rhs}{A vector containing one or multiple terms for the right-hand-side
+(consequent) of the association rules. For more information see
+\url{https://en.wikipedia.org/wiki/Association_rule_learning}.}
+
+\item{N}{The number of association rules to create (e.g. N = 100 will result
+in 100 association rules).}
 }
 \description{
-Calculate Association Rules using the apriori algorithm (as implemented in the arules package).
-This function lets the user decide on the number of rules to produce and estimates parameters to produce those results.
+Calculate Association Rules using the apriori algorithm (as
+implemented in the arules package). This function lets the user decide on the
+number of rules to produce and estimates parameters to produce those results.
 }
 \author{
 JJM van Steenbrugge

@@ -1,7 +1,15 @@
+#' Plot Trait Attribute
+#' @name Plot Trait Attribute
+#' @description Convert a list with trait attributes to a matrix where each
+#' collumn is a trait attribute and each row a genome. Presence or absence is
+#' indicated with either a zero (0) or one (1).
+#' @param trait.attributes The full list of all trait attributes
+#' @param genomes A vector containing the names of all genomes present in the
+#' sample.
 #' @export
 #' @author JJM van Steenbrugge
-Traitattributes_To_Sbsmatrix <- function(trait.attributes, bins) {
-  sbs.matrix   <- matrix(nrow = length(bins),
+Traitattributes_To_Sbsmatrix <- function(trait.attributes, genomes) {
+  sbs.matrix   <- matrix(nrow = length(genomes),
                          ncol = 1)
   sbs.matrix   <- sbs.matrix[, -1]
   traits.names <- names(trait.attributes)
@@ -15,8 +23,8 @@ Traitattributes_To_Sbsmatrix <- function(trait.attributes, bins) {
     }
     # Attributes
     for( i in 1: length(trait)) {
-      attribute.bins <- trait[[i]]$genomes
-      occurences     <- bins %in% attribute.bins
+      attribute.genomes <- trait[[i]]$genomes
+      occurences     <- genomes %in% attribute.genomes
       sbs.matrix <- cbind(sbs.matrix, occurences)
       cols <- c(cols, paste(trait.name,'.',i, sep = ''))
       #include names
@@ -27,7 +35,7 @@ Traitattributes_To_Sbsmatrix <- function(trait.attributes, bins) {
   cols <- sapply(sbs.matrix, is.logical)
   sbs.matrix[,cols] <- lapply(sbs.matrix[,cols], as.numeric)
 
-  rownames(sbs.matrix) <- bins
+  rownames(sbs.matrix) <- genomes
   return(as.matrix(sbs.matrix))
 }
 
@@ -45,13 +53,15 @@ calcmfrow<- function(x){
 
 #' Plot Trait Attribute
 #' @name Plot Trait Attribute
-#' @description Plot the expression profile for all genomes expressing that attribute.
-#' For each annotation a separate plot is created where the thick black line represents
-#' the mean expression of all genomes with that annotation. The dashed blue and red lines
-#' represent the mean + 0.5*sd and the mean - 0.5 * sd, respectively
+#' @description Plot the expression profile for all genomes expressing that
+#' attribute. For each annotation a separate plot is created where the thick
+#' black line represents the mean expression of all genomes with that annotation.
+#' The dashed blue and red lines represent the mean + 0.5*sd and the mean -
+#' 0.5 * sd, respectively.
 #' @param trait.attribute The name of the trait attribute (as character string)
 #' @param trait.attributes The full list of all trait attributes
-#' @param RNAseq data
+#' @param RNAseq.data Collection of multple components, include RNA seq data,
+#' annotations, etc. See \code{\link{Pre_process_input}} for the full list.
 #' @example Plot_Trait_Attribute('M00027.2', trait.attributes.pruned, RNAseq.data)
 #' @export
 #' @author JJM van Steenbrugge
@@ -97,7 +107,9 @@ Plot_Trait_Attribute <- function(trait.attribute, trait.attributes,
 #' Plot_Background_Individual_Genes
 #' @name Plot Background Individual Genes
 #' @description Plotting of each background distribution.
-#' @param bkgd.individual.Zscores
+#' @param bkgd.individual.Zscores A list containing (composite) Zscores based on
+#' a random background distribution.
+#' See \code{\link{Calc_Z_scores}} for more information.
 #' @export
 #' @author BO Oyserman
 Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores){
@@ -130,9 +142,9 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores){
 
 #' Plot_Background_Modules
 #' @name Plot Background Modules
-#' @description Plotting of all background distributions of different sizes together.
-#' Each distribution is represented by a different colour. This plot hints wether or not the background
-#' distribution is indeed random.
+#' @description Plotting of all background distributions of different sizes
+#' together. Each distribution is represented by a different colour. This plot
+#' hints wether or not the background distribution is indeed random.
 #' @param bkgd.traits A collection of random background distributions of traits.
 #' See \code{\link{Random_Trait_Background}}.
 #' @export
@@ -172,13 +184,20 @@ Plot_Background_Modules          <- function(bkgd.traits){
 
 #' Calculate Association Rules
 #' @name Calculate Association Rules
-#' @description Calculate Association Rules using the apriori algorithm (as implemented in the arules package).
-#' This function lets the user decide on the number of rules to produce and estimates parameters to produce those results.
-#' @param sbs.trait.attributes Matrix where each collumn is a trait attribute and each row a genome. Presence or absence is indicated with
-#' either a zero (0) or one (1).
-#' @param lhs A vector containing one or multiple terms for the left-hand-side (antecedent) of the association rules. For more information see \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
-#' @param rhs A vector containing one or multiple terms for the right-hand-side (consequent) of the association rules. For more information see \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
-#' @param N The number of association rules to create (e.g. N = 100 will result in 100 association rules).
+#' @description Calculate Association Rules using the apriori algorithm (as
+#' implemented in the arules package). This function lets the user decide on the
+#' number of rules to produce and estimates parameters to produce those results.
+#' @param sbs.trait.attributes Matrix where each collumn is a trait attribute
+#' and each row a genome. Presence or absence is indicated with either a zero
+#' (0) or one (1).
+#' @param lhs A vector containing one or multiple terms for the left-hand-side
+#' (antecedent) of the association rules. For more information see
+#' \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
+#' @param rhs A vector containing one or multiple terms for the right-hand-side
+#' (consequent) of the association rules. For more information see
+#' \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
+#' @param N The number of association rules to create (e.g. N = 100 will result
+#' in 100 association rules).
 #' @export
 #' @author JJM van Steenbrugge
 Association_Rules <- function(sbs.trait.attributes,
