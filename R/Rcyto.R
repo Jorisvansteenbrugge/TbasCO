@@ -52,6 +52,11 @@ Parse_ruleframe <- function(rules.dataframe){
 #' @export
 #' @author JJM van Steenbrugge
 Network_Association_Rules <- function(rules.dataframe, annotation.db, N = 200){
+  if(!"RCy3" %in% installed.packages()){
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("RCy3")
+  }
+  library(RCy3)
   g <- new('graphNEL', edgemode='directed')
   g <- initNodeAttribute(graph = g,
                          attribute.name  = 'attribute',

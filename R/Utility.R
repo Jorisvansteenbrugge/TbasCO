@@ -105,12 +105,29 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute, trait.attributes,
   }
 }
 
+#' Network Trait Genomes
+#' @name Network Trait Genomes
+#' @description Draw a network of trait(-attributes) with its associated genomes
+#' in Cytoscape (\url{http://www.cytoscape.org/}) automatically via Cytoscape's
+#' REST API..
+#' @param
+#' @export
+#' @example Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
+#' @author JJM van Steenbrugge
 Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned){
-  require(RCy3)
-  g <- new('graphNEL', edgemode = 'undirected')
-  df <- matrix(nrow=0,ncol=2)
+  if(!"RCy3" %in% installed.packages()){
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("RCy3")
+  }
+  library(RCy3)
+
+  nodes <- matrix(nrow=0, ncol=2)
+  colnames(nodes) <- c("id","group")
+  edges <- matrix(nrow=0, ncol=2)
+  colnames(edges) <- c("source","target")
 
   added_nodes <- c()
+
 
   for(trait in trait.names) {
     attributes <- trait.attributes.pruned[[trait]]
@@ -119,36 +136,45 @@ Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned){
 
       name <- paste(trait, attribute,
                     sep = '.')
-      g <- graph::addNode(name,g)
-      df <- rbind(df, c(name, 'trait'))
+      nodes <- rbind(nodes, c(name, 'trait'))
 
       for(genome in attributes[[attribute]]$genomes) {
 
         if(! genome %in% added_nodes ) {
-          g <- graph::addNode(genome, g)
+          nodes <- rbind(nodes, c(genome, 'genome'))
           added_nodes <- c(added_nodes, genome)
-          df <- rbind(df, c(genome, 'genome'))
         }
 
-        g <- graph::addEdge(genome, name,g)
+        edges <- rbind(edges, c(genome, name))
       }
     }
-
-
-
   }
 
-  createNetworkFromGraph(g, title = 'test')
+  createNetworkFromDataFrames(data.frame(nodes,stringsAsFactors = F),
+                              data.frame(edges,stringsAsFactors = F),
+                              title= paste(trait.names, collapse = ','), collection="Network Traits and Genomes")
 
 
-  df <- data.frame(df[,2], row.names = df[,1], stringsAsFactors = F)
-  colnames(df) <- c("type")
+  values <- c ('trait',  'genome')
+  shapes <- c ('rectangle', 'circle')
+  setNodeShapeMapping ('group', values, shapes)
 
-  loadTableData (df)
+  # Genome node colors ----
+  setNodeColorBypass(node.names = nodes[which(nodes[,2] == 'genome'), 1],
+                     new.colors = '#b30000'
+
+                     )
+  setNodeLabelColorBypass(node.names = nodes[which(nodes[,2] == 'genome'), 1],
+                          new.colors = '#ffffff')
+
+  setNodeSizeBypass(node.names = nodes[which(nodes[,2] == 'genome'), 1],
+                    new.sizes = 40)
+
+  # Trait node colors ----
+  setNodeColorBypass(node.names = nodes[which(nodes[,2] == 'trait'), 1],
+                     new.colors = '#737373')
 
 
-
-  displayGraph(cw)
 }
 
 #' Plot_Background_Individual_Genes
