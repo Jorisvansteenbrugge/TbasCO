@@ -110,7 +110,8 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute, trait.attributes,
 #' @description Draw a network of trait(-attributes) with its associated genomes
 #' in Cytoscape (\url{http://www.cytoscape.org/}) automatically via Cytoscape's
 #' REST API..
-#' @param
+#' @param trait.names a vector containing the names of traits, as provided in the
+#' RNAseq.data$features$annotation.db$module.dict object
 #' @export
 #' @example Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
 #' @author JJM van Steenbrugge
