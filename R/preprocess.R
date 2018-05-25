@@ -117,20 +117,9 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 #' @author JJM van Steenbrugge
 Normalization <- function(RNAseq.table, RNAseq.features, normalize.method){
   if(typeof(normalize.method) == "closure"){
-    normalize.method(RNAseq.table)
-  } else{
-    require(edgeR)
-
-    sample.columns <- RNAseq.features$sample.columns
-
-    DGEobj <- DGEList(counts=RNAseq.table[, sample.columns])
-
-    norm_factors      <- calcNormFactors(DGEobj, method='TMM')
-
-    RNAseq.table[, sample.columns] <- t(t(as.matrix(norm_factors)) /
-                                            norm_factors$samples[,3])
-    return(RNAseq.table)
-  }
+    return(normalize.method(RNAseq.table))
+  } 
+  return(RNAseq.table)
 }
 
 #' Remove data rows that have a stdev of zero.
