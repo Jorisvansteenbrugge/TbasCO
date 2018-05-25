@@ -11,5 +11,6 @@ License: some licence
 Encoding: UTF-8
 LazyData: true
 Imports: doSNOW
+BiocViews: RCy3
 RoxygenNote: 6.0.1
 Suggests: testthat
