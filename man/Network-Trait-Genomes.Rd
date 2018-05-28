@@ -7,6 +7,10 @@
 \usage{
 Network_Trait_Genomes(trait.names, trait.attributes.pruned)
 }
+\arguments{
+\item{trait.names}{a vector containing the names of traits, as provided in the
+RNAseq.data$features$annotation.db$module.dict object}
+}
 \description{
 Draw a network of trait(-attributes) with its associated genomes
 in Cytoscape (\url{http://www.cytoscape.org/}) automatically via Cytoscape's

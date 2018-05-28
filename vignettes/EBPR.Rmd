@@ -127,7 +127,7 @@ save.image('bgsAndPairwiseDistances.RData')
 
 ## Plotting
 ```{r}
-Plot_Trait_Attribute_Expression('M00002.1', trait.attributes.pruned, RNAseq.data)
+Plot_Trait_Attribute_Expression('M00844.2', trait.attributes.pruned, RNAseq.data)
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 Plot_Background_Modules(bkgd.modules)
 ```
@@ -143,6 +143,10 @@ Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$fe
 ```
 
 
-
+## Experimental
+```{r}
+Go_Fish('K00927', RNAseq.data,
+        type = 'peak')
+```
 
 
