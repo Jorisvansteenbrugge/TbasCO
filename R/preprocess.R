@@ -1,9 +1,11 @@
 
 #' Pre-processing of RNAseq data
-#' @description Wrapper of preprocess functions, including: Identifying Matrix features
-#' , Normalization, Filtering for non informative lines
+#' @description Wrapper of preprocess functions, including: Identifying Matrix
+#' features, Normalization, Filtering for non informative lines
 #' @param filepath RNAseq data file
-#' @param normalize.method Variable
+#' @param normalize.method User defined method to normalize data
+#' @param filter.low.coverage boolean expression to wether we should filter out
+#' genomes with a low overall expression level.
 #' @export
 #' @examples
 #' Pre_process_input(file.path, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
@@ -14,7 +16,8 @@
 #' a presence absence table of all annotations)
 #' @author JJM van Steenbrugge
 Pre_process_input <- function(file.path, annotation.db.path, normalize.method = FALSE,
-                              filter.method = "stdev"){
+                              filter.method = "stdev",
+                              filter.low.coverage = T){
 
   RNAseq.table     <- read.csv2(file.path)
 
@@ -46,13 +49,17 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
 
   RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
-  # Read annotation DB
-
+  if (filter.low.coverage) {
+    RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
+                                            "features" = RNAseq.features))
+  } else {
+    RNAseq.data <- list("table"    = RNAseq.table,
+                        "features" = RNAseq.features)
+  }
 
 
   # Combine the table and the features in one object
-  return(list("table"    = RNAseq.table,
-              "features" = RNAseq.features))
+  return(RNAseq.data)
 }
 
 #' Automatically identify features based on column names
@@ -118,7 +125,7 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 Normalization <- function(RNAseq.table, RNAseq.features, normalize.method){
   if(typeof(normalize.method) == "closure"){
     return(normalize.method(RNAseq.table))
-  } 
+  }
   return(RNAseq.table)
 }
 
@@ -152,6 +159,7 @@ Filter <- function(RNAseq.table, sample.columns,
   } else if(typeof(filter.method) == 'closure') {
     filter.method(RNAseq.table)
   }
+
 }
 #' Add a ranking collumn for each sample that holds the negative rank of transcripts
 #' assigned to each gene, per bin. Normalized on the highest negative rank.
@@ -190,7 +198,7 @@ Create.Rank.Columns <- function(RNAseq.table, RNAseq.features){
   return(RNAseq.table)
 }
 
-Create.Module.groups <- function(annotation.db){
+Create.Module.groups <- function (annotation.db) {
   module.dict <- list()
   for(module in unique(annotation.db$Module)){
     module.dict[[module]] <- annotation.db[which(annotation.db$Module == module), 'Annotation']
@@ -200,5 +208,24 @@ Create.Module.groups <- function(annotation.db){
               )
          )
 
+
+}
+
+Filter.Low.Coverage <-  function (RNAseq.data) {
+
+    expression_bins <- sapply(RNAseq.data$features$bins, FUN = function(bin){
+      dat <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin), ]
+      expr <- dat[,RNAseq.data$features$sample.columns]
+      return(sum(expr))
+    })
+
+    # Keep genomes greater than the 25% quantile
+    q_25 <- quantile(expression_bins)[2]
+    bins.keep <- as.character(RNAseq.data$features$bins[which(expression_bins > q_25)])
+    # Remove those other genomes
+    RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]
+    RNAseq.data$features$bins <- bins.keep
+    RNAseq.data$features$annotation_presence_absence <- RNAseq.data$features$annotation_presence_absence[, bins.keep]
+    return(RNAseq.data)
 
 }
