@@ -76,10 +76,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
     .Calc_P(trait.names[i], p.threshold, annotation.db, n.attributes)
   }
 
-  # for(i in 1:length(trait.names)){
-  #   .Calc_P(trait.names[i], p.threshold, annotation.db)
-  # }
-
+  print(' almost done')
   names(trait.attributes.pruned) <- trait.names
   return(trait.attributes.pruned)
 }

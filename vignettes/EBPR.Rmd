@@ -113,7 +113,7 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distanc
                                                              bkgd.individual.Zscores =  bkgd.individual.Zscores,
                                                              show.progress = F)
 
-trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, pairwise.distances)
+trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, pairwise.distances,threads = 2)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data$features,
@@ -130,6 +130,8 @@ save.image('bgsAndPairwiseDistances.RData')
 Plot_Trait_Attribute_Expression('M00844.2', trait.attributes.pruned, RNAseq.data)
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 Plot_Background_Modules(bkgd.modules)
+
+Network_Trait_Genomes(c('M00178'), trait.attributes.pruned)
 ```
 
 ## Apriori
