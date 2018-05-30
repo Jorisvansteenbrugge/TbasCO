@@ -222,6 +222,10 @@ Filter.Low.Coverage <-  function (RNAseq.data) {
     # Keep genomes greater than the 25% quantile
     q_25 <- quantile(expression_bins)[2]
     bins.keep <- as.character(RNAseq.data$features$bins[which(expression_bins > q_25)])
+    bins.removed <- RNAseq.data$features$bins[which(expression_bins <= q_25)]
+
+    print("I removed the following low coverage genomes: ")
+    print(paste(bins.removed, collapse = ', '))
     # Remove those other genomes
     RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]
     RNAseq.data$features$bins <- bins.keep
