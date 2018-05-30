@@ -7,6 +7,7 @@
 #' @param pattern character string of the kind of pattern to look for. The string
 #' should be one of the following: {'increase', 'decrease', 'peak', 'vale}
 #' @export
+#' @example Go_Fish('K00927', RNAseq.data, type = 'peak')
 #' @author JJM van Steenbrugge
 Go_Fish <- function(annotation, RNAseq.data, pattern){
 
