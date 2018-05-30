@@ -36,10 +36,10 @@ The package supports different options for normalization. By default the `Pre_pr
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
-file.path          <- "D:/Users/JorisS/Downloads/PortableGit/TcT/data/sample_data_newKO.csv"
-annotation.db.path <- "D:/Users/JorisS/Downloads/PortableGit/TcT/data/updated_KO_modules.tsv"
+file.path          <- "/home/joris/TcT/data/sample_data_newKO.csv"
+annotation.db.path <- "/home/joris/TcT/data/updated_KO_modules.tsv"
 
-RNAseq.data_new <- Pre_process_input(file.path,
+RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
                                  normalize.method  = FALSE,
                                  filter.method     = 'MAD')
@@ -54,7 +54,7 @@ RNAseq.data_new <- Pre_process_input(file.path,
 single.copy.genes <- read.csv("D:/Users/JorisS/Downloads/PortableGit/TcT/data/SCG_KOterms.txt", stringsAsFactors = F)[,1]
 single.copy.genes.n <- length(single.copy.genes)
 
-matches.per.genome_new <- sapply(RNAseq.data_new$features$bins,
+matches.per.genome <- sapply(RNAseq.data_new$features$bins,
        function(bin){
          bin.annotations <- unique(RNAseq.data_new$table[which(RNAseq.data_new$table$Bin == bin), 'Annotation'])
          total.scg <- sum(single.copy.genes %in% bin.annotations)
