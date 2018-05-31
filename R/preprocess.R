@@ -211,25 +211,26 @@ Create.Module.groups <- function (annotation.db) {
 
 }
 
-Filter.Low.Coverage <-  function (RNAseq.data) {
+Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
 
-    expression_bins <- sapply(RNAseq.data$features$bins, FUN = function(bin){
-      dat <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin), ]
-      expr <- dat[,RNAseq.data$features$sample.columns]
-      return(sum(expr))
-    })
 
-    # Keep genomes greater than the 25% quantile
-    q_25 <- quantile(expression_bins)[2]
-    bins.keep <- as.character(RNAseq.data$features$bins[which(expression_bins > q_25)])
-    bins.removed <- RNAseq.data$features$bins[which(expression_bins <= q_25)]
+  mat <- matrix(ncol=2,nrow=0)
+  for(bin in RNAseq.data$features$bins) {
+    data        <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin),
+                                     RNAseq.data$features$sample.columns]
+    total       <- sum(data)
+    LCG         <- length(which(data > threshold))
+    n.samples   <- length(RNAseq.data$features$sample.columns)
+    mat         <- rbind(mat, c((LCG/(nrow(data)* n.samples)), log2(total)))
+  }
 
-    print("I removed the following low coverage genomes: ")
-    print(paste(bins.removed, collapse = ', '))
-    # Remove those other genomes
-    RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]
-    RNAseq.data$features$bins <- bins.keep
-    RNAseq.data$features$annotation_presence_absence <- RNAseq.data$features$annotation_presence_absence[, bins.keep]
-    return(RNAseq.data)
+
+  bins.keep <- RNAseq.data$features$bins[which(mat[,1] >= 0.8)]
+
+  # Put the trash out
+  RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]
+  RNAseq.data$features$bins <- bins.keep
+  RNAseq.data$features$annotation_presence_absence <- RNAseq.data$features$annotation_presence_absence[, bins.keep]
+  return(RNAseq.data)
 
 }

@@ -41,8 +41,9 @@ annotation.db.path <- "/home/joris/TcT/data/updated_KO_modules.tsv"
 
 RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
-                                 normalize.method  = FALSE,
-                                 filter.method     = 'MAD')
+                                 normalize.method    = FALSE,
+                                 filter.method       = 'MAD',
+                                 filter.low.coverage = F)
 
 #Visualize 
 #knitr::kable(RNAseq.data$table[1:10, ])
