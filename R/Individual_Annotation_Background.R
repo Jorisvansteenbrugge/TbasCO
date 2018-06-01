@@ -30,18 +30,20 @@ Individual_Annotation_Background <- function(RNAseq.data,
                                                    # 'N',
                                                    # 'RNAseq.data',
                                                    # 'metrics'
-                                                   )) %dopar% {
+                                                   )) %do% {
     RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
     if (i == 1){
       Random.Genes.bkgd(RNAseq.data, metrics, N)
     }else if (i == 2){
       Random.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
     }else if (i == 3){
-      Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
+       Random.Identical.Annotated.Genes.bkgd(RNAseq.data, distance.metrics, 10)
     }
   }
 
+
   stopCluster(cl)
+  # The names are essential
   names(result) <- c("Random Genes", "Random Annotated Genes", "Genes with the same annotation")
   return(result)
 }
@@ -88,8 +90,16 @@ Random.Genes.bkgd <- function(RNAseq.data, metrics, N){
 #' @author JJM van Steenbrugge
 #' @param RNAseq.data
 #' @param metrics
+#' @param random.genomes Allows reuse of this function in the module background function @see@seealso \code{\link{Random Background distributions of modules}}
 #' @param N
-Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
+#' @export
+Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
+  out.terms = T
+  #Pre select N pairs of two random genomes each
+  if( missing(random.genomes) ) {
+    random.genomes <- lapply(1:N, function(x) sample(RNAseq.data$features$bins, 2))
+    out.terms = F
+  }
 
   # Creating the output format
   output <- list()
@@ -97,30 +107,38 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
     output[[metric]] <- rep(NA, N)
   }
 
-    for(i in 1:N){
+  used.terms <- c()
 
-    random.genomes     <- sample(RNAseq.data$features$bins, 2)
 
-    positions.genome.A <- which(RNAseq.data$annotation.only$Bin == random.genomes[1])
+  for(i in 1:N){
 
-    positions.genome.B <- which(RNAseq.data$annotation.only$Bin == random.genomes[2])
+    positions.genome.A <- which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][1])
+
+    positions.genome.B <- which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][2])
 
     position.A         <- sample(positions.genome.A, 1)
     position.B         <- sample(positions.genome.B, 1)
 
+    used.terms <- c(used.terms, as.character(RNAseq.data$annotation.only[position.A,]$Annotation))
+    used.terms <- c(used.terms, as.character(RNAseq.data$annotation.only[position.B,]$Annotation))
 
-    for(metric.current in names(metrics)){
-      row.A <- RNAseq.data$annotation.only[position.A, ]
-      row.B <- RNAseq.data$annotation.only[position.B, ]
+   for(metric.current in names(metrics)){
+     row.A <- RNAseq.data$annotation.only[position.A, ]
+     row.B <- RNAseq.data$annotation.only[position.B, ]
 
       # Call the distance metric function
       distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
-      output[[metric.current]][i] <- distance
+     output[[metric.current]][i] <- distance
     }
 
   }
 
-  return(output)
+  if(out.terms){
+    return(list("used terms" = used.terms,
+                "scores"  = output))
+  }else{
+    return(output)
+  }
 }
 
 #' Background distribution of two random random genes with the same
@@ -131,9 +149,8 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N){
 #' @param metrics
 #' @param N
 #' @param random.genomes Allows reuse of this function in the module background function @see@seealso \code{\link{Random Background distributions of modules}}
-#' @export
 Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
-  out.terms = T
+
   #Pre select N pairs of two random genomes each
   if( missing(random.genomes)) {
     random.genomes <- lapply(1:N, function(x) sample(RNAseq.data$features$bins, 2))
@@ -146,12 +163,9 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
     output[[metric]] <- rep(NA, N)
   }
 
-  used.terms <- rep(NA, N)
 
   for( i in 1:N) {
-
     positions.genome.A <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][1]), ]
-
     positions.genome.B <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][2]), ]
 
     pool.A <- as.character(positions.genome.A$Annotation)
@@ -159,7 +173,6 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
 
     annotations.overlap <- pool.A[pool.A %in% pool.B]
     random.annotation   <- sample(annotations.overlap, 1)
-    used.terms[i]       <- random.annotation
     # Take the first occurence
     position.genome.A <-
       positions.genome.A[which(positions.genome.A$Annotation == random.annotation), ] [1, ]
@@ -184,12 +197,9 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
     }
 
   }
-  if(out.terms){
-    return(list("used terms" = used.terms,
-                "scores"  = output))
-  }else{
-    return(output)
-  }
+
+  return(output)
+
 }
 
 

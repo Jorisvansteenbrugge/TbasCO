@@ -44,30 +44,7 @@ RNAseq.data <- Pre_process_input(file.path,
                                  normalize.method    = FALSE,
                                  filter.method       = 'MAD',
                                  filter.low.coverage = T)
-
-#Visualize 
-#knitr::kable(RNAseq.data$table[1:10, ])
-
 ```
-
-#### Additional Filter step
-```{r}
-single.copy.genes <- read.csv("D:/Users/JorisS/Downloads/PortableGit/TcT/data/SCG_KOterms.txt", stringsAsFactors = F)[,1]
-single.copy.genes.n <- length(single.copy.genes)
-
-matches.per.genome <- sapply(RNAseq.data_new$features$bins,
-       function(bin){
-         bin.annotations <- unique(RNAseq.data_new$table[which(RNAseq.data_new$table$Bin == bin), 'Annotation'])
-         total.scg <- sum(single.copy.genes %in% bin.annotations)
-         total.scg
-         }
-       )
-
-#Filter out low quality bins
-RNAseq.data$features$bins <- RNAseq.data$features$bins[-which(matches.per.genome != 11 )]
-
-```
-
 
 ### Define the distance metrics to be used
 In this vignette, the Pearson Correlation and the Normalized Rank Euclidean Distance are used.
@@ -100,14 +77,14 @@ distance.metrics <- list("PC"   = PC,
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
-                                                            N           = 10000, 
+                                                            N           = 10, 
                                                             metrics     = distance.metrics,
                                                             threads = 2)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, bkgd.individual.Zscores,
-                                                   N = 10000, Z = 1:30, distance.metrics,
+                                                   N = 10, Z = 1:30, distance.metrics,
                                                    threads = 2)
 save.image('bkgdistributions.RData')
 ######
@@ -136,14 +113,14 @@ Plot_Trait_Attribute_Expression('M00844.2', trait.attributes.pruned, RNAseq.data
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 Plot_Background_Modules(bkgd.modules)
 
-Network_Trait_Genomes(c('M00178'), trait.attributes.pruned)
+Network_Trait_Genomes(c('M00178','M00844'), trait.attributes.pruned)
 ```
 
 ## Apriori
 
 ```{r}
 
-rules <- Association_Rules(sbs.trait.attributes, N =30)
+rules <- Association_Rules(sbs.trait.attributes, N = 30)
 
 Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$features$annotation.db,
              N = 30)

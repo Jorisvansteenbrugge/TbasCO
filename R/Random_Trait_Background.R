@@ -28,7 +28,7 @@ Random_Trait_Background <- function(RNAseq.data,
                          metrics){
 
     #Runs in parallel
-    result <- foreach::foreach(i = 1:N, .export = c("Random.Identical.Annotated.Genes.bkgd",
+    result <- foreach::foreach(i = 1:N, .export = c("Random.Annotated.Genes.bkgd",
                                                      ".Convert_zscores",
                                                      ".Calc_Jaccard")) %dopar% {
       #pick two genomes
@@ -36,7 +36,7 @@ Random_Trait_Background <- function(RNAseq.data,
       random.genomes              <- sample(RNAseq.data$features$bins, 2)
       random.genomes.combis       <- rep(list(random.genomes), Z) #Workaround to re-use function below
 
-      distances   <- Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
+      distances   <- Random.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
       print(distances)
       distances.Z <- .Convert_zscores(distances$scores, metrics, bkgd.individual.Zscores)
 

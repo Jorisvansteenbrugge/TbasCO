@@ -5,10 +5,13 @@
 \title{Pre-processing of RNAseq data}
 \usage{
 Pre_process_input(file.path, annotation.db.path, normalize.method = FALSE,
-  filter.method = "stdev")
+  filter.method = "stdev", filter.low.coverage = T)
 }
 \arguments{
-\item{normalize.method}{Variable}
+\item{normalize.method}{User defined method to normalize data}
+
+\item{filter.low.coverage}{boolean expression to wether we should filter out
+genomes with a low overall expression level.}
 
 \item{filepath}{RNAseq data file}
 }
@@ -18,8 +21,8 @@ together with some features (position of expression collumns, rank collumns, ann
 a presence absence table of all annotations)
 }
 \description{
-Wrapper of preprocess functions, including: Identifying Matrix features
-, Normalization, Filtering for non informative lines
+Wrapper of preprocess functions, including: Identifying Matrix
+features, Normalization, Filtering for non informative lines
 }
 \examples{
 Pre_process_input(file.path, normalize.method = FALSE, filter.method = FALSE) #No normalization or filtering
