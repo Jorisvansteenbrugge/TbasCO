@@ -43,7 +43,7 @@ RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
                                  normalize.method    = FALSE,
                                  filter.method       = 'MAD',
-                                 filter.low.coverage = F)
+                                 filter.low.coverage = T)
 
 #Visualize 
 #knitr::kable(RNAseq.data$table[1:10, ])
@@ -60,10 +60,10 @@ matches.per.genome <- sapply(RNAseq.data_new$features$bins,
          bin.annotations <- unique(RNAseq.data_new$table[which(RNAseq.data_new$table$Bin == bin), 'Annotation'])
          total.scg <- sum(single.copy.genes %in% bin.annotations)
          total.scg
-         } 
+         }
        )
 
-#Filter out low quality bins 
+#Filter out low quality bins
 RNAseq.data$features$bins <- RNAseq.data$features$bins[-which(matches.per.genome != 11 )]
 
 ```
@@ -101,19 +101,23 @@ distance.metrics <- list("PC"   = PC,
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
                                                             N           = 10000, 
-                                                            metrics     = distance.metrics)
+                                                            metrics     = distance.metrics,
+                                                            threads = 2)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, bkgd.individual.Zscores,
                                                    N = 10000, Z = 1:30, distance.metrics,
-                                                   threads = 4)
-
+                                                   threads = 2)
+save.image('bkgdistributions.RData')
 ######
+start <- Sys.time()
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distance.metrics =distance.metrics,
                                                              bkgd.individual.Zscores =  bkgd.individual.Zscores,
-                                                             show.progress = F)
-
+                                                             show.progress = T,
+                                                             threads = 2)
+end <- Sys.time()
+save.image("pairwise.distances")
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, pairwise.distances,threads = 2)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 

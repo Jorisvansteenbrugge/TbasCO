@@ -225,7 +225,7 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
   }
 
 
-  bins.keep <- RNAseq.data$features$bins[which(mat[,1] >= 0.8)]
+  bins.keep <- as.character(RNAseq.data$features$bins[which(mat[,1] >= 0.8)])
 
   # Put the trash out
   RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]
