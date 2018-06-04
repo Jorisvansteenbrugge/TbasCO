@@ -44,6 +44,27 @@ RNAseq.data <- Pre_process_input(file.path,
                                  normalize.method    = FALSE,
                                  filter.method       = 'MAD',
                                  filter.low.coverage = T)
+# Phylo ----
+genome.phylogeny <- list('8'  = 'f_Cytophagaceae',
+                         '15' = 'f_Saprospiraceae',
+                         '16' = 'f_Rhodocyclaceae',
+                         '17' = '.',
+                         '19' = 'f_Cytophagaceae',
+                         '20' = '.',
+                         '22' = 'f_Comamonadaceae',
+                         '25' = 'f_Chitinophagaceae',
+                         '26' = 'o_Actinomycetales',
+                         '28' = 'p_bacteroidetes',
+                         '29' = 'f_Comamonadaceae',
+                         '31' = 'f_Rhodobacteraceae',
+                         '32' = 'f_Xanthomonadaceae',
+                         '36' = 'o_Actinomycetales',
+                         '39' = 'f_Rhodocyclaceae',
+                         '42' = 'p_Bacteroidetes',
+                         '45' = 'f_Flavobacteriaceae',
+                         '48' = 'c_Alphaproteobacteria',
+                         '53' = 'f_Flavobacteriaceae'
+                         )
 ```
 
 ### Define the distance metrics to be used
@@ -106,11 +127,10 @@ sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned,
 ## Plotting
 ```{r}
 Plot_Trait_Attribute_Expression('PolyP.2', trait.attributes.pruned, RNAseq.data)
-Plot_Tra
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 Plot_Background_Modules(bkgd.modules)
 
-Network_Trait_Genomes(c('PHA','PolyP', 'Glyco'), trait.attributes.pruned)
+Network_Trait_Genomes(c('PHA','PolyP', 'Glyco'), trait.attributes.pruned,genome.phylogeny)
 ```
 
 ## Apriori

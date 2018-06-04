@@ -115,15 +115,18 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute, trait.attributes,
 #' @export
 #' @example Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
 #' @author JJM van Steenbrugge
-Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned){
+Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned,
+                                     genome.phylogeny){
   if(!"RCy3" %in% installed.packages()){
     source("https://bioconductor.org/biocLite.R")
     biocLite("RCy3")
   }
   library(RCy3)
+  library(randomcoloR)
 
-  nodes <- matrix(nrow=0, ncol=2)
-  colnames(nodes) <- c("id","group")
+
+  nodes <- matrix(nrow=0, ncol=3)
+  colnames(nodes) <- c("id","group","phylogeny")
   edges <- matrix(nrow=0, ncol=2)
   colnames(edges) <- c("source","target")
 
@@ -137,12 +140,16 @@ Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned){
 
       name <- paste(trait, attribute,
                     sep = '.')
-      nodes <- rbind(nodes, c(name, 'trait'))
+      nodes <- rbind(nodes, c(name, 'trait','-'))
 
       for(genome in attributes[[attribute]]$genomes) {
 
         if(! genome %in% added_nodes ) {
-          nodes <- rbind(nodes, c(genome, 'genome'))
+          if(! missing(genome.phylogeny)) {
+            nodes <- rbind(nodes, c(genome, 'genome', genome.phylogeny[[genome]]))
+          } else {
+            nodes <- rbind(nodes, c(genome, 'genome', '.'))
+          }
           added_nodes <- c(added_nodes, genome)
         }
 
@@ -153,8 +160,10 @@ Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned){
 
   createNetworkFromDataFrames(data.frame(nodes,stringsAsFactors = F),
                               data.frame(edges,stringsAsFactors = F),
-                              title= paste(trait.names, collapse = ','), collection="Network Traits and Genomes")
+                              title= paste(trait.names, collapse = ','),
+                              collection="Network Traits and Genomes")
 
+  setVisualStyle('Nested Network Style')
 
   values <- c ('trait',  'genome')
   shapes <- c ('rectangle', 'circle')
@@ -165,6 +174,17 @@ Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned){
                      new.colors = '#b30000'
 
                      )
+  # Custom family colors
+  if(! missing(genome.phylogeny)) {
+    families <- unique(sapply(genome.phylogeny, function(x) {return(x)} ))
+
+    for (i in 1:length(families)) {
+      setNodeColorBypass(node.names = nodes[which(nodes[,3] == families[i]),1],
+                         new.colors = randomcoloR::randomColor(count = 1, luminosity = 'dark'))
+    }
+  }
+
+  # Label text colors
   setNodeLabelColorBypass(node.names = nodes[which(nodes[,2] == 'genome'), 1],
                           new.colors = '#ffffff')
 
