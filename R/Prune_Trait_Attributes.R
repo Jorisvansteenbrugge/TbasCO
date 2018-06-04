@@ -7,7 +7,7 @@
 #' @param bkgd.individual.Zscores
 #' @export
 #' @author JJM van Steenbrugge
-Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
+Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
                                    p.threshold = 0.05, completion.threshold = 0.75,
                                    threads = 4){
   require(doSNOW)
@@ -27,7 +27,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
 
   }
 
-  .Calc_P <- function(trait, p.threshold, annotation.db, n.attributes){
+  .Calc_P <- function(trait, p.threshold, annotation.db){
     n.genes <- length(annotation.db$module.dict[[trait]])
     trait.attributes.current <- trait.attributes[[trait]]
 
@@ -40,28 +40,24 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
     for(cluster in clusters){
       bins.cluster <- bins[which(trait.attributes.current$clusters$membership == cluster)]
 
-
-      #Filter for completion
-      if(! .Filter_Completion(annotation.db$module.dict[[trait]], bins, features, 0.75 )){
+      # number of bins <= 2 would end up with only 1 avg zscore which is not enough for a t.test
+      if ( length(bins.cluster) <= 2 ) {
         next()
       }
 
+     # Filter for completion
+     if(! .Filter_Completion(annotation.db$module.dict[[trait]], bins, features, completion.threshold )){
+       next()
+     }
 
-      #
+
 
       bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
-      p.val = tryCatch({
-      p.val <- t.test(bin.zscores,bkgd.modules[[as.character(n.genes)]], alternative = 'less')$p.value
-      p.val <- p.adjust(p.val, method = 'BH', n.attributes)
-      }, warning = function(w){
-        return(w)
-      }, error = function(e){
-        # Expecting this to happen if there is no bg_distance_module calculated
-        #  for the module size, or if there are not enough bins in a cluster
-      })
+      p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value
+      p.val <- p.adjust(p.val, method = 'BH', length(clusters))
 
-      if(! is.null(p.val) && p.val < p.threshold){
+      if( p.val <= p.threshold){
         cluster.attributes[[cluster]] <- list("genomes"= bins.cluster,
                                               "p-val"  = p.val)
       }
@@ -70,13 +66,12 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.modules, features,
   }
 
   trait.names <- names(annotation.db$module.dict)
-  n.attributes <- sum(sapply(trait.attributes, function(x) length(levels(as.factor(x$clusters$membership)))))
 
-  trait.attributes.pruned <- foreach::foreach(i = 1: length(trait.names)) %do%{
-    .Calc_P(trait.names[i], p.threshold, annotation.db, n.attributes)
+  trait.attributes.pruned <- list()
+  for(i in 1: length(trait.names)) {
+    trait.attributes.pruned[[i]] <- .Calc_P(trait.names[i], p.threshold, annotation.db)
   }
 
-  print(' almost done')
   names(trait.attributes.pruned) <- trait.names
   return(trait.attributes.pruned)
 }
