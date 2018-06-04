@@ -77,7 +77,7 @@ distance.metrics <- list("PC"   = PC,
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
-                                                            N           = 10, 
+                                                            N           = 10000, 
                                                             metrics     = distance.metrics,
                                                             threads = 2)
 
@@ -86,15 +86,12 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, bkgd.individual.Zscores,
                                                    N = 10, Z = 1:30, distance.metrics,
                                                    threads = 2)
-save.image('bkgdistributions.RData')
-######
-start <- Sys.time()
+
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,distance.metrics =distance.metrics,
                                                              bkgd.individual.Zscores =  bkgd.individual.Zscores,
                                                              show.progress = T,
                                                              threads = 2)
-end <- Sys.time()
-save.image("pairwise.distances")
+
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, pairwise.distances,threads = 2)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
@@ -103,17 +100,17 @@ trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits,
                                                   completion.threshold = 0.75)
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, RNAseq.data$features$bins)
 
-save.image('bgsAndPairwiseDistances.RData')
 
 ```
 
 ## Plotting
 ```{r}
-Plot_Trait_Attribute_Expression('M00844.2', trait.attributes.pruned, RNAseq.data)
+Plot_Trait_Attribute_Expression('PolyP.2', trait.attributes.pruned, RNAseq.data)
+Plot_Tra
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 Plot_Background_Modules(bkgd.modules)
 
-Network_Trait_Genomes(c('M00178','M00844'), trait.attributes.pruned)
+Network_Trait_Genomes(c('PHA','PolyP', 'Glyco'), trait.attributes.pruned)
 ```
 
 ## Apriori
@@ -130,7 +127,7 @@ Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$fe
 ## Experimental
 ```{r}
 Go_Fish('K00927', RNAseq.data,
-        type = 'peak')
+        pattern = 'peak')
 ```
 
 
