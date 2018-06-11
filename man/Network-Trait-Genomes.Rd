@@ -5,7 +5,7 @@
 \alias{Network_Trait_Genomes}
 \title{Network Trait Genomes}
 \usage{
-Network_Trait_Genomes(trait.names, trait.attributes.pruned)
+Network_Trait_Genomes(trait.names, trait.attributes.pruned, genome.phylogeny)
 }
 \arguments{
 \item{trait.names}{a vector containing the names of traits, as provided in the

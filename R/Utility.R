@@ -79,14 +79,14 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute, trait.attributes,
     annotation.expression <- RNAseq.data$table[which(RNAseq.data$table$Annotation == annotation &
                                                        RNAseq.data$table$Bin %in% attribute.genomes),]
     if(nrow(annotation.expression) == 1){
-      expression <- annotation.expression[RNAseq.data$features$sample.columns]
+      expression <- annotation.expression[RNAseq.data$features$rank.columns]
       plot(as.character(expression), type = 'l', ylab = 'Expression value', xlab = "Points in time",
           col="black", lwd="3", ylim = c(0, max(expression)), main = annotation)
       next()
     }
-    mean.cols <- apply(annotation.expression[RNAseq.data$features$sample.columns],
+    mean.cols <- apply(annotation.expression[RNAseq.data$features$rank.columns],
                        2, mean)
-    sd.cols   <- apply(annotation.expression[RNAseq.data$features$sample.columns],
+    sd.cols   <- apply(annotation.expression[RNAseq.data$features$rank.columns],
                        2, sd) / 2
 
     mean.psd <- mean.cols + sd.cols
@@ -95,7 +95,7 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute, trait.attributes,
     max.val <- max(mean.psd)
     if(! is.nan(max.val)){
      plot(mean.cols,type = 'l', ylab = 'Expression value', xlab = "Points in time",
-          col="black", lwd="3", ylim = c(0, max.val), main = annotation)
+          col="black", lwd="3", ylim = c(0, 1), main = annotation)
       points(mean.psd, type='l', col="blue", lty=2)
       points(mean.msd, type='l', col="red", lty=2)
     }else{
@@ -180,7 +180,8 @@ Network_Trait_Genomes    <- function(trait.names, trait.attributes.pruned,
 
     for (i in 1:length(families)) {
       setNodeColorBypass(node.names = nodes[which(nodes[,3] == families[i]),1],
-                         new.colors = randomcoloR::randomColor(count = 1, luminosity = 'dark'))
+                         new.colors = randomcoloR::randomColor(count = 1,
+                                                               luminosity = 'dark'))
     }
   }
 
@@ -328,9 +329,7 @@ Association_Rules <- function(sbs.trait.attributes,
 
   if (missing(lhs) && missing(rhs)) {
     rules <- .Reach_N(N)
-
-  }else if (!missing(lhs) && !missing(rhs)) {
-
+  } else if (!missing(lhs) && !missing(rhs)) {
     rules1 <- .Reach_N(N/2, lhs = lhs)
     rules2 <- .Reach_N(N/2, rhs = rhs)
 
@@ -339,16 +338,129 @@ Association_Rules <- function(sbs.trait.attributes,
 
     rules  <- rbind(rules1[1:(N/2),], rules2[1:(N/2),])
 
-
-
-  }else if (!missing(lhs)) {
-
+  } else if (!missing(lhs)) {
     rules <- .Reach_N (N,lhs = lhs)
-  }else if (!missing(rhs)) {
-
+  } else if (!missing(rhs)) {
     rules <- .Reach_N (N,rhs = rhs)
   }
 
   return(rules)
+}
 
+#' Draw_Expression
+#' @name Draw Expression
+#' @description Creates a drawing of a trait (possibly with multiple different
+#' trait-attributes) where all its composing genes are plotting individually
+#' with their corresponding expression values.
+#' @param trait character string with the name of a trait.
+#' @param RNAseq.data Collection of multple components, include RNA seq data,
+#' annotations, etc.
+#' @seealso \code{\link{Pre_process_input}} for the full list of parameters,
+#' \url{https://github.com/Jorisvansteenbrugge/TcT/wiki/The-RNAseq.data-object}
+#' for more information.
+#' @param trait.attributes.pruned The full list of all pruned trait attributes.
+#' @export
+#' @author JJM van Steenbrugge
+Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
+
+  y.max        <- 110
+  x.max        <- 35
+
+
+  attributes   <- trait.attributes.pruned[[trait]]
+  n.attributes <- length(attributes)
+  genes        <- RNAseq.data$features$annotation.db$module.dict[[trait]]
+  n.genes      <- length(genes)
+
+  plot(c(0,x.max), c(0,y.max), type='n', xlab = '',ylab='', axes = F)
+
+  y.coords <- seq(100, 1    , by = -15) # With this setting max of 7 genes
+  x.coords <- seq(0  , x.max, by =  11)
+
+  # For each gene
+  for(i in 1:n.genes) {
+    gene <- genes[i]
+
+    # Gene name
+    graphics::text(x = ( x.coords[1] + 5 ),
+                   y = ( y.coords[i] - 5 ),
+                   labels = gene)
+
+    # for each attribute
+    for(y in 1:n.attributes) {
+#      Draw Labels
+       graphics::text(x = ( x.coords[y+1] + 5), y = y.max, labels = paste(trait,
+                                                                        y, sep = '.'))
+
+       rect(xleft  = x.coords[y+1]     , ybottom = y.coords[i] - 10,
+             xright = x.coords[y+1] + 10, ytop    = y.coords[i])
+
+        # Draw expression line
+        genomes     <- attributes[[y]]$genomes
+        genomes.rna <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% genomes),]
+        genomes.rna.gene <- genomes.rna[which(genomes.rna$Annotation == gene),
+                                        RNAseq.data$features$rank.columns]
+        genomes.rna.gene.mean <- apply(genomes.rna.gene, 2, mean)
+
+
+        # Expression ranks
+        y.bot <- y.coords[i] - 10
+        rank.pos <- (genomes.rna.gene.mean * 10) + y.bot
+        x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
+        graphics::lines(x.pos,
+                        rank.pos
+        )
+
+        # Generate box colours
+        values <- seq(0.1,1,by = 0.1)
+        cols <- colorRamp(c('white','red'))
+        colours <- rgb(cols(values)/255)
+
+        # Draw all the boxes!
+        box.coords <- seq(0,10,length.out = (length(genomes.rna.gene.mean) +1))
+        for(z in 2:length(box.coords)) {
+          rank <- genomes.rna.gene.mean[z-1]
+          col = 'red'
+          # I am not proud of this
+           if(rank <= 1 && rank > 0.9){
+             col <- colours[1]
+             }
+          else if(rank <= 0.9 && rank > 0.8){
+            col <- colours[2]
+          } else if(rank <= 0.8 && rank > 0.7){
+            col <- colours[3]
+          }else if(rank <= 0.7 && rank > 0.6){
+            col <- colours[4]
+          }else if(rank <= 0.6 && rank > 0.5){
+            col <- colours[5]
+          } else if(rank <= 0.5 && rank > 0.4){
+            col <- colours[6]
+          }else if(rank <= 0.4 && rank > 0.3){
+            col <- colours[7]
+          }else if(rank <= 0.3 && rank > 0.2){
+            col <- colours[8]
+          }else if(rank <= 0.2 && rank > 0.1){
+            col <- colours[9]
+          }else if(rank <= 0.1 && rank >= 0.0){
+            col <- colours[10]
+          }
+          rect(xleft  = x.coords[y+1] + box.coords[(z-1)] , ybottom = y.coords[i] - 10,
+               xright = x.coords[y+1] + box.coords[z], ytop    = y.coords[i],
+               col=col)
+
+          # Expression ranks
+          y.bot <- y.coords[i] - 10
+          rank.pos <- (genomes.rna.gene.mean * 10) + y.bot
+          x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
+          graphics::lines(x.pos,
+                          rank.pos, col = 'black'
+          )
+
+        }
+
+
+
+
+    }
+  }
 }

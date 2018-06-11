@@ -5,7 +5,7 @@
 \alias{Prune_Trait_Attributes}
 \title{Prune Trait Attributes}
 \usage{
-Prune_Trait_Attributes(trait.attributes, bkgd.modules, features,
+Prune_Trait_Attributes(trait.attributes, bkgd.traits, features,
   p.threshold = 0.05, completion.threshold = 0.75, threads = 4)
 }
 \arguments{

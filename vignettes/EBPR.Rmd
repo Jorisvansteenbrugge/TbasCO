@@ -44,8 +44,8 @@ RNAseq.data <- Pre_process_input(file.path,
                                  normalize.method    = FALSE,
                                  filter.method       = 'MAD',
                                  filter.low.coverage = T)
-# Phylo ----
-genome.phylogeny <- list('8'  = 'f_Cytophagaceae',
+# Family ----
+genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
                          '15' = 'f_Saprospiraceae',
                          '16' = 'f_Rhodocyclaceae',
                          '17' = '.',
@@ -64,6 +64,27 @@ genome.phylogeny <- list('8'  = 'f_Cytophagaceae',
                          '45' = 'f_Flavobacteriaceae',
                          '48' = 'c_Alphaproteobacteria',
                          '53' = 'f_Flavobacteriaceae'
+                         )
+# Phylum ----
+genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
+                         '15' = 'p__Bacteroidetes',
+                         '16' = 'p__Proteobacteria',
+                         '17' = '.',
+                         '19' = 'p__Bacteroidetes',
+                         '20' = '.',
+                         '22' = 'p__Proteobacteria',
+                         '25' = 'p__Bacteroidetes',
+                         '26' = 'p__Actinobacteria',
+                         '28' = 'p__Bacteroidetes',
+                         '29' = 'p__Proteobacteria',
+                         '31' = 'p__Proteobacteria',
+                         '32' = 'p__Proteobacteria',
+                         '36' = 'p__Actinobacteria',
+                         '39' = 'p__Proteobacteria',
+                         '42' = 'p__Bacteroidetes',
+                         '45' = 'p__Bacteroidetes',
+                         '48' = 'p__Proteobacteria',
+                         '53' = 'p__Bacteroidetes'
                          )
 ```
 
@@ -126,15 +147,22 @@ sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned,
 
 ## Plotting
 ```{r}
-Plot_Trait_Attribute_Expression('PolyP.2', trait.attributes.pruned, RNAseq.data)
+Plot_Trait_Attribute_Expression('ribo', trait.attributes.pruned, RNAseq.data)
+plot(RNAseq.data$table[which(RNAseq.data$table$Annotation == 'K01977'),
+                       RNAseq.data$features$rank.columns])
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 Plot_Background_Modules(bkgd.modules)
 
-Network_Trait_Genomes(c('PHA','PolyP', 'Glyco'), trait.attributes.pruned,genome.phylogeny)
+Network_Trait_Genomes(c('PHA','PolyP', 'Glyco'), trait.attributes.pruned,
+                      genome.phylogeny)
+
+
+Draw_Expression(trait = 'PHA', RNAseq.data, trait.attributes.pruned)
+
+
 ```
 
 ## Apriori
-
 ```{r}
 
 rules <- Association_Rules(sbs.trait.attributes, N = 30)
