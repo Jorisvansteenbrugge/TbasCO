@@ -1,7 +1,7 @@
 Package: TcT
 Type: Package
 Title: Trait-based Comparative Transcriptomics
-Version: 2.5.0
+Version: 2.5.1
 Authors@R: c(person("Joris", "van Steenbrugge", email="joris.vansteenbrugge@wur.nl", role = c("cre", "aut")),
              person("Ben", "Oyserman", email="ben.oyserman@wur.nl", role = c("aut")))
 Maintainer: Joris van Steenbrugge <joris.vansteenbrugge@wur.nl>
@@ -10,7 +10,7 @@ Description: More about what it does (maybe more than one line)
 License: some licence
 Encoding: UTF-8
 LazyData: true
-Imports: doSNOW, devtools, randomcoloR
+Imports: doSNOW, devtools, randomcoloR, hexbin
 BiocViews: RCy3
 RoxygenNote: 6.0.1
 Suggests: testthat
