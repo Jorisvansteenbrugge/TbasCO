@@ -466,3 +466,151 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
     }
   }
 }
+
+
+
+
+#### Experimental ----
+getMetricDist <- function(metric){
+
+  mean.distances <- matrix(nrow=0,ncol=2)
+
+  for(category in names(cat.genes)) {
+    nreds <- c()
+    print(category)
+    for (KO in cat.genes[[category]] ) {
+
+      data.rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO),]
+
+      if(nrow(data.rows) <= 1) {
+        nreds <- c(nreds,NA)
+        next()
+      }
+
+
+      random.rows <- sample.int(nrow(data.rows), 2)
+      distance <- distance.metrics[[metric]](data.rows[random.rows[1],],
+                                             data.rows[random.rows[2],],
+                                             RNAseq.data$features )
+
+
+      nreds <- c(nreds,distance)
+
+
+    }
+    p.val <- NA
+    p.c <- 'not significant'
+    try(p.val <- t.test(nreds, bkgd.individual$`Random Annotated Genes`[[metric]])$p.value,
+        silent = T)
+
+    try(if(p.val <= 0.05){
+      p.c <- 'significant'
+    }else{
+      p.c. <- 'not significant'
+    }
+    ,silent =T)
+    #actual distances
+    mean.dist <- mean(nreds, na.rm = T)
+    mean.dist.Z <- (mean.dist - bkgd.individual.Zscores$mu$`Random Annotated Genes`[[metric]]) /
+      bkgd.individual.Zscores$sd$`Random Annotated Genes`[[metric]]
+    mean.distances <- rbind(mean.distances, c(mean.dist.Z, p.c)
+                            )
+
+
+  }
+
+  return(mean.distances)
+}
+
+Plot_Categories <- function(){
+  # Catogerized Modules
+  cat.modules <- read.csv('/home/joris/categorized_modules2.csv', sep=';',header=F)
+
+  # Hacking categories ----
+  categories <- c(rep('P_Energy metabolism',4),
+                  rep('P_Carbohydrate and lipid metabolism', 10),
+                  rep('P_Nucleotide and AA metabolism', 12),
+                  rep('P_Secondary metabolism',2),
+                  rep('S_Energy metabolism', 2),
+                  rep('S_Genetic information processing', 10),
+                  rep('S_Environmental information processing', 9),
+                  rep('F_Metabolism', 2),
+                  rep('F_Environemntal information processing', 2),
+                  rep('F_Cellular processes', 1),
+                  rep('Si_Gene set', 4)
+  )
+  #
+  cat.genes <- list()
+  con = file('/home/joris/categorized_modules2.csv', "r")
+  while ( TRUE ) {
+    line = readLines(con, n = 1)
+    if ( length(line) == 0 ) {
+      break
+    }
+    line <- unlist(strsplit(line,';'))
+
+    cat.genes[[line[1]]] <- line[2:length(line)]
+  }
+
+  close(con)
+
+
+  # Get Zscores ----
+
+  pearson.Z <- getMetricDist('PC')
+  nred.Z    <- getMetricDist('NRED')
+
+
+
+  library(ggplot2)
+  # Pearson plot ----
+  ids <- 1:nrow(pearson.Z)
+  pearson.Z <- cbind(pearson.Z, ids)
+  pearson.Z <- cbind(pearson.Z, categories)
+
+  colnames(pearson.Z) <- c("value",'sig','ids','categories')
+
+
+  pearson.Z <- as.data.frame(pearson.Z, stringsAsFactors=F)
+  pearson.Z$value <- as.numeric(pearson.Z$value)
+  pearson.Z$ids <- as.numeric(pearson.Z$ids)
+  pearson.Z$ids <- factor(pearson.Z$ids, levels= pearson.Z$ids)
+
+  pearson.plot <- ggplot(pearson.Z, aes(x= ids, y = value, colour=categories,shape = factor(sig),
+                        size=1)) +
+    geom_point() +
+    xlab("") +
+    ylab("Pearson Z score")+
+    facet_grid(. ~ categories, scales = 'free_x', space='free_x')+
+    geom_hline(yintercept = 0) +
+    theme(axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())
+
+  # NRED plot ----
+  ids <- 1:nrow(nred.Z)
+  nred.Z <- cbind(nred.Z, ids)
+  nred.Z <- cbind(nred.Z, categories)
+
+  colnames(nred.Z) <- c("value",'sig','ids','categories')
+
+
+  nred.Z <- as.data.frame(nred.Z, stringsAsFactors=F)
+  nred.Z$value <- as.numeric(nred.Z$value)
+  nred.Z$ids <- as.numeric(nred.Z$ids)
+  nred.Z$ids <- factor(nred.Z$ids, levels= nred.Z$ids)
+
+  nred.plot <- ggplot(nred.Z, aes(x= ids, y = value, colour=categories,shape = factor(sig),
+                                        size=1)) +
+    geom_point() +
+    xlab("") +
+    ylab("NRED Z score")+
+    facet_grid(. ~ categories, scales = 'free_x', space='free_x')+
+    geom_hline(yintercept = 0)
+    #theme(axis.text.x=element_blank(),
+       #   axis.ticks.x=element_blank())
+
+
+  # Combine plots ----
+  plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
+}
+

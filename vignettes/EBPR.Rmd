@@ -112,14 +112,14 @@ NRED <- function(rowA, rowB, RNAseq.features) {
 }
 
 # Combine multiple distance metrics to complement each other.
-distance.metrics <- list("PC"   = PC,
-                         "NRED" = NRED)
+distance.metrics <- list("NRED" = NRED,
+                         "PC"   = PC)
 ```
 
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data = RNAseq.data, 
-                                                            N           = 10000, 
+                                                            N           = 2000, 
                                                             metrics     = distance.metrics,
                                                             threads = 2)
 
@@ -179,3 +179,7 @@ Go_Fish('K00927', RNAseq.data,
 ```
 
 
+## Publication figure creating
+```{r}
+Plot_Categories()
+```
