@@ -37,7 +37,7 @@ Individual_Annotation_Background <- function(RNAseq.data,
     }else if (i == 2){
       Random.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
     }else if (i == 3){
-       Random.Identical.Annotated.Genes.bkgd(RNAseq.data, distance.metrics, 10)
+       Random.Identical.Annotated.Genes.bkgd(RNAseq.data, distance.metrics, N)
     }
   }
 
@@ -95,6 +95,7 @@ Random.Genes.bkgd <- function(RNAseq.data, metrics, N){
 #' @export
 Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
   out.terms = T
+  RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
   #Pre select N pairs of two random genomes each
   if( missing(random.genomes) ) {
     random.genomes <- lapply(1:N, function(x) sample(RNAseq.data$features$bins, 2))
