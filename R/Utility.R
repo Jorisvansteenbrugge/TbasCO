@@ -467,9 +467,6 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
   }
 }
 
-
-
-
 #### Experimental ----
 getMetricDist <- function(metric){
 
