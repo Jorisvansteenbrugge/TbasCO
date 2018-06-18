@@ -23,7 +23,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
       complete <- apply(pa.current,1,function(x){if(sum(x)>=1){return(1)}else{return(0)}})
       completion <- sum(complete) / n
     }
-    return(completion >= 0.75)
+    return(completion >= completion.threshold)
 
   }
 

@@ -105,7 +105,6 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
 
         d <- mean(sapply(module.terms, function(term) pairwise.distances[[term]][x,y] ),
                                      na.rm = T)
-        print(d)
         avg.zscore.module[x,y] <- d
     }
   }
