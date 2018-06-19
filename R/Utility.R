@@ -581,31 +581,41 @@ getMetricDist <- function(metric, cat.genes){
   mean.distances <- matrix(nrow=0,ncol=3)
 
   for(category in names(cat.genes)) {
-    nreds <- c()
+    distances.list <- list()
     print(category)
-    for (KO in cat.genes[[category]] ) {
 
+    for (KO in cat.genes[[category]] ) {
       data.rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO),]
 
-      if(nrow(data.rows) <= 1) {
-        nreds <- c(nreds,NA)
+      genomes.present <- unique(data.rows$Bin)
+      if (length(genomes.present) <= 1) {
         next()
       }
+      dist.matrix <- matrix(data = NA,ncol=length(genomes.present),nrow = length(genomes.present))
+      for(x in 1:(length(genomes.present)-1)) {
+
+        gen.x <- data.rows[which(data.rows$Bin == genomes.present[x]),][1,]
+
+        for (y in (x+1):length(genomes.present)) {
+          gen.y <- data.rows[which(data.rows$Bin == genomes.present[y]),][1,]
+          dist.matrix[x,y] <- distance.metrics[[metric]](gen.x, gen.y, RNAseq.data$features)
 
 
-      random.rows <- sample.int(nrow(data.rows), 2)
-      distance <- distance.metrics[[metric]](data.rows[random.rows[1],],
-                                             data.rows[random.rows[2],],
-                                             RNAseq.data$features )
 
 
-      nreds <- c(nreds,distance)
+        }
+      }
 
+      distances.list[[KO]] <- dist.matrix
+    } # ko
 
-    }
+    distances <- unlist(distances.list)
+
     p.val <- NA
     p.c <- 'not significant'
-    try(p.val <- t.test(nreds, bkgd.individual$`Random Annotated Genes`[[metric]])$p.value,
+
+    try(p.val <- t.test(distances, bkgd.individual$`Random Annotated Genes`[[metric]],
+                        na.action = na.omit)$p.value,
         silent = T)
 
     try(if(p.val <= 0.05){
@@ -615,7 +625,7 @@ getMetricDist <- function(metric, cat.genes){
     }
     ,silent =T)
     #actual distances
-    mean.dist <- mean(nreds, na.rm = T)
+    mean.dist <- mean(distances, na.rm = T)
     mean.dist.Z <- (mean.dist - bkgd.individual.Zscores$mu$`Random Annotated Genes`[[metric]]) /
       bkgd.individual.Zscores$sd$`Random Annotated Genes`[[metric]]
     mean.distances <- rbind(mean.distances,
@@ -629,7 +639,7 @@ getMetricDist <- function(metric, cat.genes){
   return(mean.distances)
 }
 
-getMetricDistModule <- function(metric, cat.modules){
+getMetricDistModule  <- function(metric, cat.modules){
 
   mean.distances <- matrix(nrow=0,ncol=5)
 
@@ -683,7 +693,7 @@ getMetricDistModule <- function(metric, cat.modules){
       }
       ,silent =T)
       #actual distances
-      mean.dist <- mean(distances, na.rm = T)
+      mean.dist <- median(distances, na.rm = T)
       mean.dist.Z <- (mean.dist - bkgd.individual.Zscores$mu$`Random Annotated Genes`[[metric]]) /
         bkgd.individual.Zscores$sd$`Random Annotated Genes`[[metric]]
       mean.distances <- rbind(mean.distances,
@@ -733,8 +743,8 @@ Plot_Pathway_genes   <- function() {
 
   # Get Zscores ----
 
-  pearson.Z <- getMetricDist('PC')
-  nred.Z    <- getMetricDist('NRED')
+  pearson.Z <- getMetricDist('PC', cat.genes)
+  nred.Z    <- getMetricDist('NRED', cat.genes)
 
 
 
@@ -824,7 +834,7 @@ Plot_Pathway_modules <- function() {
 
   ggplot(nred.modules.Z.sig, aes(x= ids, y = value, colour=pathway, shape = factor(sig),
                     size=1)) +
-    geom_point() +
+    geom_point(aes(size=0.05)) +
     xlab("") +
     ylab("NRED Z score")+
     facet_grid(. ~ pathway, scales = 'free_x', space='free_x')+
