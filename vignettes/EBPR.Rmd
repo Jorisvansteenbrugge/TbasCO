@@ -137,6 +137,7 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              bkgd.individual.Zscores,
                                                              show.progress = T,
                                                              threads = 2)
+traits                  <- Identify_Significant_Traits()
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, 
                                                      pairwise.distances,
