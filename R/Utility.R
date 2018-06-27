@@ -212,21 +212,25 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores){
   require(RColorBrewer)
   rf <- colorRampPalette(rev(brewer.pal(11,'Spectral')))
 
-  random.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Genes`$PC,
-                              bkgd.individual.Zscores$zscores$`Random Genes`$NRED)
+  all_scores <- c(bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
+                  bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
+                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
+                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED
+  )
+
+
 
   random.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
-                                        bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED)
+                                        bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
+                                        ybnds = c(min(all_scores), max(all_scores)))
 
   random.identical.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
-                                                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED)
+                                                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED,
+                                                  ybnds = c(min(all_scores), max(all_scores)))
 
   cnt.max <- max(c(random.identical.annotated.genes.hexb@count,
-                   random.annotated.genes.hexb@count,
-                   random.genes.hexb@count))
-  plot(random.genes.hexb,
-       colramp=rf,mincnt=1, maxcnt=cnt.max,
-       xlab="PC",ylab="NRED", main="Random Genes")
+                   random.annotated.genes.hexb@count))
+
 
   plot(random.annotated.genes.hexb,
        colramp=rf,mincnt=1, maxcnt=cnt.max,
@@ -241,7 +245,7 @@ Plot_Metric_Comparison <- function(bkgd.individual){
 
   t_test_KO_random_pearson   <- t.test(bkgd.individual$`Random Annotated Genes`$PC,
                                        bkgd.individual$`Random Genes`$PC,
-                                       alternative="greater") # x > y (NULL)
+                                       alternative="less") # x > y (NULL)
 
   t_test_KO_random_euclidean <- t.test(bkgd.individual$`Random Annotated Genes`$NRED,
                                        bkgd.individual$`Random Genes`$NRED,
@@ -509,14 +513,22 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
                                         RNAseq.data$features$rank.columns]
         genomes.rna.gene.mean <- apply(genomes.rna.gene, 2, mean)
 
+        for(line.idx in 1:nrow(genomes.rna.gene)) {
+          y.bot <- y.coords[i] - 10
+          rank.pos <- (genomes.rna.gene[line.idx,] * 10) + y.bot
+          x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
+          graphics::lines(x.pos,
+                          rank.pos
+          )
+        }
 
         # Expression ranks
-        y.bot <- y.coords[i] - 10
-        rank.pos <- (genomes.rna.gene.mean * 10) + y.bot
-        x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
-        graphics::lines(x.pos,
-                        rank.pos
-        )
+        # y.bot <- y.coords[i] - 10
+        # rank.pos <- (genomes.rna.gene.mean * 10) + y.bot
+        # x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
+        # graphics::lines(x.pos,
+        #                 rank.pos
+        # )
 
         # Generate box colours
         values <- seq(0.1,1,by = 0.1)
@@ -746,7 +758,13 @@ Plot_Pathway_genes   <- function() {
   pearson.Z <- getMetricDist('PC', cat.genes)
   nred.Z    <- getMetricDist('NRED', cat.genes)
 
-
+  # Significant number ----
+  total <- nrow(pearson.Z)
+  pearson.sig <- pearson.Z[which(pearson.Z$sig == 'significant'),]
+  cat("Pearson ", nrow(pearson.sig), "out of", total)
+  total <- nrow(nred.Z)
+  nred.sig <- nred.Z[which(nred.Z$sig == 'significant'),]
+  cat("Pearson ", nrow(nred.sig), "out of", total)
 
   library(ggplot2)
   # Pearson plot ----
@@ -818,28 +836,91 @@ Plot_Pathway_modules <- function() {
 
   close(con)
 
-  sig.pathways <- nred.Z[which(nred.Z$sig == 'significant'),'collection']
+  sig.pathways    <- nred.Z[which(nred.Z$sig == 'significant'),'collection']
   cat.modules.sig <- cat.modules[sig.pathways]
 
 
-  nred.modules.Z <- getMetricDistModule('NRED', cat.modules.sig)
-  nred.modules.Z <- cbind(nred.modules.Z, (1:nrow(nred.modules.Z)))
+  nred.modules.Z           <- getMetricDistModule('NRED', cat.modules.sig)
+  nred.modules.Z           <- cbind(nred.modules.Z, (1:nrow(nred.modules.Z)))
   colnames(nred.modules.Z) <- c('value', 'pval', 'sig','pathway', 'module','ids')
-  nred.modules.Z.df <- as.data.frame(nred.modules.Z, stringsAsFactors = F)
-  nred.modules.Z.df$value <- as.numeric(nred.modules.Z.df$value)
-  nred.modules.Z.df$ids   <- as.numeric(nred.modules.Z.df$ids)
-  nred.modules.Z.df$ids   <- factor(nred.modules.Z.df$ids, levels= nred.modules.Z.df$ids)
+  nred.modules.Z.df        <- as.data.frame(nred.modules.Z, stringsAsFactors = F)
+  nred.modules.Z.df$value  <- as.numeric(nred.modules.Z.df$value)
+  nred.modules.Z.df$ids    <- as.numeric(nred.modules.Z.df$ids)
+  nred.modules.Z.df$ids    <- factor(nred.modules.Z.df$ids, levels= nred.modules.Z.df$ids)
 
   nred.modules.Z.sig <- nred.modules.Z.df[which(nred.modules.Z.df$sig == 'significant'),]
 
-  ggplot(nred.modules.Z.sig, aes(x= ids, y = value, colour=pathway, shape = factor(sig),
-                    size=1)) +
+  ggplot(nred.modules.Z.sig, aes(x= ids, y = value, colour=pathway, shape = factor(sig))) +
     geom_point(aes(size=0.05)) +
     xlab("") +
-    ylab("NRED Z score")+
-    facet_grid(. ~ pathway, scales = 'free_x', space='free_x')+
-    geom_hline(yintercept = 0)+
+    ylab("NRED Z score") +
+    facet_grid(. ~ pathway, scales = 'free_x', space='free_x') +
+    geom_hline(yintercept = 0) +
      guides(colour=FALSE)
+
+
+  # for each pathway the % of sig
+  percentage_sig <- list()
+  for (pathway in unique(nred.modules.Z.df$pathway)) {
+
+    pathway_rows <- nred.modules.Z.df[which(
+      nred.modules.Z.df$pathway == pathway),]
+
+    total        <- nrow(pathway_rows)
+    sig          <- nrow(pathway_rows[which(pathway_rows$sig == 'significant'),])
+    percentage_sig[[pathway]] <- ( (sig * 100) / total)
+    cat(paste(pathway, ( (sig * 100) / total), sep=';'), '\n')
+
+  }
+
+
+  pc.modules.Z           <- getMetricDistModule('PC', cat.modules.sig)
+  pc.modules.Z           <- cbind(pc.modules.Z, (1:nrow(pc.modules.Z)))
+  colnames(pc.modules.Z) <- c('value', 'pval', 'sig','pathway', 'module','ids')
+  pc.modules.Z.df        <- as.data.frame(pc.modules.Z, stringsAsFactors = F)
+  pc.modules.Z.df$value  <- as.numeric(pc.modules.Z.df$value)
+  pc.modules.Z.df$ids    <- as.numeric(pc.modules.Z.df$ids)
+  pc.modules.Z.df$ids    <- factor(pc.modules.Z.df$ids, levels= pc.modules.Z.df$ids)
+
+  pc.modules.Z.sig <- pc.modules.Z.df[which(pc.modules.Z.df$sig == 'significant'),]
+
+
+  sigboth <- pc.modules.Z.sig[which(pc.modules.Z.sig$module %in%
+                                      nred.modules.Z.sig$module),]
+  sigboth.pruned <- sigboth[which(sigboth$module %in% prune_lalala(sigboth)),]
 }
 
 
+Plot_Trait_Expression <- function(trait) {
+
+  .getRank <- function(genome, rows) {
+    genome.rows <- rows[which(rows$Bin == genome),
+                        RNAseq.data$features$rank.columns]
+
+    x <- genome.rows[sample.int(nrow(genome.rows),1),]
+
+    return(x)
+  }
+
+
+  annotations <- RNAseq.data$features$annotation.db$module.dict[[trait]]
+  par(mfrow=calcmfrow(length(annotations)))
+
+
+
+  for (KO in annotations) {
+    print(KO)
+    rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO), ]
+    genomes <- unique(rows$Bin)
+    if (length(genomes) == 0) {
+      next()
+    }
+
+    plot(1:length(RNAseq.data$features$rank.columns),.getRank(genomes[1], rows),
+         ylim=c(0,1), main = KO, type = 'l')
+    for (genome in unique(rows$Bin)) {
+      lines(1:length(RNAseq.data$features$rank.columns),.getRank(genome, rows))
+    }
+  }
+
+}

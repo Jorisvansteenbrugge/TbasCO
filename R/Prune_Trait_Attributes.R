@@ -9,8 +9,8 @@
 #' @author JJM van Steenbrugge
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
                                    p.threshold = 0.05, completion.threshold = 0.75,
-                                   threads = 4){
-  require(doSNOW)
+                                   pairwise.distances){
+
   annotation.db <- features$annotation.db
 
   .Filter_Completion <- function(trait.terms, bins, features, completion.threshold){
@@ -46,9 +46,9 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
       }
 
      # Filter for completion
-     if(! .Filter_Completion(annotation.db$module.dict[[trait]], bins, features, completion.threshold )){
-       next()
-     }
+      if(! .Filter_Completion(annotation.db$module.dict[[trait]], bins, features, completion.threshold )){
+        next()
+      }
 
 
 
@@ -62,6 +62,9 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
                                               "p-val"  = p.val)
       }
     }
+
+
+
     return(cluster.attributes)
   }
 
@@ -69,9 +72,26 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
 
   trait.attributes.pruned <- list()
   for(i in 1: length(trait.names)) {
-    trait.attributes.pruned[[i]] <- .Calc_P(trait.names[i], p.threshold, annotation.db)
+    trait.attribute <- .Calc_P(trait.names[i], p.threshold, annotation.db)
+    # Backup check if there are not sig attributes
+    if (length(trait.attribute) == 0){
+    # try(
+      pos.sig <- Identify_Significance_Trait(trait.names[i],
+                                             RNAseq.data,
+                                             pairwise.distances,
+                                             bkgd.traits)
+      if (length(pos.sig) > 0) {
+        trait.attribute <- list('1' = pos.sig)
+      }
+
+    # ,silent = T)
+    #
+    }
+
+    trait.attributes.pruned[[i]] <-  trait.attribute
   }
 
   names(trait.attributes.pruned) <- trait.names
   return(trait.attributes.pruned)
 }
+
