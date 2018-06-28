@@ -38,12 +38,8 @@ prune_lalala <- function(sigboth) {
 Expr_per_KO <- function () {
 
   sizes <- sapply(RNAseq.data$features$annotation.db$`all annotations in a module`,
-                  function(x) {
-                    rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO),
-                                        ]
-
-
-
+                  function(KO) {
+                    rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO),]
                     if (nrow(rows) >= 1){
                       return(sum(rows[,RNAseq.data$features$rank.columns]))
                     } else {
@@ -54,3 +50,4 @@ Expr_per_KO <- function () {
            )
 
 }
+

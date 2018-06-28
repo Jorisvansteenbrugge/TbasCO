@@ -892,7 +892,7 @@ Plot_Pathway_modules <- function() {
 
 
 Plot_Trait_Expression <- function(trait) {
-
+  dev.off()
   .getRank <- function(genome, rows) {
     genome.rows <- rows[which(rows$Bin == genome),
                         RNAseq.data$features$rank.columns]
