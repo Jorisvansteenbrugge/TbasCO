@@ -11,55 +11,13 @@
 #' @author JJM van Steenbrugge
 Go_Fish <- function(trait, RNAseq.data, pattern){
 
-  .process_row <- function(row){
-    sample.n <- length(RNAseq.data$features$rank.columns)
-    row <- row[RNAseq.data$features$rank.columns]
-    if      ( pattern == 'increase' ) {
-      res <- sapply(2:sample.n,  function(x){
-        if(row[x] > row[(x-1)]){
-          return(T)
-        }else {
-          return(F)
-        }
-      })
-    }
-    else if ( pattern == 'decrease' ) {
-      res <- sapply(2:sample.n,  function(x){
-        if(row[x] < row[(x-1)]){
-          return(T)
-        }else {
-          return(F)
-        }
-      })
-    }
-    else if ( pattern == 'peak'     ) {
-      res <- sapply(2: (sample.n - 1),  function(x){
-        if ( row[(x-1)] < row[x] &&  row[(x+1)] < row[x]) {
-          return(T)
-        }
-        else{
-          return(F)
-        }
-      })
-    }
-    else if ( pattern == 'vale'     ) {
-      res <- sapply(2: (sample.n - 1),  function(x){
-        if ( row[(x-1)] > row[x] &&  row[(x+1)] > row[x]) {
-          return(T)
-        }
-        else{
-          return(F)
-        }
-      })
-    }
-
-    if      ( T %in% res        ) {
-      return(T)
-    }
-    else                          {
-      return(F)
-    }
+  if(missing(pattern)){
+    points <- .Draw_pattern()
+    lines(points$x, points$y)
+    text(3,0.5,'Using this pattern to match')
   }
+
+
 
   annotations <- RNAseq.data$features$annotation.db$module.dict[[trait]]
 
@@ -72,3 +30,14 @@ Go_Fish <- function(trait, RNAseq.data, pattern){
 }
 
 
+.Draw_pattern <- function(nsamples = 6){
+  plot(c(1,nsamples), c(0,1), type='n',
+       xlab = 'Time points',
+       ylab = 'Normalized Rank')
+  cat("Click on six points in the graph, then press finish in the plot window")
+
+  return(locator(nsamples))
+
+}
+
+.Draw_pattern()
