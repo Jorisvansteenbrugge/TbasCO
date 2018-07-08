@@ -16,12 +16,10 @@
 #' @export
 Individual_Annotation_Background <- function(RNAseq.data,
                                              N       = 1000,
-                                             threads = 3,
                                              metrics = list("PC"   = PC,
                                                             "NRED" = NRED)){
   require(doSNOW)
-  cl <- makeSOCKcluster(threads)
-  registerDoSNOW(cl)
+
 
 
   result <- foreach::foreach(i = 1: 3, .export = c('Random.Genes.bkgd',
@@ -30,7 +28,7 @@ Individual_Annotation_Background <- function(RNAseq.data,
                                                    # 'N',
                                                    # 'RNAseq.data',
                                                    # 'metrics'
-                                                   )) %dopar% {
+                                                   )) %do% {
     RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
     if (i == 1){
       Random.Genes.bkgd(RNAseq.data, metrics, N)
@@ -42,7 +40,7 @@ Individual_Annotation_Background <- function(RNAseq.data,
   }
 
 
-  stopCluster(cl)
+
   # The names are essential
   names(result) <- c("Random Genes", "Random Annotated Genes", "Genes with the same annotation")
   return(result)
