@@ -5,8 +5,7 @@
 \alias{Identify_Trait_Attributes}
 \title{Identify Trait Attributes}
 \usage{
-Identify_Trait_Attributes(RNAseq.data, pairwise.distances, annotation.db,
-  threads = 4)
+Identify_Trait_Attributes(RNAseq.data, pairwise.distances, annotation.db)
 }
 \arguments{
 \item{RNAseq.data}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
