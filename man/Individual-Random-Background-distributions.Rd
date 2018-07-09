@@ -5,16 +5,16 @@
 \alias{Individual_Annotation_Background}
 \title{Individual Random Background distributions}
 \usage{
-Individual_Annotation_Background(RNAseq.data, N = 1000, threads = 3,
-  metrics = list(PC = PC, NRED = NRED))
+Individual_Annotation_Background(RNAseq.data, N = 1000, metrics = list(PC =
+  PC, NRED = NRED))
 }
 \arguments{
 \item{N}{Number of iterations}
 
-\item{threads}{Number of cpu cores to be used}
-
 \item{metrics}{Named list containing possibly multiple functions for distance
 metrics}
+
+\item{threads}{Number of cpu cores to be used}
 }
 \description{
 A function that creates three different random background distributions
