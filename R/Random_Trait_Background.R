@@ -69,7 +69,7 @@ Random_Trait_Background <- function(RNAseq.data,
 
 
 
-  snow::stopCluster(cl)
+
   return(bkgd.modules)
 }
 
