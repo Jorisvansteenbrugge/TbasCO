@@ -17,8 +17,7 @@ Random_Trait_Background <- function(RNAseq.data,
                                     bkgd.individual.Zscores,
                                     N,
                                     Z,
-                                    metrics,
-                                    threads = 4){
+                                    metrics){
 
 
   .Procedure <- function(RNAseq.data,
@@ -30,7 +29,7 @@ Random_Trait_Background <- function(RNAseq.data,
     #Runs in parallel
     result <- foreach::foreach(i = 1:N, .export = c("Random.Annotated.Genes.bkgd",
                                                      ".Convert_zscores",
-                                                     ".Calc_Jaccard")) %dopar% {
+                                                     ".Calc_Jaccard")) %do% {
       #pick two genomes
       RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
       random.genomes              <- sample(RNAseq.data$features$bins, 2)
@@ -57,8 +56,6 @@ Random_Trait_Background <- function(RNAseq.data,
 
 
   require(doSNOW)
-  cl <- snow::makeSOCKcluster(threads)
-  registerDoSNOW(cl)
 
   bkgd.modules <- list()
 
