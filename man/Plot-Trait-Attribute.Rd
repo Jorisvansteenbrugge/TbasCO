@@ -9,7 +9,8 @@
 \usage{
 Traitattributes_To_Sbsmatrix(trait.attributes, genomes)
 
-Plot_Trait_Attribute_Expression(trait.attribute, trait.attributes, RNAseq.data)
+Plot_Trait_Attribute_Expression(trait.attribute, trait.attributes.pruned,
+  RNAseq.data)
 }
 \arguments{
 \item{trait.attributes}{The full list of all trait attributes}
