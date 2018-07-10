@@ -10,7 +10,7 @@ Description: More about what it does (maybe more than one line)
 License: some licence
 Encoding: UTF-8
 LazyData: true
-Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, ggplot2
+Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, ggplot2, gridExtra
 BiocViews: RCy3
 RoxygenNote: 6.0.1
 Suggests: testthat
