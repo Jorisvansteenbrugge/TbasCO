@@ -13,6 +13,7 @@
 #' @export
 #' @author JJM van Steenbrugge
 #' BO Oyserman
+
 Random_Trait_Background <- function(RNAseq.data,
                                     bkgd.individual.Zscores,
                                     N,
@@ -36,7 +37,6 @@ Random_Trait_Background <- function(RNAseq.data,
       random.genomes.combis       <- rep(list(random.genomes), Z) #Workaround to re-use function below
 
       distances   <- Random.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
-      print(distances)
       distances.Z <- .Convert_zscores(distances$scores, metrics, bkgd.individual.Zscores)
 
 
