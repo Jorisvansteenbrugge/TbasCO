@@ -6,15 +6,10 @@
 \title{Identify whether an annotation term has a certain expression pattern in one
 or more genomes}
 \usage{
-Go_Fish(annotation, RNAseq.data, pattern)
+Go_Fish(RNAseq.data)
 }
 \arguments{
-\item{annotation}{character string of the Annotation term}
-
 \item{RNAseq.data}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
-
-\item{pattern}{character string of the kind of pattern to look for. The string
-should be one of the following: {'increase', 'decrease', 'peak', 'vale}}
 }
 \description{
 Identify whether a gene has a certain expression pattern in one or more genomes.

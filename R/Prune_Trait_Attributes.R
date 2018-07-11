@@ -9,21 +9,26 @@
 #' @author JJM van Steenbrugge
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
                                    p.threshold = 0.05, completion.threshold = 0.75,
-                                   threads = 4){
-  require(doSNOW)
+                                   pairwise.distances){
+
   annotation.db <- features$annotation.db
 
   .Filter_Completion <- function(trait.terms, bins, features, completion.threshold){
     n <- length(trait.terms)
-    pa.current <- features$annotation_presence_absence[trait.terms,bins]
+    bins_remove <- c()
 
-    if(n == 1){
+    for (bin in bins) {
+      pa.current <- features$annotation_presence_absence[trait.terms,bin]
+
+
       completion <- sum(pa.current) / n
-    }else{
-      complete <- apply(pa.current,1,function(x){if(sum(x)>=1){return(1)}else{return(0)}})
-      completion <- sum(complete) / n
+
+      if (! completion >= completion.threshold) {
+        bins_remove <- c(bins_remove, bin)
+      }
+
     }
-    return(completion >= completion.threshold)
+    return(bins_remove)
 
   }
 
@@ -46,22 +51,39 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
       }
 
      # Filter for completion
-     if(! .Filter_Completion(annotation.db$module.dict[[trait]], bins, features, completion.threshold )){
-       next()
-     }
+      bins_remove <- .Filter_Completion(annotation.db$module.dict[[trait]],
+                                        bins.cluster, features,
+                                        completion.threshold )
+
+      if ( length(bins_remove) == length(bins.cluster) ) {
+        next()
+      }else if (length(bins_remove) == 0) {
+        next()
+      } else {
+        bins.cluster <- bins.cluster[-which(bins.cluster %in% bins_remove)]
+      }
 
 
 
       bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
-      p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value
-      p.val <- p.adjust(p.val, method = 'BH', length(clusters))
+      p.val <- NA
+      tryCatch({
+        p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value
+        p.val <- p.adjust(p.val, method = 'BH', length(clusters))
 
-      if( p.val <= p.threshold){
-        cluster.attributes[[cluster]] <- list("genomes"= bins.cluster,
-                                              "p-val"  = p.val)
-      }
+        if( p.val <= p.threshold){
+          cluster.attributes[[cluster]] <- list("genomes"= unique(bins.cluster),
+                                                "p-val"  = p.val)
+        }
+      },
+      error = function(cond) {
+
+      })
     }
+
+
+
     return(cluster.attributes)
   }
 
@@ -69,9 +91,21 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
 
   trait.attributes.pruned <- list()
   for(i in 1: length(trait.names)) {
-    trait.attributes.pruned[[i]] <- .Calc_P(trait.names[i], p.threshold, annotation.db)
+    trait.attribute <- .Calc_P(trait.names[i], p.threshold, annotation.db)
+    # Backup check if there are not sig attributes
+    if (length(trait.attribute) == 0){
+      pos.sig <- Identify_Significance_Trait(trait.names[i],
+                                             RNAseq.data,
+                                             pairwise.distances,
+                                             bkgd.traits)
+      if (length(pos.sig) > 0) {
+        trait.attribute <- list('1' = pos.sig)
+      }
+    }
+    trait.attributes.pruned[[i]] <-  trait.attribute
   }
 
   names(trait.attributes.pruned) <- trait.names
   return(trait.attributes.pruned)
 }
+
