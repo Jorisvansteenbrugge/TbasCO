@@ -566,7 +566,7 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
   }
 }
 
-#### Experimental ----
+
 getMetricDist <- function(metric, cat.genes){
 
   mean.distances <- matrix(nrow=0,ncol=4)
