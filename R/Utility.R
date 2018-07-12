@@ -1010,3 +1010,8 @@ Plot_Venn             <- function(trait.attributes.pruned) {
                               title= 'title',
                               collection="Network Traits and Genomes")
 }
+
+
+super_test_function <- function(){
+  print("HI")
+}
