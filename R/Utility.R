@@ -65,9 +65,8 @@ calcmfrow<- function(x){
 #' @example Plot_Trait_Attribute('M00027.2', trait.attributes.pruned, RNAseq.data)
 #' @export
 #' @author JJM van Steenbrugge
-Plot_Trait_Attribute_Expression <- function(trait.attribute,
-                                            trait.attributes.pruned,
-                                            RNAseq.data){
+Plot_Trait_Attribute_Expression <- function(trait.attribute, trait.attributes,
+                                 RNAseq.data){
 
   trait.attribute.s <- unlist(strsplit(x = trait.attribute,split = '[.]'))
 
@@ -120,25 +119,21 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores){
   require(RColorBrewer)
   rf <- colorRampPalette(rev(brewer.pal(11,'Spectral')))
 
-  all_scores <- c(bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
-                  bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
-                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
-                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED
-  )
-
-
+  random.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Genes`$PC,
+                              bkgd.individual.Zscores$zscores$`Random Genes`$NRED)
 
   random.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
-                                        bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
-                                        ybnds = c(min(all_scores), max(all_scores)))
+                                        bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED)
 
   random.identical.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
-                                                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED,
-                                                  ybnds = c(min(all_scores), max(all_scores)))
+                                                  bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED)
 
   cnt.max <- max(c(random.identical.annotated.genes.hexb@count,
-                   random.annotated.genes.hexb@count))
-
+                   random.annotated.genes.hexb@count,
+                   random.genes.hexb@count))
+  plot(random.genes.hexb,
+       colramp=rf,mincnt=1, maxcnt=cnt.max,
+       xlab="PC",ylab="NRED", main="Random Genes")
 
   plot(random.annotated.genes.hexb,
        colramp=rf,mincnt=1, maxcnt=cnt.max,
@@ -153,7 +148,7 @@ Plot_Metric_Comparison <- function(bkgd.individual){
 
   t_test_KO_random_pearson   <- t.test(bkgd.individual$`Random Annotated Genes`$PC,
                                        bkgd.individual$`Random Genes`$PC,
-                                       alternative="less") # x > y (NULL)
+                                       alternative="greater") # x > y (NULL)
 
   t_test_KO_random_euclidean <- t.test(bkgd.individual$`Random Annotated Genes`$NRED,
                                        bkgd.individual$`Random Genes`$NRED,
@@ -382,7 +377,7 @@ Association_Rules <- function(sbs.trait.attributes,
 #' @author JJM van Steenbrugge
 Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
 
-  y.max        <- 140
+  y.max        <- 110
   x.max        <- 60
 
 
@@ -391,9 +386,9 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
   genes        <- RNAseq.data$features$annotation.db$module.dict[[trait]]
   n.genes      <- length(genes)
 
-  plot(c(0,as.numeric(x.max)), c(0,y.max), type='n', xlab = '',ylab='', axes = F)
+  plot(c(0,x.max), c(0,y.max), type='n', xlab = '',ylab='', axes = F)
 
-  y.coords <- seq(y.max, 1    , by = -15) # With this setting max of 7 genes
+  y.coords <- seq(100, 1    , by = -15) # With this setting max of 7 genes
   x.coords <- seq(0  , x.max, by =  11)
 
   # For each gene
@@ -420,6 +415,15 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
         genomes.rna.gene <- genomes.rna[which(genomes.rna$Annotation == gene),
                                         RNAseq.data$features$rank.columns]
         genomes.rna.gene.mean <- apply(genomes.rna.gene, 2, mean)
+
+
+        # Expression ranks
+        y.bot <- y.coords[i] - 10
+        rank.pos <- (genomes.rna.gene.mean * 10) + y.bot
+        x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
+        graphics::lines(x.pos,
+                        rank.pos
+        )
 
         # Generate box colours
         values <- seq(0.1,1,by = 0.1)
@@ -460,27 +464,32 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
           rect(xleft  = x.coords[y+1] + box.coords[(z-1)] , ybottom = y.coords[i] - 10,
                xright = x.coords[y+1] + box.coords[z], ytop    = y.coords[i],
                col=col)
-          for(line.idx in 1:nrow(genomes.rna.gene)) {
-            y.bot <- y.coords[i] - 10
-            rank.pos <- (genomes.rna.gene[line.idx,] * 10) + y.bot
-            x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
-            graphics::lines(x.pos,
-                            rank.pos
-            )
-          }
+
+          # Expression ranks
+          y.bot <- y.coords[i] - 10
+          rank.pos <- (genomes.rna.gene.mean * 10) + y.bot
+          x.pos    <- seq(1,10, length.out = 6)+ x.coords[y+1]
+          graphics::lines(x.pos,
+                          rank.pos, col = 'black'
+          )
+
         }
+
+
+
+
     }
   }
 }
 
+#### Experimental ----
+getMetricDist <- function(metric, cat.genes){
 
-getMetricDist <- function(metric, cat.genes, distance.metrics){
-
-  mean.distances <- matrix(nrow=0,ncol=4)
+  mean.distances <- matrix(nrow=0,ncol=3)
 
   for(category in names(cat.genes)) {
     distances.list <- list()
-    cat(paste(category, '\n'))
+    print(category)
 
     for (KO in cat.genes[[category]] ) {
       data.rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO),]
@@ -522,23 +531,12 @@ getMetricDist <- function(metric, cat.genes, distance.metrics){
       p.c. <- 'not significant'
     }
     ,silent =T)
-
-
-    cex <- median(distances, na.rm = T)
-    if (is.null(cex)) {
-      cex <- NA
-    }
-
-
     #actual distances
     mean.dist <- mean(distances, na.rm = T)
     mean.dist.Z <- (mean.dist - bkgd.individual.Zscores$mu$`Random Annotated Genes`[[metric]]) /
       bkgd.individual.Zscores$sd$`Random Annotated Genes`[[metric]]
-
-
-
     mean.distances <- rbind(mean.distances,
-                            c(mean.dist.Z, p.c,category, cex)
+                            c(mean.dist.Z, p.c,category)
 
                             )
 
@@ -617,12 +615,11 @@ getMetricDistModule  <- function(metric, cat.modules){
   return(mean.distances)
 }
 
-#' @export
-Plot_Pathway_genes   <- function(metric_name, distance.metrics) {
+Plot_Pathway_genes   <- function() {
   # Catogerized Modules
   cat.modules <- read.csv('/home/joris/categorized_modules2.csv', sep=';',header=F)
 
-  # Hacking categories because the order is known ----
+  # Hacking categories ----
   categories <- c(rep('P_Energy metabolism',4),
                   rep('P_Carbohydrate and lipid metabolism', 10),
                   rep('P_Nucleotide and AA metabolism', 12),
@@ -637,8 +634,6 @@ Plot_Pathway_genes   <- function(metric_name, distance.metrics) {
   )
   #
   cat.genes <- list()
-
-  # Do this better in the future
   con = file('/home/joris/categorized_modules2.csv', "r")
   while ( TRUE ) {
     line = readLines(con, n = 1)
@@ -654,45 +649,64 @@ Plot_Pathway_genes   <- function(metric_name, distance.metrics) {
 
 
   # Get Zscores ----
-  metric.Z <- getMetricDist(metric, cat.genes, distance.metrics)
+
+  pearson.Z <- getMetricDist('PC', cat.genes)
+  nred.Z    <- getMetricDist('NRED', cat.genes)
+
+
 
   library(ggplot2)
   # Pearson plot ----
-  ids       <- 1:nrow(metric.Z)
-  metric.Z <- cbind(metric.Z, ids)
-  metric.Z <- cbind(metric.Z, categories)
+  ids       <- 1:nrow(pearson.Z)
+  pearson.Z <- cbind(pearson.Z, ids)
+  pearson.Z <- cbind(pearson.Z, categories)
 
-  colnames(metric.Z) <- c("value",'sig','collection','cex','ids','categories')
+  colnames(pearson.Z) <- c("value",'sig','collection','ids','categories')
 
 
-  metric.Z       <- as.data.frame(metric.Z, stringsAsFactors=F)
-  metric.Z$value <- as.numeric(metric.Z$value)
-  metric.Z$ids   <- as.numeric(metric.Z$ids)
-  metric.Z$ids   <- factor(metric.Z$ids, levels= metric.Z$ids)
+  pearson.Z       <- as.data.frame(pearson.Z, stringsAsFactors=F)
+  pearson.Z$value <- as.numeric(pearson.Z$value)
+  pearson.Z$ids   <- as.numeric(pearson.Z$ids)
+  pearson.Z$ids   <- factor(pearson.Z$ids, levels= pearson.Z$ids)
 
-  metric.Z$cex   <- exp(as.numeric(metric.Z$cex) / mean(as.numeric(metric.Z$cex),
-                                                      na.rm = ))
-
-  metric.plot <- ggplot(metric.Z, aes(x = ids, y = value,
+  pearson.plot <- ggplot(pearson.Z, aes(x = ids, y = value,
                                         colour = categories,
-                                        shape  = factor(sig))
-                        #,size = cex
-                        ) +
-    geom_point(size=3) +
+                                        shape  = factor(sig),
+                        size = 1)) +
+    geom_point() +
     xlab("") +
-    ylab(paste(metric_name, "Z score", sep = ' '))+
+    ylab("Pearson Z score")+
     facet_grid(. ~ categories, scales = 'free_x', space='free_x')+
-    geom_hline(yintercept = 0) +
-    theme(axis.text.x=element_blank(),
-          axis.ticks.x=element_blank(),
-          legend.position = 'none')
+    geom_hline(yintercept = 0)# +
+   # theme(axis.text.x=element_blank(),
+  #        axis.ticks.x=element_blank())
+
+  # NRED plot ----
+  ids    <- 1:nrow(nred.Z)
+  nred.Z <- cbind(nred.Z, ids)
+  nred.Z <- cbind(nred.Z, categories)
+
+  colnames(nred.Z) <- c("value",'sig','collection','ids','categories')
 
 
-  # Combine plot
-  # plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
+  nred.Z       <- as.data.frame(nred.Z, stringsAsFactors=F)
+  nred.Z$value <- as.numeric(nred.Z$value)
+  nred.Z$ids   <- as.numeric(nred.Z$ids)
+  nred.Z$ids   <- factor(nred.Z$ids, levels= nred.Z$ids)
 
-  return(list('data' = metric.Z,
-              'plot' = metric.plot))
+  nred.plot <- ggplot(nred.Z, aes(x= ids, y = value, colour=categories,shape = factor(sig),
+                                        size=1)) +
+    geom_point() +
+    xlab("") +
+    ylab("NRED Z score")+
+    facet_grid(. ~ categories, scales = 'free_x', space='free_x')+
+    geom_hline(yintercept = 0)
+    #theme(axis.text.x=element_blank(),
+       #   axis.ticks.x=element_blank())
+
+
+  # Combine plots ----
+  plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
 }
 
 Plot_Pathway_modules <- function() {
@@ -711,209 +725,28 @@ Plot_Pathway_modules <- function() {
 
   close(con)
 
-  sig.pathways    <- nred.Z[which(nred.Z$sig == 'significant'),'collection']
+  sig.pathways <- nred.Z[which(nred.Z$sig == 'significant'),'collection']
   cat.modules.sig <- cat.modules[sig.pathways]
 
 
-  nred.modules.Z           <- getMetricDistModule('NRED', cat.modules.sig)
-  nred.modules.Z           <- cbind(nred.modules.Z, (1:nrow(nred.modules.Z)))
+  nred.modules.Z <- getMetricDistModule('NRED', cat.modules.sig)
+  nred.modules.Z <- cbind(nred.modules.Z, (1:nrow(nred.modules.Z)))
   colnames(nred.modules.Z) <- c('value', 'pval', 'sig','pathway', 'module','ids')
-  nred.modules.Z.df        <- as.data.frame(nred.modules.Z, stringsAsFactors = F)
-  nred.modules.Z.df$value  <- as.numeric(nred.modules.Z.df$value)
-  nred.modules.Z.df$ids    <- as.numeric(nred.modules.Z.df$ids)
-  nred.modules.Z.df$ids    <- factor(nred.modules.Z.df$ids, levels= nred.modules.Z.df$ids)
+  nred.modules.Z.df <- as.data.frame(nred.modules.Z, stringsAsFactors = F)
+  nred.modules.Z.df$value <- as.numeric(nred.modules.Z.df$value)
+  nred.modules.Z.df$ids   <- as.numeric(nred.modules.Z.df$ids)
+  nred.modules.Z.df$ids   <- factor(nred.modules.Z.df$ids, levels= nred.modules.Z.df$ids)
 
   nred.modules.Z.sig <- nred.modules.Z.df[which(nred.modules.Z.df$sig == 'significant'),]
 
-  ggplot(nred.modules.Z.sig, aes(x= ids, y = value, colour=pathway, shape = factor(sig))) +
-    geom_point(size=2) +
+  ggplot(nred.modules.Z.sig, aes(x= ids, y = value, colour=pathway, shape = factor(sig),
+                    size=1)) +
+    geom_point(aes(size=0.05)) +
     xlab("") +
-    ylab("NRED Z score") +
-    facet_grid(. ~ pathway, scales = 'free_x', space='free_x') +
-    geom_hline(yintercept = 0) +
+    ylab("NRED Z score")+
+    facet_grid(. ~ pathway, scales = 'free_x', space='free_x')+
+    geom_hline(yintercept = 0)+
      guides(colour=FALSE)
-
-
-  # for each pathway the % of sig
-  percentage_sig <- list()
-  for (pathway in unique(nred.modules.Z.df$pathway)) {
-
-    pathway_rows <- nred.modules.Z.df[which(
-      nred.modules.Z.df$pathway == pathway),]
-
-    total        <- nrow(pathway_rows)
-    sig          <- nrow(pathway_rows[which(pathway_rows$sig == 'significant'),])
-    percentage_sig[[pathway]] <- ( (sig * 100) / total)
-    cat(paste(pathway, ( (sig * 100) / total), sep=';'), '\n')
-
-  }
-
-
-  pc.modules.Z           <- getMetricDistModule('PC', cat.modules.sig)
-  pc.modules.Z           <- cbind(pc.modules.Z, (1:nrow(pc.modules.Z)))
-  colnames(pc.modules.Z) <- c('value', 'pval', 'sig','pathway', 'module','ids')
-  pc.modules.Z.df        <- as.data.frame(pc.modules.Z, stringsAsFactors = F)
-  pc.modules.Z.df$value  <- as.numeric(pc.modules.Z.df$value)
-  pc.modules.Z.df$ids    <- as.numeric(pc.modules.Z.df$ids)
-  pc.modules.Z.df$ids    <- factor(pc.modules.Z.df$ids, levels= pc.modules.Z.df$ids)
-
-  pc.modules.Z.sig <- pc.modules.Z.df[which(pc.modules.Z.df$sig == 'significant'),]
-
-
-  sigboth <- pc.modules.Z.sig[which(pc.modules.Z.sig$module %in%
-                                      nred.modules.Z.sig$module),]
-  sigboth.pruned <- sigboth[which(sigboth$module %in% prune_lalala(sigboth)),]
 }
 
 
-Plot_Trait_Expression <- function(trait, subset_genomes) {
-  dev.off()
-  .getRank <- function(genome, rows) {
-    genome.rows <- rows[which(rows$Bin == genome),
-                        RNAseq.data$features$rank.columns]
-
-    x <- genome.rows[sample.int(nrow(genome.rows),1),]
-
-    return(x)
-  }
-
-
-  annotations <- RNAseq.data$features$annotation.db$module.dict[[trait]]
-  par(mfrow=calcmfrow(length(annotations)))
-
-
-
-  for (KO in annotations) {
-    print(KO)
-    rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO), ]
-
-    if(missing(subset_genomes)) {
-      genomes <- unique(rows$Bin)
-    } else{
-      genomes <- unique(rows$Bin)
-      genomes <- subset_genomes[which(subset_genomes %in% genomes)]
-    }
-
-    print(genomes)
-    if (length(genomes) == 0) {
-      next()
-    }
-
-    plot(1:length(RNAseq.data$features$rank.columns),.getRank(genomes[1], rows),
-         ylim=c(0,1), main = KO, type = 'l')
-    for (genome in genomes) {
-      lines(1:length(RNAseq.data$features$rank.columns),.getRank(genome, rows))
-    }
-  }
-
-}
-
-Plot_Venn             <- function(trait.attributes.pruned) {
-  tap   <- trait.attributes.pruned
-  b16   <- c()
-  b39   <- c()
-  total <- c()
-
-  for ( trait.idx in 1:length(tap) ) {
-    t <- tap[[trait.idx]]
-    #####
-    if ( length(t) == 0 ) {
-      next
-    }
-    #####
-
-    for (ta.idx in 1:length(t)) {
-      ta <- t[[ta.idx]]
-      ta.name <- paste(names(tap)[trait.idx],
-                  ta.idx, sep = '.')
-      total <- c(total, ta.name)
-      genomes <- ta$genomes
-
-      c <- F
-
-      if('16' %in% genomes) {
-        b16 <- c(b16, ta.name)
-        c <- T
-      }
-
-      if('39' %in% genomes) {
-        b39 <- c(b39, ta.name)
-        c <- T
-      }
-
-      # if (! c) {
-      #   total <- c(total, ta.name)
-      # }
-
-    }
-  }
-
-  o12  <- total[which(total %in% b39)]
-  o23  <- b39  [which(b39   %in% b16)]
-  o13  <- total[which(total %in% b16)]
-  o123 <- o12  [which(o12   %in% b16)]
-
-  VennDiagram::draw.triple.venn(length(total),
-                                length(b39),
-                                length(b16),
-                                length(o12),
-                                length(o23),
-                                length(o13),
-                                length(o123),
-                                category = c('Total', 'b39', 'b16'))
-
-  .getGenomeTraits <- function(genome) {
-    tas <- c()
-
-    for ( trait.idx in 1:length(tap) ) {
-      t <- tap[[trait.idx]]
-      #####
-      if ( length(t) == 0 ) {
-        next
-      }
-      #####
-
-      for (ta.idx in 1:length(t)) {
-        ta <- t[[ta.idx]]
-        ta.name <- paste(names(tap)[trait.idx],
-                         ta.idx, sep = '.')
-
-        genomes <- ta$genomes
-
-        c <- F
-
-        if(genome %in% genomes) {
-          tas <- c(tas, ta.name)
-          c <- T
-        }
-
-      }
-    }
-    return(tas)
-  }
-  library(RCy3)
-  nodes <- as.matrix(RNAseq.data$features$bins, ncol=1)
-  colnames(nodes) <- 'id'
-
-  edges <- matrix(ncol=3,nrow=0)
-  for ( x in 1:(length(RNAseq.data$features$bins) - 1 ) ) {
-    x.tas <- .getGenomeTraits(RNAseq.data$features$bins[x])
-    for (y in (x+1):length(RNAseq.data$features$bins)) {
-      y.tas <- .getGenomeTraits(RNAseq.data$features$bins[y])
-      overlap <- length(x.tas[which(x.tas %in% y.tas)])
-      edges <- rbind(edges, c(RNAseq.data$features$bins[x],
-                              RNAseq.data$features$bins[y],
-                              overlap))
-    }
-  }
-  colnames(edges) <- c('source', 'target','weight')
-  weights <-  as.numeric(edges[,'weight'])
-  weights <- (weights  / min(weights)) ^ 2
-
-  edges[,3] <- weights
-
-  createNetworkFromDataFrames(data.frame(nodes,stringsAsFactors = F),
-                              data.frame(edges,stringsAsFactors = F),
-                              title= 'title',
-                              collection="Network Traits and Genomes")
-}

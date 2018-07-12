@@ -14,7 +14,7 @@ Calc_Pairwise_Annotation_Distance(RNAseq.data, annotation.db, distance.metrics,
 \item{annotation.db}{List containing a dictionary like structure with trait as names
 and annotation as values.}
 
-\item{distance.metrics}{Named list containing distance functions as values.}
+\item{distance.metrics}{Named list containing distance functions as values}
 
 \item{bkgd.individual.Zscores}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
 
