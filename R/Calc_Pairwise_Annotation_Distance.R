@@ -79,7 +79,7 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
                                                       'annotation.db',
                                                       '.Convert_zscores',
                                                       'bkgd.individual.Zscores'),
-                                          .verbose = T) %dopar%{
+                                          .verbose = show.progress) %dopar%{
 
       pairwise.matrix <- .Pairwise_Distance(annotation.db$`all annotations in a module`[i])
       colnames(pairwise.matrix) <- RNAseq.data$features$bins
