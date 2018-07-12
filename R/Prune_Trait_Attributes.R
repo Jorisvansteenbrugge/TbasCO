@@ -7,10 +7,11 @@
 #' @param bkgd.individual.Zscores
 #' @export
 #' @author JJM van Steenbrugge
-Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, features,
+Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
                                    p.threshold = 0.05, completion.threshold = 0.75,
                                    pairwise.distances){
 
+  features <- RNAseq.data$features
   annotation.db <- features$annotation.db
 
   .Filter_Completion <- function(trait.terms, bins, features, completion.threshold){
