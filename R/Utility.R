@@ -1012,6 +1012,3 @@ Plot_Venn             <- function(trait.attributes.pruned) {
 }
 
 
-super_test_function <- function(){
-  print("HI")
-}
