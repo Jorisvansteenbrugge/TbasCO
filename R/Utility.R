@@ -747,10 +747,9 @@ Plot_Pathway_genes   <- function(metric_name, distance.metrics, RNAseq.data) {
 
 
   # Get Zscores ----
-  metric.Z <- getMetricDist(metric, cat.genes, distance.metrics, RNAseq.data)
+  metric.Z <- getMetricDist(metric_name, cat.genes, distance.metrics, RNAseq.data)
 
   library(ggplot2)
-  # Pearson plot ----
   ids       <- 1:nrow(metric.Z)
   metric.Z <- cbind(metric.Z, ids)
   metric.Z <- cbind(metric.Z, categories)
