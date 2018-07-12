@@ -567,7 +567,8 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
 }
 
 
-getMetricDist <- function(metric, cat.genes, distance.metrics, RNAseq.data){
+getMetricDist <- function(metric, cat.genes, distance.metrics, RNAseq.data,
+                          bkgd.individual, bkgd.individual.Zscores){
 
   mean.distances <- matrix(nrow=0,ncol=4)
 
@@ -711,7 +712,8 @@ getMetricDistModule  <- function(metric, cat.modules){
 }
 
 #' @export
-Plot_Pathway_genes   <- function(metric_name, distance.metrics, RNAseq.data) {
+Plot_Pathway_genes   <- function(metric_name, distance.metrics, RNAseq.data,
+                                 bkgd.individual, bkgd.individual.Zscores) {
   # Catogerized Modules
   cat.modules <- read.csv('/home/joris/categorized_modules2.csv', sep=';',header=F)
 
@@ -747,7 +749,8 @@ Plot_Pathway_genes   <- function(metric_name, distance.metrics, RNAseq.data) {
 
 
   # Get Zscores ----
-  metric.Z <- getMetricDist(metric_name, cat.genes, distance.metrics, RNAseq.data)
+  metric.Z <- getMetricDist(metric_name, cat.genes, distance.metrics, RNAseq.data,
+                            bkgd.individual, bkgd.individual.Zscores)
 
   library(ggplot2)
   ids       <- 1:nrow(metric.Z)
