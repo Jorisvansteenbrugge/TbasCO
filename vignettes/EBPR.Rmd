@@ -1,3 +1,4 @@
+
 ---
 title: "Trait-based Comparative Transcriptomics Analysis"
 author: "Joris van Steenbrugge"
@@ -35,7 +36,6 @@ The package supports different options for normalization. By default the `Pre_pr
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
-
 file.path          <- "/home/joris/Dropbox/MSc Internship/sample_data_newKO.csv"
 annotation.db.path <- "/home/joris/Dropbox/MSc Internship/updated_KO_modules.tsv"
 
@@ -119,7 +119,6 @@ distance.metrics <- list("NRED" = NRED,
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
-
                                                             N       = 1000, 
                                                             metrics = distance.metrics)
 
@@ -128,7 +127,6 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
                                                    N = 10, 
-
                                                    Z = 1:13, 
                                                    metrics = distance.metrics)
 
@@ -137,26 +135,18 @@ bkgd.traits             <- Random_Trait_Background(RNAseq.data,
                                                              bkgd.individual.Zscores =
                                                                bkgd.individual.Zscores)
 
-
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, 
                                                      pairwise.distances,
                                                      threads = 2)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data$features,
-                                                  p.threshold = 0.05, 
-                                                  completion.threshold = 0.9,
-                                                  pairwise.distances = pairwise.distances)
-
+                                                  p.threshold = 1, 
+                                                  completion.threshold = 0.75)
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, 
                                                         RNAseq.data$features$bins)
 
 
-ta <- 'TCArevE'
-tcarevbins <- trait.attributes.pruned[[ta]]$`1`$genomes
-otherbins <- which(RNAseq.data$features$bins %!in% tcarevbins)
-trait.attributes.pruned[[ta]][['2']] <- list('genomes' = otherbins)
-Draw_Expression( ta, RNAseq.data, trait.attributes.pruned )
 ```
 
 ## Plotting
@@ -170,7 +160,10 @@ Plot_Background_Modules(bkgd.modules)
 Network_Trait_Genomes(c('PHA','PolyP', 'Glyco'), trait.attributes.pruned,
                       genome.phylogeny)
 
+
 Draw_Expression(trait = 'PHA', RNAseq.data, trait.attributes.pruned)
+
+
 ```
 
 ## Apriori
@@ -188,6 +181,7 @@ Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$fe
 Go_Fish('K00927', RNAseq.data,
         pattern = 'peak')
 ```
+
 
 ## Publication figure creating
 ```{r}
