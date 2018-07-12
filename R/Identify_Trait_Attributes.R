@@ -10,11 +10,8 @@
 #' @author JJM van Steenbrugge
 #' BO Oyserman
 Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
-                                      annotation.db, threads = 4){
+                                      annotation.db){
   require(doSNOW)
-
-  cl <- snow::makeSOCKcluster(threads)
-  registerDoSNOW(cl)
 
   # Allows for easy subset testing
   if(missing(annotation.db)){
@@ -30,7 +27,7 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
                           .export = c('.Calc_Jaccard_Module',
                                       '.Calc_Jaccard',
                                       '.Calc_Avg_Zscore_Module'),
-                          .verbose = F) %dopar%{
+                          .verbose = F) %do%{
 
       module.terms             <- annotation.db$module.dict[[i]]
 
@@ -62,7 +59,7 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
       )
                           }
 
-  stopCluster(cl)
+
   names(output.list) <- trait.names
   return(output.list)
 }

@@ -13,7 +13,7 @@
 #' @author JJM van Steenbrugge
 Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
                                               distance.metrics, bkgd.individual.Zscores,
-                                              show.progress = F, threads = 4){
+                                              show.progress = F){
   # Allows for easy subset testing
   if(missing(annotation.db)){
     annotation.db <- RNAseq.data$features$annotation.db
@@ -64,8 +64,6 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
 
 
   require(doSNOW)
-  cl <- makeSOCKcluster(threads)
-  registerDoSNOW(cl)
 
 
 
@@ -78,8 +76,7 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
                                                       'RNAseq.data',
                                                       'annotation.db',
                                                       '.Convert_zscores',
-                                                      'bkgd.individual.Zscores'),
-                                          .verbose = T) %dopar%{
+                                                      'bkgd.individual.Zscores')) %do%{
 
       pairwise.matrix <- .Pairwise_Distance(annotation.db$`all annotations in a module`[i])
       colnames(pairwise.matrix) <- RNAseq.data$features$bins
@@ -87,7 +84,7 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
       return(pairwise.matrix)
   }
 
-  stopCluster(cl)
+
   names(composite.distances) <- annotation.db$`all annotations in a module`
   return(composite.distances)
 }

@@ -35,8 +35,7 @@ The package supports different options for normalization. By default the `Pre_pr
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
-file.path          <- "/home/joris/TcT/data/sample_data_newKO.csv"
-annotation.db.path <- "/home/joris/branch/TcT/data/updated_KO_modules.tsv"
+
 file.path          <- "/home/joris/Dropbox/MSc Internship/sample_data_newKO.csv"
 annotation.db.path <- "/home/joris/Dropbox/MSc Internship/updated_KO_modules.tsv"
 
@@ -120,25 +119,24 @@ distance.metrics <- list("NRED" = NRED,
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
-                                                            N       = 1500, 
-                                                            metrics = distance.metrics,
-                                                            threads = 2)
+
+                                                            N       = 1000, 
+                                                            metrics = distance.metrics)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
                                                    N = 10, 
-                                                   Z = 1:30, 
-                                                   metrics = distance.metrics,
-                                                   threads = 2)
 
-pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
-                                                             RNAseq.data$features$annotation.db,
-                                                             distance.metrics,
-                                                             bkgd.individual.Zscores,
-                                                             show.progress = T,
-                                                             threads = 2)
+                                                   Z = 1:13, 
+                                                   metrics = distance.metrics)
+
+  pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data = RNAseq.data,
+                                                             distance.metrics = distance.metrics,
+                                                             bkgd.individual.Zscores =
+                                                               bkgd.individual.Zscores)
+
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, 
                                                      pairwise.distances,
