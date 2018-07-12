@@ -567,13 +567,13 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
 }
 
 
-getMetricDist <- function(metric, cat.genes){
+getMetricDist <- function(metric, cat.genes, distance.metrics){
 
   mean.distances <- matrix(nrow=0,ncol=4)
 
   for(category in names(cat.genes)) {
     distances.list <- list()
-    print(category)
+    cat(paste(category, '\n'))
 
     for (KO in cat.genes[[category]] ) {
       data.rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO),]
@@ -618,10 +618,18 @@ getMetricDist <- function(metric, cat.genes){
 
 
     cex <- median(distances, na.rm = T)
+    if (is.null(cex)) {
+      cex <- NA
+    }
+
+
     #actual distances
     mean.dist <- mean(distances, na.rm = T)
     mean.dist.Z <- (mean.dist - bkgd.individual.Zscores$mu$`Random Annotated Genes`[[metric]]) /
       bkgd.individual.Zscores$sd$`Random Annotated Genes`[[metric]]
+
+
+
     mean.distances <- rbind(mean.distances,
                             c(mean.dist.Z, p.c,category, cex)
 
@@ -702,11 +710,12 @@ getMetricDistModule  <- function(metric, cat.modules){
   return(mean.distances)
 }
 
-Plot_Pathway_genes   <- function() {
+#' @export
+Plot_Pathway_genes   <- function(metric_name, distance.metrics) {
   # Catogerized Modules
   cat.modules <- read.csv('/home/joris/categorized_modules2.csv', sep=';',header=F)
 
-  # Hacking categories ----
+  # Hacking categories because the order is known ----
   categories <- c(rep('P_Energy metabolism',4),
                   rep('P_Carbohydrate and lipid metabolism', 10),
                   rep('P_Nucleotide and AA metabolism', 12),
@@ -721,6 +730,8 @@ Plot_Pathway_genes   <- function() {
   )
   #
   cat.genes <- list()
+
+  # Do this better in the future
   con = file('/home/joris/categorized_modules2.csv', "r")
   while ( TRUE ) {
     line = readLines(con, n = 1)
@@ -736,73 +747,45 @@ Plot_Pathway_genes   <- function() {
 
 
   # Get Zscores ----
-
-  pearson.Z <- getMetricDist('PC', cat.genes)
-  nred.Z    <- getMetricDist('NRED', cat.genes)
-
-  # Significant number ----
-  total <- nrow(pearson.Z)
-  pearson.sig <- pearson.Z[which(pearson.Z$sig == 'significant'),]
-  cat("Pearson ", nrow(pearson.sig), "out of", total)
-  total <- nrow(nred.Z)
-  nred.sig <- nred.Z[which(nred.Z$sig == 'significant'),]
-  cat("Pearson ", nrow(nred.sig), "out of", total)
+  metric.Z <- getMetricDist(metric, cat.genes, distance.metrics)
 
   library(ggplot2)
   # Pearson plot ----
-  ids       <- 1:nrow(pearson.Z)
-  pearson.Z <- cbind(pearson.Z, ids)
-  pearson.Z <- cbind(pearson.Z, categories)
+  ids       <- 1:nrow(metric.Z)
+  metric.Z <- cbind(metric.Z, ids)
+  metric.Z <- cbind(metric.Z, categories)
 
-  colnames(pearson.Z) <- c("value",'sig','collection','cex','ids','categories')
+  colnames(metric.Z) <- c("value",'sig','collection','cex','ids','categories')
 
 
-  pearson.Z       <- as.data.frame(pearson.Z, stringsAsFactors=F)
-  pearson.Z$value <- as.numeric(pearson.Z$value)
-  pearson.Z$ids   <- as.numeric(pearson.Z$ids)
-  pearson.Z$ids   <- factor(pearson.Z$ids, levels= pearson.Z$ids)
+  metric.Z       <- as.data.frame(metric.Z, stringsAsFactors=F)
+  metric.Z$value <- as.numeric(metric.Z$value)
+  metric.Z$ids   <- as.numeric(metric.Z$ids)
+  metric.Z$ids   <- factor(metric.Z$ids, levels= metric.Z$ids)
 
-  pearson.Z$cex   <- exp(as.numeric(pearson.Z$cex) / mean(as.numeric(pearson.Z$cex),
+  metric.Z$cex   <- exp(as.numeric(metric.Z$cex) / mean(as.numeric(metric.Z$cex),
                                                       na.rm = ))
 
-  pearson.plot <- ggplot(pearson.Z, aes(x = ids, y = value,
+  metric.plot <- ggplot(metric.Z, aes(x = ids, y = value,
                                         colour = categories,
-                                        shape  = factor(sig)),
-                        size = cex) +
-    geom_point() +
+                                        shape  = factor(sig))
+                        #,size = cex
+                        ) +
+    geom_point(size=3) +
     xlab("") +
-    ylab("Pearson Z score")+
+    ylab(paste(metric_name, "Z score", sep = ' '))+
     facet_grid(. ~ categories, scales = 'free_x', space='free_x')+
-    geom_hline(yintercept = 0)# +
-   # theme(axis.text.x=element_blank(),
-  #        axis.ticks.x=element_blank())
-
-  # NRED plot ----
-  ids    <- 1:nrow(nred.Z)
-  nred.Z <- cbind(nred.Z, ids)
-  nred.Z <- cbind(nred.Z, categories)
-
-  colnames(nred.Z) <- c("value",'sig','collection','ids','categories')
+    geom_hline(yintercept = 0) +
+    theme(axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          legend.position = 'none')
 
 
-  nred.Z       <- as.data.frame(nred.Z, stringsAsFactors=F)
-  nred.Z$value <- as.numeric(nred.Z$value)
-  nred.Z$ids   <- as.numeric(nred.Z$ids)
-  nred.Z$ids   <- factor(nred.Z$ids, levels= nred.Z$ids)
+  # Combine plot
+  # plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
 
-  nred.plot <- ggplot(nred.Z, aes(x= ids, y = value, colour=categories,shape = factor(sig),
-                                        size=1)) +
-    geom_point() +
-    xlab("") +
-    ylab("NRED Z score")+
-    facet_grid(. ~ categories, scales = 'free_x', space='free_x')+
-    geom_hline(yintercept = 0)
-    #theme(axis.text.x=element_blank(),
-       #   axis.ticks.x=element_blank())
-
-
-  # Combine plots ----
-  plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
+  return(list('data' = metric.Z,
+              'plot' = metric.plot))
 }
 
 Plot_Pathway_modules <- function() {
