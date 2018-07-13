@@ -373,7 +373,7 @@ Plot_Background_Modules          <- function(bkgd.traits){
        xlab     = "Composite Zscore",
        cex.main = 0.75,
        col      = colours[1],
-       main     = "Random background distributions of module sizes 2 - 20")
+       main     = "Random background distributions of modules")
 
   for(i in 2: length(bkgd.traits)){
     points(density(bkgd.traits[[i]],
