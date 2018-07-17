@@ -37,14 +37,22 @@ does not normalize the data. To indicate if normalization should be performed, t
 ```{r}
 file.path          <- "/home/joris/TcT/data/sample_data_newKO.csv"
 annotation.db.path <- "/home/joris/branch/TcT/data/updated_KO_modules.tsv"
-file.path          <- "/home/joris/Dropbox/MSc Internship/sample_data_newKO.csv"
-annotation.db.path <- "/home/joris/Dropbox/MSc Internship/updated_KO_modules.tsv"
+file.path          <- "D:\\Users\\JorisS\\Dropbox\\MSc Internship\\sample_data_newKO.csv"
+annotation.db.path <- "D:\\Users\\JorisS\\Dropbox\\MSc Internship\\updated_KO_modules.tsv"
+
+normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
+                  'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
+                  'library_size' = c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166),
+                  'not_aligned'  = c(0, 0, 0, 0, 0, 0)
+                  )
+
 
 RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
-                                 normalize.method    = FALSE,
+                                 normalize.method    = T,
                                  filter.method       = 'MAD',
-                                 filter.low.coverage = T)
+                                 filter.low.coverage = T,
+                                 normalization.features)
 # Family ----
 genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
                          '15' = 'f_Saprospiraceae',
