@@ -293,6 +293,7 @@ Normalize <- function(RNAseq.table, RNAseq.features, normalization.features){
   new_cols <- apply(RNAseq.table[, RNAseq.features$sample.columns], 2,
                         function(col) {
                           col[is.infinite(col)] <- 0
+                          return(col)
                         })
   RNAseq.table[, RNAseq.features$sample.columns] <- new_cols
 
