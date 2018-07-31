@@ -9,8 +9,8 @@ Association_Rules(sbs.trait.attributes, lhs, rhs, N)
 }
 \arguments{
 \item{sbs.trait.attributes}{Matrix where each collumn is a trait attribute
-and each row a genome. Presence or absence is indicated with either a zero
-(0) or one (1).}
+and each row a genome. Presence or absence is indicated with either a one
+(1) or zero (0).}
 
 \item{lhs}{A vector containing one or multiple terms for the left-hand-side
 (antecedent) of the association rules. For more information see

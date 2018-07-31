@@ -6,7 +6,7 @@
 \title{Prune Trait Attributes}
 \usage{
 Prune_Trait_Attributes(trait.attributes, bkgd.traits, features,
-  p.threshold = 0.05, completion.threshold = 0.75, threads = 4)
+  p.threshold = 0.05, completion.threshold = 0.75, pairwise.distances)
 }
 \arguments{
 \item{filepath}{RNAseq data file}

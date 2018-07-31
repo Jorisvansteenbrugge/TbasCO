@@ -5,7 +5,7 @@
 #' @param RNAseq.data Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
 #' @param annotation.db List containing a dictionary like structure with trait as names
 #' and annotation as values.
-#' @param distance.metrics Named list containing distance functions as values
+#' @param distance.metrics Named list containing distance functions as values.
 #' @param bkgd.individual.Zscores Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
 #' @param show.progress Boolean indicating werther or not to show progress.
 #' @param threads The number of cpu threads to run the function in parallel .
@@ -79,7 +79,7 @@ Calc_Pairwise_Annotation_Distance <- function(RNAseq.data, annotation.db,
                                                       'annotation.db',
                                                       '.Convert_zscores',
                                                       'bkgd.individual.Zscores'),
-                                          .verbose = T) %dopar%{
+                                          .verbose = show.progress) %dopar%{
 
       pairwise.matrix <- .Pairwise_Distance(annotation.db$`all annotations in a module`[i])
       colnames(pairwise.matrix) <- RNAseq.data$features$bins

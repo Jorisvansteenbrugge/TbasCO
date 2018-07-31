@@ -15,9 +15,10 @@
 #' together with some features (position of expression collumns, rank collumns, annotation database, a list of the genomes, and
 #' a presence absence table of all annotations)
 #' @author JJM van Steenbrugge
-Pre_process_input <- function(file.path, annotation.db.path, normalize.method = FALSE,
+Pre_process_input <- function(file.path, annotation.db.path, normalize.method = T,
                               filter.method = "stdev",
-                              filter.low.coverage = T){
+                              filter.low.coverage = T,
+                              normalization.features = NULL){
 
   RNAseq.table     <- read.csv2(file.path)
 
@@ -35,18 +36,17 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
   for(sample.col in RNAseq.features$sample.columns){
     RNAseq.table[, sample.col] <- as.numeric(RNAseq.table[, sample.col])
   }
-
   if (normalize.method != FALSE){
     RNAseq.table <- Normalization(RNAseq.table,
                                   RNAseq.features,
-                                  normalize.method)
+                                  normalize.method,
+                                  normalization.features)
   }
   if (filter.method    != FALSE){
     RNAseq.table <- Filter(RNAseq.table,
                            RNAseq.features$sample.columns,
                            filter.method)
   }
-
   RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
   if (filter.low.coverage) {
@@ -119,12 +119,15 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 
 #' Normalize RNAseq data
 #' @param RNAseq.table
-#' @param normalize.method variable that is either a string (default method) or a function to be applied
-#' for normalization of RNAseq data.
+#' @param normalize.method variable that is either a function to be applied or
+#' the default method for normalization of RNAseq data.
 #' @author JJM van Steenbrugge
-Normalization <- function(RNAseq.table, RNAseq.features, normalize.method){
+Normalization <- function(RNAseq.table, RNAseq.features,
+                          normalize.method, normalization.features){
   if(typeof(normalize.method) == "closure"){
     return(normalize.method(RNAseq.table))
+  } else {
+    return(Normalize(RNAseq.table, RNAseq.features, normalization.features))
   }
   return(RNAseq.table)
 }
@@ -234,3 +237,108 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
   return(RNAseq.data)
 
 }
+
+
+#' Normalized RNAseq raw read counts
+#'
+#'
+#' RNAseq raw read counts may by normalized based on various parameters including reads per sample,
+#' reads mapped per genome, gene length etc. Here we implement the normalization of edgeR (citation)
+#' which accounts for differences in both Sequencing Detph and RNA composition (see edgeR documentation
+#' page 2.7.2 & 2.7.3). However, in metatranscritpomic studies, it may also be beneficial to
+#' adjust for an additional source of compositional bias in which a single organisms may contribute
+#' a high relative abundance of transcrtipts, resulting in an undersampling of other organisms.
+#' Therefore, we provide an additional normalization step to normalize on a per genome/bin basis.
+#'
+#' @param RNAseq_Annotated_Matrix The original count matrix (See X for format details).
+#' @param no_feature,ambiguous,not_aligned  A set of vectors equal to the number of samples,
+#' containing the number of reads that had no feature,
+#' where ambiguously mapped, or not aligned in their  (obtained from the mapping output).
+#' @param gene_lengths A matrix with the length of each gene (genes must be in same order as input RNAseq_Annotated_Matrix)
+#' @param method A string containing the method to use, either one of: ["default", "TMM", "RLE"].  In addition to the described default method, TMM and RLE from bioconductors edgeR
+#' package are implemented as well
+#' @export
+#' @author BO Oyserman
+#' @return The normalized read counts  of \code{Sample 1} ... \code{Sample N}.
+#' @examples RNAseq_Normalize(RNAseq_Annotated_Matrix, no_feature,ambiguous, not_aligned)
+#' @note \preformatted{To remove rows that have a 0 for its read counts:}
+#' \code{RNAseq_Annotated_Matrix[apply(RNAseq_Annotated_Matrix[, SS:SE], 1, function(x) !any(x == 0)), ]}
+#' \preformatted{Where SS and SE are the start and end columns of the samples (raw counts).}
+
+Normalize <- function(RNAseq.table, RNAseq.features, normalization.features){
+
+  # normalized by total of non-rRNA reads per sample mapped
+  sum_aligned         <- apply(RNAseq.table[, RNAseq.features$sample.columns],
+                               2, sum)
+
+  total_nonRNA_reads  <- sum_aligned + normalization.features$no_feature
+  total_nonRNA_reads  <-  total_nonRNA_reads + normalization.features$ambiguous
+  total_nonRNA_reads  <-  total_nonRNA_reads  + normalization.features$not_aligned
+
+  normalized_by_total <- total_nonRNA_reads / max(total_nonRNA_reads)
+
+  # An alternative would be to use the library size.
+  # However, since the pool of rRNA is often both physically and bioinformatically removed,
+  # the count of mRNA reads per sample is more intuitively relevant.
+  # normalized_by_total <- library_size/max(library_size)
+
+
+  RNAseq.table[,RNAseq.features$sample.columns] <- t(t(RNAseq.table[,RNAseq.features$sample.columns])
+                                                     /normalized_by_total)
+
+  # convert to log base 2
+  # RNAseq_Annotated_Matrix[,SS:SE]<-log(RNAseq_Annotated_Matrix[,SS:SE],2)
+
+  # replace -Inf with 0
+  new_cols <- apply(RNAseq.table[, RNAseq.features$sample.columns], 2,
+                        function(col) {
+                          col[is.infinite(col)] <- 0
+                          return(col)
+                        })
+  RNAseq.table[, RNAseq.features$sample.columns] <- new_cols
+
+  return(Normalize_by_bin(RNAseq.table, RNAseq.features))
+
+
+
+}
+
+#' @author BO Oyserman
+Normalize_by_bin <- function(RNAseq.table, RNAseq.features){
+
+
+
+  # Step 1: Calculate the number of reads mapped to each bin in each sample (This may be a separate function)
+  sum_reads_per_genome_matrix<-matrix(NA,
+                                      nrow = length(RNAseq.features$bins),
+                                      ncol = length(RNAseq.features$sample.columns))
+
+  for (i in 1: length(RNAseq.features$bins) ){
+
+    for (j in 2: (length(RNAseq.features$sample.columns) + 1) ) {
+
+      bin_rows <- which(RNAseq.table[, "Bin"] == RNAseq.features$bins[i])
+      sum_reads_per_genome_matrix[i, j - 1] <- sum(RNAseq.table[bin_rows, j])
+    }
+  }
+
+  # Step 2: Calculate max per bin.
+  # Divide each column (sample) per row in normalized_sum_reads_per_genome_matrix (each bin) by
+  # the max count per bin
+
+  normalized_sum_reads_per_genome_matrix<-sum_reads_per_genome_matrix/
+    apply(sum_reads_per_genome_matrix,1,max)
+
+  # Step 3: normalize reads by max mapped to a genome
+  for (i in 1: length(RNAseq.features$bins)) {
+    bin_rows <- which(RNAseq.table[, 'Bin'] == RNAseq.features$bins[i])
+
+    RNAseq.table[bin_rows, RNAseq.features$sample.columns] <- t(t(RNAseq.table[bin_rows, RNAseq.features$sample.columns])/
+                                                    normalized_sum_reads_per_genome_matrix[i, ])
+
+  }
+
+  return(RNAseq.table)
+}
+
+

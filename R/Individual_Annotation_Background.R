@@ -30,14 +30,14 @@ Individual_Annotation_Background <- function(RNAseq.data,
                                                    # 'N',
                                                    # 'RNAseq.data',
                                                    # 'metrics'
-                                                   )) %do% {
+                                                   )) %dopar% {
     RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
     if (i == 1){
       Random.Genes.bkgd(RNAseq.data, metrics, N)
     }else if (i == 2){
       Random.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
     }else if (i == 3){
-       Random.Identical.Annotated.Genes.bkgd(RNAseq.data, distance.metrics, N)
+       Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
     }
   }
 
