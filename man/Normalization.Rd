@@ -4,11 +4,12 @@
 \alias{Normalization}
 \title{Normalize RNAseq data}
 \usage{
-Normalization(RNAseq.table, RNAseq.features, normalize.method)
+Normalization(RNAseq.table, RNAseq.features, normalize.method,
+  normalization.features)
 }
 \arguments{
-\item{normalize.method}{variable that is either a string (default method) or a function to be applied
-for normalization of RNAseq data.}
+\item{normalize.method}{variable that is either a function to be applied or
+the default method for normalization of RNAseq data.}
 }
 \description{
 Normalize RNAseq data

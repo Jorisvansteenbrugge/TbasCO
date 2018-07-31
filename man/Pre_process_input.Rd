@@ -4,8 +4,9 @@
 \alias{Pre_process_input}
 \title{Pre-processing of RNAseq data}
 \usage{
-Pre_process_input(file.path, annotation.db.path, normalize.method = FALSE,
-  filter.method = "stdev", filter.low.coverage = T)
+Pre_process_input(file.path, annotation.db.path, normalize.method = T,
+  filter.method = "stdev", filter.low.coverage = T,
+  normalization.features = NULL)
 }
 \arguments{
 \item{normalize.method}{User defined method to normalize data}
