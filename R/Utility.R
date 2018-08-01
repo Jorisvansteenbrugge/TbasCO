@@ -1013,4 +1013,42 @@ Plot_Venn             <- function(trait.attributes.pruned) {
                               collection="Network Traits and Genomes")
 }
 
+Plot_Shared_Attributes  <- function(trait.attributes.pruned, RNAseq.data){
+  library(magrittr)
+  trait.names <- list()
+
+  accum_bins <- c('16', '39')
+
+  for ( trait.name in names(trait.attributes.pruned) ) {
+    trait <- trait.attributes.pruned[[trait.name]]
+
+    for (attribute.name in names(trait)) {
+      attribute <- trait[[attribute.name]]
+      genomes <- attribute$genomes
+      if ( sum(accum_bins %in% genomes) == 2) {
+        trait.names[[trait.name]] <- attribute.name
+      }
+    }
+  }
+
+  other_bins <- RNAseq.data$features$bins[-which(RNAseq.data$features$bins %in% accum_bins)]
+
+  bin_occurences <- sapply(other_bins, function(bin) {
+
+    occurences <- sapply(1:length(trait.names), function(i) {
+
+
+      ta <- trait.attributes.pruned[[names(trait.names)[i]]][[trait.names[[i]]]]
+      if ( bin %in% ta$genomes ) {return(1)}
+      else {return(0)}
+    })
+
+    return(sum(occurences))
+  }) %>% sort(decreasing = T)
+
+  plot(bin_occurences, type = 'l', xaxt = 'n',
+       xlab = "Genomic bins",
+       ylab = "Number of attributes shared with CAA")
+  axis(1, at=1:length(bin_occurences), labels=names(bin_occurences))
+}
 
