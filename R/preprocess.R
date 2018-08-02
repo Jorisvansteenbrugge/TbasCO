@@ -245,7 +245,7 @@ Create.Module.groups <- function (annotation.db) {
 
 }
 
-Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
+Filter.Low.Coverage <-  function (RNAseq.data, threshold = 8) {
 
 
   mat <- matrix(ncol = 2, nrow = 0)
