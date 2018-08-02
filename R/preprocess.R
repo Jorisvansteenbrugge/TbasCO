@@ -81,11 +81,14 @@ Get_matrix_features <- function(RNAseq.table,annotation.db){
 
   sample.columns <- .Get_sample_columns(colnames(RNAseq.table))
   bins <- sort(unique(RNAseq.table$Bin))
+
+  annotation_presence_absence <- Get_annotation_presence_absence(RNAseq.table, bins,annotation.db)
   return(list(
     "bins"                        = bins,
     "sample.columns"              = sample.columns,
     "rank.columns"                = ncol(RNAseq.table)+1:length(sample.columns),
-    "annotation_presence_absence" = Get_annotation_presence_absence(RNAseq.table, bins,annotation.db)
+    "annotation_presence_absence" = annotation_presence_absence,
+    "trait_presence_absence"      = Get_trait_presence_absence(annotation_presence_absence, bins, annotation.db)
   ))
 }
 
@@ -115,6 +118,34 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
   rownames(annotation_presence_absence) <- annotation_terms
 
   return( annotation_presence_absence )
+}
+
+
+Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db, cutoff = 0.75) {
+  output <- matrix(nrow = length(annotation.db$module.dict), ncol=0)
+
+  .get_genome_trait_pa <- function(bin, cutoff = 0.75) {
+    verdicts <- c()
+    for (module in names(annotation.db$module.dict)) {
+      annotations <- annotation.db$module.dict[[module]]
+
+      presence <- annotation_presence_absence[annotations, as.character(bin)]
+      presence.frac <- sum(presence) / length(presence)
+      if (presence.frac >= cutoff) {
+        verdicts <- c(verdicts, T)
+      } else {
+        verdicts <- c(verdicts, F)
+        }
+    }
+    return(verdicts)
+  }
+
+  for(bin in bins){
+    output <- cbind(output, .get_genome_trait_pa(bin))
+  }
+  rownames(output) <- names(annotation.db$module.dict)
+  colnames(output) <- bins
+  return(output)
 }
 
 #' Normalize RNAseq data
