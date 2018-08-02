@@ -1108,7 +1108,7 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
   library(magrittr)
   trait.names <- list()
 
-  accum_bins <- c("16", "39")
+  accum_bins <- c("39")
 
   for (trait.name in names(trait.attributes.pruned)) {
     trait <- trait.attributes.pruned[[trait.name]]
@@ -1116,7 +1116,7 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
     for (attribute.name in names(trait)) {
       attribute <- trait[[attribute.name]]
       genomes <- attribute$genomes
-      if (sum(accum_bins %in% genomes) == 2) {
+      if (sum(accum_bins %in% genomes) == 1) {
         trait.names[[trait.name]] <- attribute.name
       }
     }
@@ -1136,12 +1136,12 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
     })
 
     return(sum(occurences))
-  }) %>% sort(decreasing = T)
-
-  plot(bin_occurences,
-    type = "l", xaxt = "n",
-    xlab = "Genomic bins",
-    ylab = "Number of attributes shared with CAA"
-  )
+  }) %>%
+    sort(decreasing = T) %T>%
+    plot(
+      type = "l", xaxt = "n",
+      xlab = "Genomic bins",
+      ylab = "Number of attributes shared with CAA"
+    )
   axis(1, at = 1:length(bin_occurences), labels = names(bin_occurences))
 }
