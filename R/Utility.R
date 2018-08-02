@@ -1148,6 +1148,7 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
 
 Plot_Redundancy_Traits <- function(RNAseq.data) {
   library(ggplot2)
+  library(magrittr)
 
   ta.pa <- apply(RNAseq.data$features$trait_presence_absence, 1, function(row) {
     return(sum(row))
@@ -1155,10 +1156,89 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
 
   ta.matrix <- data.frame(cbind(as.numeric(ta.pa), names(ta.pa)))
   colnames(ta.matrix) <- c("count", "trait")
-  ta.matrix$count <- as.numeric(ta.matrix$count)
 
   ta.matrix$trait <- factor(ta.matrix$trait, levels = ta.matrix$trait[order(-ta.matrix$count)])
 
-  ggplot(data = ta.matrix, aes(x = trait, y = count)) +
-    geom_bar(stat = "identity")
+
+
+  barplot.matrix <- matrix(ncol = 3, nrow = 0)
+  colnames(barplot.matrix) <- c("Trait", "Attribute", "Count")
+
+  # Highest number of attributes in 1 trait
+  max.ta <- sapply(trait.attributes.pruned, length) %>% max
+  colour.scheme <- grey.colors( n = ( max.ta) )
+
+  for(trait.name in names(trait.attributes.pruned)) {
+
+    trait <- trait.attributes.pruned[[trait.name]]
+    attribute.n <- trait %>% length
+
+
+    if (attribute.n >= 1 ) {
+
+      for(ta.idx in 1:attribute.n){
+        ta <- trait[[ta.idx]]
+
+        count <- length(ta$genomes) %>% as.numeric
+        ta.name <- sprintf("Attribute%s", as.character(ta.idx))
+        barplot.matrix <- rbind(barplot.matrix,
+                                c(trait.name, ta.name, count))
+      }
+
+      max.genomes     <- ta.pa[trait.name]
+      current.genomes <- barplot.matrix[which(barplot.matrix[,"Trait"] == trait.name), 'Count'] %>% as.numeric %>% sum
+
+    }
+  }
+
+  barplot.df <- as.data.frame(barplot.matrix)
+
+  barplot.df$Count <- as.numeric(barplot.df$Count)
+
+
+  barplot.df$Trait <- factor(barplot.df$Trait, levels = levels(ta.matrix$trait) )
+
+  ggplot(data = barplot.df, aes(x = Trait, y = Count, fill = Attribute, colour = 'black')) +
+    geom_bar(stat = 'identity') +
+    scale_fill_manual(values = colour.scheme)
+
+
+  #
+  # ggplot(data = ta.matrix, aes(x = trait, y = count)) +
+  #   geom_bar(stat = "identity")
 }
+
+Plot_traits_vs_attributes <- function() {
+  point.matrix <- matrix(ncol=3, nrow=0)
+  t.pa <- RNAseq.data$features$trait_presence_absence
+
+  for (pair in combn(RNAseq.data$features$bins, 2, simplify = F)){
+    try({
+      A <- pair[1] %>% as.character
+      B <- pair[2] %>% as.character
+
+      traits.A <- t.pa[, A] %>% which(. == T) %>% names
+      traits.B <- t.pa[, B] %>% which(. == T) %>% names
+      overlap.traits <- intersect(traits.A, traits.B) %>% length
+
+      attributes.A <- which(sbs.trait.attributes[A,]  == 1) %>% names
+      print(B)
+      attributes.B <- which(sbs.trait.attributes[B,]  == 1) %>% names
+      overlap.attributes <- intersect(attributes.A, attributes.B) %>% length
+
+      vs <- paste(pair, collapse = 'vs')
+
+      point.matrix <- rbind(point.matrix,
+                            c(vs,
+                              overlap.traits,
+                              overlap.attributes))
+    })
+
+  }
+
+
+  plot(x = as.numeric(point.matrix[,2]),
+       y = as.numeric(point.matrix[,3]))
+
+}
+
