@@ -248,14 +248,16 @@ Create.Module.groups <- function (annotation.db) {
 Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
 
 
-  mat <- matrix(ncol=2,nrow=0)
-  for(bin in RNAseq.data$features$bins) {
-    data        <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin),
-                                     RNAseq.data$features$sample.columns]
-    total       <- sum(data)
-    LCG         <- length(which(data > threshold))
-    n.samples   <- length(RNAseq.data$features$sample.columns)
-    mat         <- rbind(mat, c((LCG/(nrow(data)* n.samples)), log2(total)))
+  mat <- matrix(ncol = 2, nrow = 0)
+  for (bin in RNAseq.data$features$bins) {
+    data <- RNAseq.data$table[
+      which(RNAseq.data$table$Bin == bin),
+      RNAseq.data$features$sample.columns
+    ]
+    total <- sum(data)
+    LCG <- length(which(data > threshold))
+    n.samples <- length(RNAseq.data$features$sample.columns)
+    mat <- rbind(mat, c((LCG / (nrow(data) * n.samples)), log2(total)))
   }
 
 
@@ -265,6 +267,7 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
   RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]
   RNAseq.data$features$bins <- bins.keep
   RNAseq.data$features$annotation_presence_absence <- RNAseq.data$features$annotation_presence_absence[, bins.keep]
+  RNAseq.data$features$trait_presence_absence      <- RNAseq.data$features$trait_presence_absence[, bins.keep]
   return(RNAseq.data)
 
 }

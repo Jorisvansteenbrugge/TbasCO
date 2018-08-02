@@ -1145,3 +1145,17 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
     )
   axis(1, at = 1:length(bin_occurences), labels = names(bin_occurences))
 }
+
+Plot_Redundancy_Traits <- function(RNAseq.data) {
+  library(ggplot2)
+  ta.pa <- apply(RNAseq.data$features$trait_presence_absence, 1, function(row) {
+    return(sum(row))
+  })
+  ta.matrix <- as.data.frame(cbind(as.numeric(ta.pa), names(ta.pa)))
+  colnames(ta.matrix) <- c('count', 'trait')
+
+  ta.matrix$trait <- factor(ta.matrix$trait, levels = ta.matrix$trait[order(ta.matrix$count)])
+
+    ggplot(data = ta.matrix, aes( x = trait, y = count)) +
+    geom_bar(stat = 'identity')
+}
