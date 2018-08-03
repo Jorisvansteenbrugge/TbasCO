@@ -9,14 +9,13 @@
 #' @author JJM van Steenbrugge
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
                                    p.threshold = 0.05, pairwise.distances){
-  library(magrittr)
 
   features <- RNAseq.data$features
   annotation.db <- features$annotation.db
 
   .Filter_Completion <- function(features, trait.name){
 
-    bin.completions <- features$trait_presence_absence[trait.name, ] %>% as.logical
+    bin.completions <- as.logical(features$trait_presence_absence[trait.name, ])
     return(features$bins[!bin.completions])
 
   }
