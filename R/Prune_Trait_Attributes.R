@@ -26,7 +26,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
     cluster.attributes <- list()
 
-    clusters <- trait.attributes.current$clusters$membership %>% as.factor %>% levels
+    clusters <- levels(as.factor(trait.attributes.current$clusters$membership))
 
     bins <- trait.attributes.current$cluster$names
 
