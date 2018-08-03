@@ -13,9 +13,9 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
   features <- RNAseq.data$features
   annotation.db <- features$annotation.db
 
-  .Filter_Completion <- function(features, trait.name){
+  .Filter_Completion <- function(features, trait, bins){
 
-    bin.completions <- as.logical(features$trait_presence_absence[trait.name, ])
+    bin.completions <- as.logical(features$trait_presence_absence[trait, bins])
     return(features$bins[!bin.completions])
 
   }
@@ -39,14 +39,12 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
       }
 
      # Filter for completion
-      bins_remove <- .Filter_Completion(features, trait)
+      bins_remove <- .Filter_Completion(features, trait, bins.cluster)
 
       if ( length(bins_remove) == length(bins.cluster) ) {
         next()
-      }else if (length(bins_remove) == 0) {
-        next()
-      } else {
-        bins.cluster <- bins.cluster[-which(bins.cluster %in% bins_remove)]
+      } else if( length(bins_remove) > 0 ) {
+        bins.cluster <- bins.cluster[!bins.cluster %in% bins_remove]
       }
 
       bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
@@ -75,15 +73,15 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
   for(i in 1: length(trait.names)) {
     trait.attribute <- .Calc_P(trait.names[i], p.threshold, annotation.db)
    # Backup check if there are not sig attributes
-    # if (length(trait.attribute) == 0){
-    #   pos.sig <- Identify_Significance_Trait(trait.names[i],
-    #                                          RNAseq.data,
-    #                                          pairwise.distances,
-    #                                          bkgd.traits)
-    #   if (length(pos.sig) > 0) {
-    #     trait.attribute <- list('1' = pos.sig)
-    #   }
-    # }
+   # if (length(trait.attribute) == 0){
+   #   pos.sig <- Identify_Significance_Trait(trait.names[i],
+   #                                          RNAseq.data,
+   #                                          pairwise.distances,
+   #                                          bkgd.traits)
+   #   if (length(pos.sig) > 0) {
+   #     trait.attribute <- list('1' = pos.sig)
+   #   }
+   # }
     trait.attributes.pruned[[i]] <-  trait.attribute
   }
 
