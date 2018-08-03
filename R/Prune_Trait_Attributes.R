@@ -8,28 +8,16 @@
 #' @export
 #' @author JJM van Steenbrugge
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
-                                   p.threshold = 0.05, completion.threshold = 0.75,
-                                   pairwise.distances){
+                                   p.threshold = 0.05, pairwise.distances){
+  library(magrittr)
 
   features <- RNAseq.data$features
   annotation.db <- features$annotation.db
 
-  .Filter_Completion <- function(trait.terms, bins, features, completion.threshold){
-    n <- length(trait.terms)
-    bins_remove <- c()
+  .Filter_Completion <- function(features, trait.name){
 
-    for (bin in bins) {
-      pa.current <- features$annotation_presence_absence[trait.terms,bin]
-
-
-      completion <- sum(pa.current) / n
-
-      if (! completion >= completion.threshold) {
-        bins_remove <- c(bins_remove, bin)
-      }
-
-    }
-    return(bins_remove)
+    bin.completions <- features$trait_presence_absence[trait.name, ] %>% as.logical
+    return(features$bins[!bin.completions])
 
   }
 
@@ -39,7 +27,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
     cluster.attributes <- list()
 
-    clusters <- levels(as.factor(trait.attributes.current$clusters$membership))
+    clusters <- trait.attributes.current$clusters$membership %>% as.factor %>% levels
 
     bins <- trait.attributes.current$cluster$names
 
@@ -52,9 +40,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
       }
 
      # Filter for completion
-      bins_remove <- .Filter_Completion(annotation.db$module.dict[[trait]],
-                                        bins.cluster, features,
-                                        completion.threshold )
+      bins_remove <- .Filter_Completion(features, trait)
 
       if ( length(bins_remove) == length(bins.cluster) ) {
         next()
@@ -63,8 +49,6 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
       } else {
         bins.cluster <- bins.cluster[-which(bins.cluster %in% bins_remove)]
       }
-
-
 
       bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
@@ -83,8 +67,6 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
       })
     }
 
-
-
     return(cluster.attributes)
   }
 
@@ -93,20 +75,19 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
   trait.attributes.pruned <- list()
   for(i in 1: length(trait.names)) {
     trait.attribute <- .Calc_P(trait.names[i], p.threshold, annotation.db)
-    # Backup check if there are not sig attributes
-    if (length(trait.attribute) == 0){
-      pos.sig <- Identify_Significance_Trait(trait.names[i],
-                                             RNAseq.data,
-                                             pairwise.distances,
-                                             bkgd.traits)
-      if (length(pos.sig) > 0) {
-        trait.attribute <- list('1' = pos.sig)
-      }
-    }
+   # Backup check if there are not sig attributes
+    # if (length(trait.attribute) == 0){
+    #   pos.sig <- Identify_Significance_Trait(trait.names[i],
+    #                                          RNAseq.data,
+    #                                          pairwise.distances,
+    #                                          bkgd.traits)
+    #   if (length(pos.sig) > 0) {
+    #     trait.attribute <- list('1' = pos.sig)
+    #   }
+    # }
     trait.attributes.pruned[[i]] <-  trait.attribute
   }
 
   names(trait.attributes.pruned) <- trait.names
   return(trait.attributes.pruned)
 }
-
