@@ -121,10 +121,10 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 }
 
 
-Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db, cutoff = 0.5) {
+Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db, cutoff = 0.75) {
   output <- matrix(nrow = length(annotation.db$module.dict), ncol=0)
 
-  .get_genome_trait_pa <- function(bin, cutoff = 0.5) {
+  .get_genome_trait_pa <- function(bin, cutoff = 0.75) {
     verdicts <- c()
     for (module in names(annotation.db$module.dict)) {
       annotations <- annotation.db$module.dict[[module]]

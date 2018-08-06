@@ -37,8 +37,9 @@ does not normalize the data. To indicate if normalization should be performed, t
 ```{r}
 file.path          <- "/home/joris/TcT/data/sample_data_newKO.csv"
 annotation.db.path <- "/home/joris/branch/TcT/data/updated_KO_modules.tsv"
-file.path          <- "D:\\Users\\JorisS\\Dropbox\\MSc Internship\\sample_data_newKO.csv"
-annotation.db.path <- "D:\\Users\\JorisS\\Dropbox\\MSc Internship\\updated_KO_modules.tsv"
+file.path          <- "/home/joris/Dropbox/MSc Internship/sample_data_newKO.csv"
+annotation.db.path <- "/home/joris/Dropbox/MSc Internship/all_KO_modules.tsv"
+
 
 normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
                   'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
@@ -153,9 +154,8 @@ trait.attributes        <- Identify_Trait_Attributes(RNAseq.data,
                                                      threads = 2)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
-                                                  RNAseq.data$features,
-                                                  p.threshold = 0.05, 
-                                                  completion.threshold = 0.9,
+                                                  RNAseq.data,
+                                                  p.threshold = 0.05,
                                                   pairwise.distances = pairwise.distances)
 
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, 
@@ -186,7 +186,8 @@ Draw_Expression(trait = 'PHA', RNAseq.data, trait.attributes.pruned)
 ## Apriori
 ```{r}
 
-rules <- Association_Rules(sbs.trait.attributes, N = 30)
+rules <- Association_Rules(sbs.trait.attributes, N = 30,
+                           rhs= c('PHA.1', 'PHA.2'))
 
 Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$features$annotation.db,
              N = 30)
@@ -195,8 +196,7 @@ Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$fe
 
 ## Experimental
 ```{r}
-Go_Fish('K00927', RNAseq.data,
-        pattern = 'peak')
+Go_Fish(RNAseq.data)
 ```
 
 ## Publication figure creating
