@@ -6,6 +6,7 @@ output: html_document
 ---
 ```{r,results='hide'}
 library(TcT)
+library(magrittr)
 ```
 #Loading and Preprocessing Data
 
@@ -53,10 +54,11 @@ RNAseq.data <- Pre_process_input(file.path,
                                  normalize.method    = T,
                                  filter.method       = 'MAD',
                                  filter.low.coverage = T,
-                                 normalization.features)
+                                 normalization.features,
+                                 presence.cutoff = 0.75)
 # Family ----
 genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
-                         '15' = 'f_Saprospiraceae',
+                         '11' = 'f__Rubrivivax',
                          '16' = 'f_Rhodocyclaceae',
                          '17' = '.',
                          '19' = 'f_Cytophagaceae',
@@ -77,7 +79,7 @@ genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
                          )
 # Phylum ----
 genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
-                         '15' = 'p__Bacteroidetes',
+                         '11' = 'p__Proteobacteria',
                          '16' = 'p__Proteobacteria',
                          '17' = '.',
                          '19' = 'p__Bacteroidetes',
@@ -129,7 +131,7 @@ distance.metrics <- list("NRED" = NRED,
 ### Actual Analysis
 ```{r}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
-                                                            N       = 1500, 
+                                                            N       = 10000, 
                                                             metrics = distance.metrics,
                                                             threads = 2)
 
@@ -151,7 +153,7 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, 
                                                      pairwise.distances,
-                                                     threads = 2)
+                                                     threads = 4)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data,

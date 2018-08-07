@@ -48,9 +48,9 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
       module.distances.table.reduced        <- module.distances.table[which(
                                                 module.distances.table[, 3] < 0), ]
       module.distances.table.reduced[, 3]   <- (-module.distances.table.reduced[, 3])
-#
-#       graph                    <- igraph::graph_from_data_frame(module.distances.table.reduced,
-                                                                # directed = FALSE)
+
+      graph                    <- igraph::graph_from_data_frame(module.distances.table.reduced,
+                                                                 directed = FALSE)
       clusters                 <- igraph::cluster_louvain(graph,
                                                           weights = igraph::E(graph)$Distance)
 

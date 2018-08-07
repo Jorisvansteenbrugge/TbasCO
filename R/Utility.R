@@ -1186,10 +1186,11 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
       }
 
       max.genomes     <- ta.pa[trait.name]
-      current.genomes <- barplot.matrix[which(barplot.matrix[,"Trait"] == trait.name), 'Count'] %>% as.numeric %>% sum
+      current.genomes <- barplot.matrix[which(barplot.matrix[,"Trait"] == trait.name), 'Count'] %>%
+        as.numeric %>% sum
 
     }
-  }
+ }
 
   barplot.df <- as.data.frame(barplot.matrix)
 
@@ -1235,10 +1236,24 @@ Plot_traits_vs_attributes <- function() {
     })
 
   }
+  colnames(point.matrix) <- c("pairs", 'traits', 'attributes')
 
+  point.df <- data.frame(point.matrix, stringsAsFactors = F)
+  point.df$traits %<>% as.numeric
+  point.df$attributes %<>% as.numeric
 
   plot(x = as.numeric(point.matrix[,2]),
-       y = as.numeric(point.matrix[,3]))
+       y = as.numeric(point.matrix[,3]),
+       xlab = '# Overlap Traits',
+       ylab = '# Overlap Attributes',
+       main = "Pairwise Genome Comparisons")
 
+
+  model <- lm(attributes~traits, data = point.df)
+  abline(model$coefficients)
+
+  cinterval <- confint(model, level=.99)
+  abline(cinterval[,1])
+  abline(cinterval[,2])
 }
 

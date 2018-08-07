@@ -1,3 +1,4 @@
+context("Test Normalized Rank Creation")
 test_that("Test Create.Rank.Columns()", {
 
             x <- "Sample1;Bin\n10;5\n30;5\n5;5\n19;5\n90;4\n100;4"

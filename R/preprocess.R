@@ -18,7 +18,8 @@
 Pre_process_input <- function(file.path, annotation.db.path, normalize.method = T,
                               filter.method = "stdev",
                               filter.low.coverage = T,
-                              normalization.features = NULL){
+                              normalization.features = NULL,
+                              presence.cutoff = 0.75){
 
   RNAseq.table     <- read.csv2(file.path)
 
@@ -27,7 +28,7 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
                                  quote = "", stringsAsFactors = F,
                                  header = T)
   annotation.db    <- Create.Module.groups(annotation.db)
-  RNAseq.features  <- Get_matrix_features(RNAseq.table,annotation.db)
+  RNAseq.features  <- Get_matrix_features(RNAseq.table,annotation.db,presence.cutoff = presence.cutoff)
   RNAseq.features$annotation.db <- annotation.db
 
   # To be sure the corresponding collumns are converted to their correct type
@@ -69,7 +70,7 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
 #' @return A list containing a vector of unique bins, a vector with the sample column
 #' numbers, a vector containing the rank column numbers and a annotation_presence_absence matrix
 #' @author JJM van Steenbrugge
-Get_matrix_features <- function(RNAseq.table,annotation.db){
+Get_matrix_features <- function(RNAseq.table,annotation.db, presence.cutoff = 0.75){
 
   .Get_sample_columns <- function(column.names){
 
@@ -88,7 +89,7 @@ Get_matrix_features <- function(RNAseq.table,annotation.db){
     "sample.columns"              = sample.columns,
     "rank.columns"                = ncol(RNAseq.table)+1:length(sample.columns),
     "annotation_presence_absence" = annotation_presence_absence,
-    "trait_presence_absence"      = Get_trait_presence_absence(annotation_presence_absence, bins, annotation.db)
+    "trait_presence_absence"      = Get_trait_presence_absence(annotation_presence_absence, bins, annotation.db, presence.cutoff)
   ))
 }
 
@@ -122,9 +123,11 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 
 
 Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db, cutoff = 0.75) {
-  output <- matrix(nrow = length(annotation.db$module.dict), ncol=0)
+  # nrow = number of traits
+  # ncol = 0 because columns will be added at runtime
+  output <- matrix(nrow = length(annotation.db$module.dict), ncol=0 )
 
-  .get_genome_trait_pa <- function(bin, cutoff = 0.75) {
+  .get_genome_trait_pa <- function(bin, cutoff) {
     verdicts <- c()
     for (module in names(annotation.db$module.dict)) {
       annotations <- annotation.db$module.dict[[module]]
@@ -141,7 +144,7 @@ Get_trait_presence_absence <- function(annotation_presence_absence, bins, annota
   }
 
   for(bin in bins){
-    output <- cbind(output, .get_genome_trait_pa(bin))
+    output <- cbind(output, .get_genome_trait_pa(bin, cutoff))
   }
   rownames(output) <- names(annotation.db$module.dict)
   colnames(output) <- bins
