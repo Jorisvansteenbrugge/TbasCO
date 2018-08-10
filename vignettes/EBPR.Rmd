@@ -48,14 +48,14 @@ normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 817
                   'not_aligned'  = c(0, 0, 0, 0, 0, 0)
                   )
 
-
+start <- Sys.time()
 RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
                                  normalize.method    = T,
                                  filter.method       = 'MAD',
                                  filter.low.coverage = T,
-                                 normalization.features,
-                                 presence.cutoff = 0.1)
+                                 normalization.features)
+end <- Sys.time()
 # Family ----
 genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
                          '11' = 'f__Rubrivivax',

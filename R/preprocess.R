@@ -131,7 +131,7 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db) {
   library(reticulate)
   library(magrittr)
-  source_python('python/parse_module_definition.py')
+  source_python('parse_module_definition.py')
 
   # nrow = number of traits
   # ncol = 0 because columns will be added at runtime
