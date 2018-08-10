@@ -18,8 +18,7 @@
 Pre_process_input <- function(file.path, annotation.db.path, normalize.method = T,
                               filter.method = "stdev",
                               filter.low.coverage = T,
-                              normalization.features = NULL,
-                              presence.cutoff = 0.75){
+                              normalization.features = NULL){
 
   RNAseq.table     <- read.csv2(file.path)
 
@@ -28,7 +27,7 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
                                  quote = "", stringsAsFactors = F,
                                  header = T)
   annotation.db    <- Create.Module.groups(annotation.db)
-  RNAseq.features  <- Get_matrix_features(RNAseq.table,annotation.db,presence.cutoff = presence.cutoff)
+  RNAseq.features  <- Get_matrix_features(RNAseq.table,annotation.db)
   RNAseq.features$annotation.db <- annotation.db
 
   # To be sure the corresponding collumns are converted to their correct type
@@ -70,7 +69,7 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
 #' @return A list containing a vector of unique bins, a vector with the sample column
 #' numbers, a vector containing the rank column numbers and a annotation_presence_absence matrix
 #' @author JJM van Steenbrugge
-Get_matrix_features <- function(RNAseq.table,annotation.db, presence.cutoff = 0.75){
+Get_matrix_features <- function(RNAseq.table,annotation.db){
 
   .Get_sample_columns <- function(column.names){
 
@@ -89,7 +88,7 @@ Get_matrix_features <- function(RNAseq.table,annotation.db, presence.cutoff = 0.
     "sample.columns"              = sample.columns,
     "rank.columns"                = ncol(RNAseq.table)+1:length(sample.columns),
     "annotation_presence_absence" = annotation_presence_absence,
-    "trait_presence_absence"      = Get_trait_presence_absence(annotation_presence_absence, bins, annotation.db, presence.cutoff)
+    "trait_presence_absence"      = Get_trait_presence_absence(annotation_presence_absence, bins, annotation.db)
   ))
 }
 
@@ -122,33 +121,51 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 }
 
 
-Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db, cutoff = 0.75) {
+#' Determine for each genome whether a trait is present or absent
+#' @name Get_trait_presence_absence
+#' @description
+#' @param annotation_presence_absence
+#' @param bins
+#' @param annotation.db
+#' @author JJM van Steenbrugge
+Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db) {
+  library(reticulate)
+  library(magrittr)
+  source_python('python/parse_module_definition.py')
+
   # nrow = number of traits
   # ncol = 0 because columns will be added at runtime
-  output <- matrix(nrow = length(annotation.db$module.dict), ncol=0 )
+  output <- matrix(nrow = 0, ncol=length(bins) )
 
-  .get_genome_trait_pa <- function(bin, cutoff) {
-    verdicts <- c()
-    for (module in names(annotation.db$module.dict)) {
-      annotations <- annotation.db$module.dict[[module]]
+  .get_trait_pa <- function(module) {
+    sub_modules <- parse_module(module)
 
-      presence <- annotation_presence_absence[annotations, as.character(bin)]
-      presence.frac <- sum(presence) / length(presence)
-      if (presence.frac >= cutoff) {
-        verdicts <- c(verdicts, T)
-      } else {
-        verdicts <- c(verdicts, F)
+    pa <- sapply(bins,function(bin) {
+      kos <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin), "Annotation"] %>% unique
+
+      tfs <- c()
+
+      for (sub_mod in sub_modules) {
+        true_sum <- sub_mod %in% kos %>% sum
+        if (true_sum == length(sub_mod)) {
+          return(T)
         }
-    }
-    return(verdicts)
+      }
+
+      return(F)
+
+
+    })
+
+  return(pa)
   }
 
-  for(bin in bins){
-    output <- cbind(output, .get_genome_trait_pa(bin, cutoff))
+  for(module in names(annotation.db$module.dict)){
+    output <- rbind(output, .get_trait_pa(module))
   }
-  rownames(output) <- names(annotation.db$module.dict)
-  colnames(output) <- bins
+
   return(output)
+
 }
 
 #' Normalize RNAseq data
