@@ -1108,7 +1108,7 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
   library(magrittr)
   trait.names <- list()
 
-  accum_bins <- c("39")
+  accum_bins <- c('16',"39")
 
   for (trait.name in names(trait.attributes.pruned)) {
     trait <- trait.attributes.pruned[[trait.name]]
@@ -1116,7 +1116,7 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
     for (attribute.name in names(trait)) {
       attribute <- trait[[attribute.name]]
       genomes <- attribute$genomes
-      if (sum(accum_bins %in% genomes) == 1) {
+      if (sum(accum_bins %in% genomes) == 2) {
         trait.names[[trait.name]] <- attribute.name
       }
     }
@@ -1257,3 +1257,4 @@ Plot_traits_vs_attributes <- function() {
   abline(cinterval[,2])
 }
 
+View(RNAseq.data$features$trait_presence_absence)

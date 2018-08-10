@@ -55,7 +55,7 @@ RNAseq.data <- Pre_process_input(file.path,
                                  filter.method       = 'MAD',
                                  filter.low.coverage = T,
                                  normalization.features,
-                                 presence.cutoff = 0.75)
+                                 presence.cutoff = 0.1)
 # Family ----
 genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
                          '11' = 'f__Rubrivivax',
@@ -154,6 +154,7 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, 
                                                      pairwise.distances,
                                                      threads = 4)
+
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data,

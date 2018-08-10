@@ -33,6 +33,16 @@ annotation.db <- Create.Module.groups(modules)
 
 expect_identical(as.character(annotation.db$module.dict$M1), c('K1', 'K2', 'K3', 'K4') )
 
+# Test annotation presence absence
+anno_pa <- Get_annotation_presence_absence(data, c('Bin1','Bin2' ,'Bin3','Bin4' ),
+                                           annotation.db )
+res <- matrix(nrow=5, ncol = 4, c(T,T,F,F,T,T,T,T,T,T,T,T,T,F,F,T,F,F,F,F), byrow = T)
+colnames(res) <- data$Bin %>% unique %>% sort
+rownames(res) <- annotation.db$`all annotations in a module`
+
+expect(identical(res,anno_pa))
+
+
 features <- Get_matrix_features(data,annotation.db)
 
 res <- matrix(nrow = 2, ncol = 4, c(T,T,F,T,T,F,F,T), byrow = T)
