@@ -1257,4 +1257,14 @@ Plot_traits_vs_attributes <- function() {
   abline(cinterval[,2])
 }
 
-View(RNAseq.data$features$trait_presence_absence)
+Get_KEGG_Sub_Modules <- function(){
+  library(reticulate)
+  source_python('/home/joris/TcT/python/parse_module_definition.py')
+
+  module_names <- RNAseq.data$features$annotation.db$module.dict %>% names
+
+  sub_modules <- lapply(module_names, function(module) {
+
+    parse_module(module)
+  })
+}

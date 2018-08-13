@@ -129,9 +129,7 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 #' @param annotation.db
 #' @author JJM van Steenbrugge
 Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db) {
-  library(reticulate)
-  library(magrittr)
-  source_python('parse_module_definition.py')
+
 
   # nrow = number of traits
   # ncol = 0 because columns will be added at runtime
@@ -141,12 +139,14 @@ Get_trait_presence_absence <- function(annotation_presence_absence, bins, annota
     sub_modules <- parse_module(module)
 
     pa <- sapply(bins,function(bin) {
-      kos <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin), "Annotation"] %>% unique
+
 
       tfs <- c()
 
       for (sub_mod in sub_modules) {
-        true_sum <- sub_mod %in% kos %>% sum
+        kos <- annotation_presence_absence[sub_mod, bin]
+
+        true_sum <- kos %>% sum
         if (true_sum == length(sub_mod)) {
           return(T)
         }
@@ -160,7 +160,8 @@ Get_trait_presence_absence <- function(annotation_presence_absence, bins, annota
   return(pa)
   }
 
-  for(module in names(annotation.db$module.dict)){
+  for(module in names(annotation.db$module.dict[1:3])){
+    print(module)
     output <- rbind(output, .get_trait_pa(module))
   }
 
@@ -395,34 +396,3 @@ Normalize_by_bin <- function(RNAseq.table, RNAseq.features){
   return(RNAseq.table)
 }
 
-unnamed_function <- function(){
-  library(reticulate)
-  library(magrittr)
-  source_python('python/parse_module_definition.py')
-
-  module <- "M00007"
-  sub_modules <- parse_module(module) # This is a python function
-
-  out_matrix <- matrix(ncol = length(sub_modules), nrow = 0)
-
-  for(bin in RNAseq.data$features$bins) {
-    kos <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin), "Annotation"] %>% unique
-
-    tfs <- c()
-
-    for (sub_mod in sub_modules) {
-      true_sum <- sub_mod %in% kos %>% sum
-      if (true_sum == length(sub_mod)) {
-        tfs <- c(tfs, T)
-      }else{
-        tfs <- c(tfs, F)
-      }
-    }
-
-    out_matrix <- rbind(out_matrix, tfs)
-  }
-  rownames(out_matrix) <- RNAseq.data$features$bins
-  out_matrix <- as.data.frame(out_matrix,stringsAsFactors = F)
-
-  out_matrix <- out_matrix[order(out_matrix[,1], out_matrix[,2], decreasing = T),] %>% View
-}
