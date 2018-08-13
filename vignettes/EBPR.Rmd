@@ -37,12 +37,6 @@ The package supports different options for normalization. By default the `Pre_pr
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r}
-file.path          <- "/home/joris/TcT/data/sample_data_newKO.csv"
-annotation.db.path <- "/home/joris/branch/TcT/data/updated_KO_modules.tsv"
-file.path          <- "/home/joris/Dropbox/MSc Internship/sample_data_newKO.csv"
-annotation.db.path <- "/home/joris/Dropbox/MSc Internship/all_KO_modules.tsv"
-
-
 normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
                   'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
                   'library_size' = c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166),
