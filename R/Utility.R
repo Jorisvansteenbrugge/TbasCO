@@ -1247,6 +1247,48 @@ Get_KEGG_Sub_Modules <- function(){
 #' @author JJM van Steenbrugge
 Go_Fish <- function(RNAseq.data){
 
+  .Test_pattern <- function(pattern, gene_pattern, margin = 0.15){
+    verdict <- T
+    for( i in 1: length(pattern) ) {
+      lower <- pattern[i] - margin
+      upper <- pattern[i] + margin
+
+      if(gene_pattern[i] < lower || gene_pattern[i] > upper) {
+        verdict <- F
+      }
+
+    }
+    return(verdict)
+  }
+
+  .Draw_pattern <- function(nsamples = 6){
+    plot(c(1,nsamples), c(0,1), type='n',
+         xlab = 'Time points',
+         ylab = 'Normalized Rank')
+    cat("Pick a rank value (Y axis) for each time point by clicking in the graph (start at 1)")
+
+    positions <- list('x' = c(),
+                      'y' = c()
+    )
+
+    for(i in 1:nsamples){
+      pos <- locator(1)
+      positions$x <- c(positions$x, pos$x)
+      positions$y <- c(positions$y, pos$y)
+
+      plot(positions,
+           xlab = 'Time points',
+           ylab = 'Normalized Rank',
+           xlim = c(1, nsamples),
+           ylim = c(0,1),
+           type = 'b')
+
+    }
+
+    return(positions)
+
+  }
+
   points <- .Draw_pattern()
   lines(points$x, points$y)
   text(3,0.5,'Using this pattern to match')
@@ -1268,26 +1310,4 @@ Go_Fish <- function(RNAseq.data){
 
 }
 
-.Test_pattern <- function(pattern, gene_pattern, margin = 0.15){
-  verdict <- T
-  for( i in 1: length(pattern) ) {
-    lower <- pattern[i] - margin
-    upper <- pattern[i] + margin
 
-    if(gene_pattern[i] < lower || gene_pattern[i] > upper) {
-      verdict <- F
-    }
-
-  }
-  return(verdict)
-}
-
-.Draw_pattern <- function(nsamples = 6){
-  plot(c(1,nsamples), c(0,1), type='n',
-       xlab = 'Time points',
-       ylab = 'Normalized Rank')
-  cat("Pick a rank value (Y axis) for each timme point by clicking in the graph")
-
-  return(locator(nsamples))
-
-}
