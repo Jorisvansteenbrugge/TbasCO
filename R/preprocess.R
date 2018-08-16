@@ -57,6 +57,8 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
                         "features" = RNAseq.features)
   }
 
+  # Add trait presence absence later
+  RNAseq.data$features$trait_presence_absence <- Get_trait_presence_absence(RNAseq.data)
 
   # Combine the table and the features in one object
   return(RNAseq.data)
@@ -87,8 +89,7 @@ Get_matrix_features <- function(RNAseq.table,annotation.db){
     "bins"                        = bins,
     "sample.columns"              = sample.columns,
     "rank.columns"                = ncol(RNAseq.table)+1:length(sample.columns),
-    "annotation_presence_absence" = annotation_presence_absence,
-    "trait_presence_absence"      = Get_trait_presence_absence(annotation_presence_absence, bins, annotation.db)
+    "annotation_presence_absence" = annotation_presence_absence
   ))
 }
 
@@ -99,16 +100,25 @@ Get_matrix_features <- function(RNAseq.table,annotation.db){
 #' @param bins a vector with all unique bins
 #' @author JJM van Steenbrugge
 Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
+  library(magrittr)
+
+  annotation_terms <- read.table(ko.db.path, header = F, stringsAsFactors = F)$V1 %>% unique
 
   a <- unique(annotation.db$`all annotations in a module`)
   b <- unique(as.character(RNAseq.table$Annotation))
-  annotation_terms <- unique(c(a,b))
+  c <- RNAseq.table$Annotation[which(RNAseq.table$Annotation != "")] %>% as.character
+  annotation_terms <- unique(c(a,b,c, annotation_terms))
 
   .Lookup_bin <- function(bin){
 
+
     present_bins <- RNAseq.table[which(RNAseq.table$Bin == bin), "Annotation"]
 
-    return(annotation_terms %in% present_bins)
+    overlap <- annotation_terms %in% NULL
+    try(
+      overlap <- annotation_terms %in% present_bins
+      )
+    return(overlap)
   }
 
   annotation_presence_absence <- sapply(bins, .Lookup_bin)
@@ -128,23 +138,30 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 #' @param bins
 #' @param annotation.db
 #' @author JJM van Steenbrugge
-Get_trait_presence_absence <- function(annotation_presence_absence, bins, annotation.db) {
+Get_trait_presence_absence <- function(RNAseq.data) {
 
 
   # nrow = number of traits
   # ncol = 0 because columns will be added at runtime
-  output <- matrix(nrow = 0, ncol=length(bins) )
+  output <- matrix(nrow = 0, ncol=length(RNAseq.data$features$bins) )
 
   .get_trait_pa <- function(module) {
-    sub_modules <- parse_module(module)
+    sub_module <- sub_modules[[module]]
 
-    pa <- sapply(bins,function(bin) {
+    pa <- sapply(RNAseq.data$features$bins,function(bin) {
 
 
       tfs <- c()
 
-      for (sub_mod in sub_modules) {
-        kos <- annotation_presence_absence[sub_mod, bin]
+      for (sub_mod in sub_module) {
+        tryCatch({
+          kos <- RNAseq.data$features$annotation_presence_absence[sub_mod, bin]
+
+          },
+          error = function(e){
+            print(e)
+          })
+
 
         true_sum <- kos %>% sum
         if (true_sum == length(sub_mod)) {
@@ -160,11 +177,20 @@ Get_trait_presence_absence <- function(annotation_presence_absence, bins, annota
   return(pa)
   }
 
-  for(module in names(annotation.db$module.dict[1:3])){
+  for(module in names(RNAseq.data$features$annotation.db$module.dict)){
     print(module)
-    output <- rbind(output, .get_trait_pa(module))
+
+    module_completions     <- rep(F, length(RNAseq.data$features$bins))
+    try({
+      module_completions <- .get_trait_pa(module)
+      print(paste0(module, " done"))
+      })
+
+    output <- rbind(output, module_completions)
   }
 
+  colnames(output) <- RNAseq.data$features$bins
+  rownames(output) <- names(RNAseq.data$features$annotation.db$module.dict)
   return(output)
 
 }

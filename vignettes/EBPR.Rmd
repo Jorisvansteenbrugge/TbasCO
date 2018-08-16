@@ -43,14 +43,14 @@ normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 817
                   'not_aligned'  = c(0, 0, 0, 0, 0, 0)
                   )
 
-start <- Sys.time()
+
 RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
                                  normalize.method    = T,
                                  filter.method       = 'MAD',
                                  filter.low.coverage = T,
                                  normalization.features)
-end <- Sys.time()
+
 # Family ----
 genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
                          '11' = 'f__Rubrivivax',
@@ -128,23 +128,23 @@ distance.metrics <- list("NRED" = NRED,
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
                                                             N       = 10000, 
                                                             metrics = distance.metrics,
-                                                            threads = 2)
+                                                            threads = 3)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
-                                                   N = 10, 
-                                                   Z = 1:30, 
+                                                   N = 10000, 
+                                                   Z = 1:15, 
                                                    metrics = distance.metrics,
-                                                   threads = 2)
+                                                   threads = 8)
 
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,
                                                              distance.metrics,
                                                              bkgd.individual.Zscores,
                                                              show.progress = T,
-                                                             threads = 2)
+                                                             threads = 8)
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, 
                                                      pairwise.distances,

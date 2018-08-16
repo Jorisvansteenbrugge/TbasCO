@@ -31,26 +31,30 @@ Random_Trait_Background <- function(RNAseq.data,
     result <- foreach::foreach(i = 1:N, .export = c("Random.Annotated.Genes.bkgd",
                                                      ".Convert_zscores",
                                                      ".Calc_Jaccard")) %dopar% {
+      print('start')
       #pick two genomes
       RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
       random.genomes              <- sample(RNAseq.data$features$bins, 2)
       random.genomes.combis       <- rep(list(random.genomes), Z) #Workaround to re-use function below
 
       distances   <- Random.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
-      print(distances)
+      print('distances')
       distances.Z <- .Convert_zscores(distances$scores, metrics, bkgd.individual.Zscores)
-
+      print("Z scores")
 
       # This is quick and dirty composition
       composite.distance          <- mean( (-distances.Z$PC) + distances.Z$NRED,
                                            na.rm = T)[1]
-
+      print('composite')
       # Jaccard distance
       jaccard.distance            <- .Calc_Jaccard(RNAseq.data, random.genomes,
                                                    distances$`used terms`)
+      print("Jaccard")
 
       #normalize composite scores with jaccard distance
-      return( composite.distance * (1 - jaccard.distance) )
+      norm_comp <- composite.distance * (1 - jaccard.distance)
+      print(norm_comp)
+      return( norm_comp )
     }
   }
 
@@ -96,9 +100,9 @@ Random_Trait_Background <- function(RNAseq.data,
   PA.genome.A <- presence.absence[used.terms, as.character(random.genomes[1])]
   PA.genome.B <- presence.absence[used.terms, as.character(random.genomes[2])]
 
-  Jaccard_Distance <- 1 - (sum(which(PA.genome.A == 1) %in% which(PA.genome.A == 1))  /
-                             (sum(which(PA.genome.A == 0) %in% which(PA.genome.A == 1))  +
-                                sum(which(PA.genome.A == 1)%in%which(PA.genome.A == 0))   +
-                                sum(which(PA.genome.A == 1)%in%which(PA.genome.A == 1))))
+  Jaccard_Distance <- 1 - (sum(which(PA.genome.A == 1) %in% which(PA.genome.B == 1))  /
+                             (sum(which(PA.genome.A == 0) %in% which(PA.genome.B == 1))  +
+                                sum(which(PA.genome.A == 1)%in%which(PA.genome.B == 0))   +
+                                sum(which(PA.genome.A == 1)%in%which(PA.genome.B == 1))))
   return(Jaccard_Distance)
 }

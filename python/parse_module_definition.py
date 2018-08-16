@@ -64,6 +64,10 @@ def clean_definition(definition):
     if '-' not in definition: #then we don't need cleaning
         return definition
 
+    # double -- quick and dirty fix
+    definition = definition.replace(" -- --","").replace(" -- ","-").replace("-- ",'-').replace(" --","")
+
+
     # Keep doing this until all optional terms are gone
     while '-' in definition:
         min_pos = definition.index('-')
@@ -97,9 +101,17 @@ def clean_definition(definition):
                 # Remove all characters between the optional parentheses
                 definition = definition.replace(definition[min_pos:end_pos+1], "")
         else:
-            raise ValueError("Unsupported optional term found")
+            raise ValueError("Unsupported optional term found", definition[min_pos+1])
 
-    return definition
+
+    definition = definition.replace("  ", " ")
+    if definition.startswith(' '):
+        definition = definition[1:]
+
+    while definition.endswith(" "):
+        definition = definition[0:len(definition)-1]
+
+    return definition.replace("  ", " ")
 
 
 def get_symbol_dict(definitions):
@@ -134,10 +146,17 @@ def parse_definition(definitions):
 
     return combinations
 
-
 def parse_module(module_name):
     definition = retrieve_definition(module_name)
+
     definition = clean_definition(definition)
 
+    try:
+        definition_parsed = parse_definition(definition)
+    except ValueError as err:
+            print(err.args)
 
-    return parse_definition(definition)
+    return definition_parsed
+
+if __name__ == "__main__":
+    parse_module("M00814")

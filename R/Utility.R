@@ -1259,23 +1259,25 @@ Plot_traits_vs_attributes <- function() {
 
 Get_KEGG_Sub_Modules <- function(){
   library(reticulate)
-
+  library(magrittr)
 
   source_python('/home/joris/TcT/python/parse_module_definition.py')
 
-  module_names <- RNAseq.data$features$annotation.db$module.dict %>% names
+  # module_names <- RNAseq.data$features$annotation.db$module.dict %>% names
 
+  start <- Sys.time()
+  sub_modules <- lapply(module_names, function(module) {
+    print(paste0("Parsing: ", module))
 
-  sub_modules <- lapply(module_names[20:22], function(module) {
-
-  if (as.logical(grep('M[0-9]{5}', module)) == T) {
+  if (length(grep('M[0-9]{5}', module)) != 0 ) {
     return(parse_module(module) )
   }else{
-    return(list(RNAseq.data$features$annotation.db$module.dict[[module]]))
+   return(list(RNAseq.data$features$annotation.db$module.dict[[module]]))
   }
 
   })
+  end <- Sys.time()
 
+  names(sub_modules) <- module_names
 
-
-}
+  }
