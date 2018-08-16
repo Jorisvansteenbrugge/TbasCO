@@ -1154,59 +1154,9 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
     return(sum(row))
   })
 
-  ta.matrix <- data.frame(cbind(as.numeric(ta.pa), names(ta.pa)))
-  colnames(ta.matrix) <- c("count", "trait")
+  ta.pa <- ta.pa[which(ta.pa != 0)]
+  sort(ta.pa) %>% barplot(xaxt='n', ylim = c(0,20))
 
-  ta.matrix$trait <- factor(ta.matrix$trait, levels = ta.matrix$trait[order(-ta.matrix$count)])
-
-
-
-  barplot.matrix <- matrix(ncol = 3, nrow = 0)
-  colnames(barplot.matrix) <- c("Trait", "Attribute", "Count")
-
-  # Highest number of attributes in 1 trait
-  max.ta <- sapply(trait.attributes.pruned, length) %>% max
-  colour.scheme <- grey.colors( n = ( max.ta) )
-
-  for(trait.name in names(trait.attributes.pruned)) {
-
-    trait <- trait.attributes.pruned[[trait.name]]
-    attribute.n <- trait %>% length
-
-
-    if (attribute.n >= 1 ) {
-
-      for(ta.idx in 1:attribute.n){
-        ta <- trait[[ta.idx]]
-
-        count <- length(ta$genomes) %>% as.numeric
-        ta.name <- sprintf("Attribute%s", as.character(ta.idx))
-        barplot.matrix <- rbind(barplot.matrix,
-                                c(trait.name, ta.name, count))
-      }
-
-      max.genomes     <- ta.pa[trait.name]
-      current.genomes <- barplot.matrix[which(barplot.matrix[,"Trait"] == trait.name), 'Count'] %>%
-        as.numeric %>% sum
-
-    }
- }
-
-  barplot.df <- as.data.frame(barplot.matrix)
-
-  barplot.df$Count <- as.numeric(barplot.df$Count)
-
-
-  barplot.df$Trait <- factor(barplot.df$Trait, levels = levels(ta.matrix$trait) )
-
-  ggplot(data = barplot.df, aes(x = Trait, y = Count, fill = Attribute, colour = 'black')) +
-    geom_bar(stat = 'identity') +
-    scale_fill_manual(values = colour.scheme)
-
-
-  #
-  # ggplot(data = ta.matrix, aes(x = trait, y = count)) +
-  #   geom_bar(stat = "identity")
 }
 
 Plot_traits_vs_attributes <- function() {
@@ -1246,7 +1196,10 @@ Plot_traits_vs_attributes <- function() {
        y = as.numeric(point.matrix[,3]),
        xlab = '# Overlap Traits',
        ylab = '# Overlap Attributes',
-       main = "Pairwise Genome Comparisons")
+       main = "Pairwise Genome Comparisons",
+       ylim = c(0,50),
+       xlim = c(0, 110))
+
 
 
   model <- lm(attributes~traits, data = point.df)
@@ -1255,6 +1208,8 @@ Plot_traits_vs_attributes <- function() {
   cinterval <- confint(model, level=.99)
   abline(cinterval[,1])
   abline(cinterval[,2])
+
+  identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
 }
 
 Get_KEGG_Sub_Modules <- function(){
