@@ -1350,8 +1350,9 @@ Go_Fish <- function(RNAseq.data){
 #' @param Module_Pool
 #' @param Bin_Order
 #' @param Yrange It is optional to provide a Yrange
-#' @examples Model_Bin <- 39
+#' @examples
 #'\dontrun{
+#' Model_Bin <- 39
 #' Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
 #' Yrange <- c(-2.5,2.5)
 #' Module_Names_Polymer_Metabolism <- c("M00001","M00307","HOX", "M00579","PHA","M00434","M00222", "PPK")
