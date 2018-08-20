@@ -1104,6 +1104,28 @@ Plot_Venn <- function(trait.attributes.pruned) {
   )
 }
 
+Shared_traits <- function( RNAseq.data ) {
+
+  interesting_bins <- c('16','39','22','29', '32')
+  other_bins <- RNAseq.data$features$bins[which(!(RNAseq.data$features$bins %in% interesting_bins))]
+  rows_shared <- RNAseq.data$features$trait_presence_absence %>% apply(1, function(row){
+    if (sum(row[interesting_bins]) == length(interesting_bins) && sum(row[other_bins]) == 0) {
+      return(T)
+    } else{F}
+  })
+
+  shared_traits <- rows_shared[which(rows_shared)] %>% names
+
+
+  distances <- pairwise.distances[RNAseq.data$features$annotation.db$module.dict$M00150] %>% sapply(function(x) {
+    x[c("16","39"),c("16","39")]
+  }) %>% .[which(!is.na(.))]
+
+  t.test(distances, bkgd.traits$`4`, alternative = 'less')
+
+
+}
+
 Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
   library(magrittr)
   trait.names <- list()
@@ -1141,7 +1163,8 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
     plot(
       type = "l", xaxt = "n",
       xlab = "Genomic bins",
-      ylab = "Number of attributes shared with CAA"
+      ylab = "Number of attributes shared with CAA",
+      ylim = c(0,30)
     )
   axis(1, at = 1:length(bin_occurences), labels = names(bin_occurences))
 }
