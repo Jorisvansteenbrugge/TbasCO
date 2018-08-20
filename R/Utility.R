@@ -1350,8 +1350,9 @@ Go_Fish <- function(RNAseq.data){
 #' @param Module_Pool
 #' @param Bin_Order
 #' @param Yrange It is optional to provide a Yrange
-#' @examples Model_Bin <- 39
-#'\dontrun{ 
+#' @examples
+#'\dontrun{
+#' Model_Bin <- 39
 #' Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
 #' Yrange <- c(-2.5,2.5)
 #' Module_Names_Polymer_Metabolism <- c("M00001","M00307","HOX", "M00579","PHA","M00434","M00222", "PPK")
@@ -1363,31 +1364,29 @@ Go_Fish <- function(RNAseq.data){
 #' @export
 #' @author BO Oyserman
 #'
+Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange) {
 
-
-Genome_Fishing <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange) {
-  
   # Create Module Pool list from Module_Names list. This is done by parsing out the trait.attributse$M#####$module.distances
-  
+
   Module_Positions <- match(Module_Names,names(RNAseq.data$features$annotation.db$module.dict))
   Module_Pool<-NULL
   for (i in 1:length(Module_Names))  {
     Module_Pool[i] <- list(trait.attributes[[Module_Positions[i]]][2])
   }
-  
+
   # Reorder the bins based on the input variable
   Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]][[1]]))
   Module_lengths <- as.numeric(lapply(RNAseq.data$features$annotation.db$module.dict[Module_Positions],length))
   Module_background_distribution_index <- match(as.numeric(Module_lengths) , as.numeric(names(bkgd.traits)))
-  
+
   Fish_Backgrounds<-NULL
   for (i in Module_background_distribution_index){
     Fish_Background <- quantile(unlist(bkgd.traits[i]),probs =seq(0,0.1,.01))[6]
     Fish_Backgrounds <- c(Fish_Backgrounds,Fish_Background)
   }
-  
+
   par(mfrow=c(1,length(Module_Pool)),mar=c(5.1,2,4.1,1.1))
-  
+
   for (i in 1:length(Module_Pool)) {
     fullmatrix <- Module_Pool[[i]][[1]]
     fullmatrix[lower.tri(fullmatrix, diag = FALSE)] <- fullmatrix[upper.tri(fullmatrix, diag = FALSE)]
@@ -1397,9 +1396,9 @@ Genome_Fishing <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Name
     sig_bins <- which(fullmatrix[rev(Bin_Order_Index),which(dimnames(fullmatrix)[[1]]==Model_Bin)]<=Fish_Backgrounds[i])
     sig_colors <- rep("gray",length(Bin_Order))
     sig_colors[as.numeric(sig_bins)] <- "gray0"
-    
+
     barplot(fullmatrix[rev(Bin_Order_Index),which(dimnames(fullmatrix)[[1]]==Model_Bin)], xlim=Yrange, horiz = TRUE, main = Module_Names[i], col= sig_colors)
     abline(v=0, lwd=2)
   }
-  
+
 }

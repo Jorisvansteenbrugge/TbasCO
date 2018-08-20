@@ -2,10 +2,9 @@
 % Please edit documentation in R/Utility.R
 \name{Model_Module}
 \alias{Model_Module}
-\alias{Genome_Fishing}
 \title{Model Module}
 \usage{
-Genome_Fishing(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
+Model_Module(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Bin_Order, Yrange)
 }
 \arguments{
@@ -23,7 +22,7 @@ The bar is presented in dark grey.
 }
 \examples{
 Model_Bin <- 39
-\dontrun{ 
+\dontrun{
 Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
 Yrange <- c(-2.5,2.5)
 Module_Names_Polymer_Metabolism <- c("M00001","M00307","HOX", "M00579","PHA","M00434","M00222", "PPK")
