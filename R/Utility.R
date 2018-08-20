@@ -1333,4 +1333,73 @@ Go_Fish <- function(RNAseq.data){
 
 }
 
+#' Model Module
+#' @name Model_Module
+#' @description Creates a bar plot of pairwise comparisons between the traits of a model genome.
+#' If a distance is less than the 99% quantile of the background distances for a module of similar size,
+#' The bar is presented in dark grey.
+#' @param trait character string with the name of a trait.
+#' @param RNAseq.data Collection of multple components, include RNA seq data,
+#' annotations, etc.
+#' @seealso \code{\link{Pre_process_input}} for the full list of parameters,
+#' \url{https://github.com/Jorisvansteenbrugge/TcT/wiki/The-RNAseq.data-object}
+#' for more information.
+#' @param RNAseq.data
+#' @param trait.attributes
+#' @param Model_Bin
+#' @param Module_Pool
+#' @param Bin_Order
+#' @param Yrange It is optional to provide a Yrange
+#' @examples Model_Bin <- 39
+#'\dontrun{ 
+#' Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
+#' Yrange <- c(-2.5,2.5)
+#' Module_Names_Polymer_Metabolism <- c("M00001","M00307","HOX", "M00579","PHA","M00434","M00222", "PPK")
+#' Module_Names_Purine_Metabolism <-c("M00048","M00049","M00050","M00546")
+#' Module_Names_Pyrimidine_Metabolism <-c("M00051","M00052","M00053","M00046")
+#' Module_Names_Nitrogen_Metabolism <- c("M00175","M00531","M00530","M00529","M00528","M00804")
+#' Module_Names_CC_Metabolism <- c("M00001","M00002","M00003","M00307","M00009","M00010","M00011","M00004","M00006","M00007","M00580","M00005","M00008","M00308","M00633","M00309")
+#'}
+#' @export
+#' @author BO Oyserman
+#'
 
+
+Genome_Fishing <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange) {
+  
+  # Create Module Pool list from Module_Names list. This is done by parsing out the trait.attributse$M#####$module.distances
+  
+  Module_Positions <- match(Module_Names,names(RNAseq.data$features$annotation.db$module.dict))
+  Module_Pool<-NULL
+  for (i in 1:length(Module_Names))  {
+    Module_Pool[i] <- list(trait.attributes[[Module_Positions[i]]][2])
+  }
+  
+  # Reorder the bins based on the input variable
+  Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]][[1]]))
+  Module_lengths <- as.numeric(lapply(RNAseq.data$features$annotation.db$module.dict[Module_Positions],length))
+  Module_background_distribution_index <- match(as.numeric(Module_lengths) , as.numeric(names(bkgd.traits)))
+  
+  Fish_Backgrounds<-NULL
+  for (i in Module_background_distribution_index){
+    Fish_Background <- quantile(unlist(bkgd.traits[i]),probs =seq(0,0.1,.01))[6]
+    Fish_Backgrounds <- c(Fish_Backgrounds,Fish_Background)
+  }
+  
+  par(mfrow=c(1,length(Module_Pool)),mar=c(5.1,2,4.1,1.1))
+  
+  for (i in 1:length(Module_Pool)) {
+    fullmatrix <- Module_Pool[[i]][[1]]
+    fullmatrix[lower.tri(fullmatrix, diag = FALSE)] <- fullmatrix[upper.tri(fullmatrix, diag = FALSE)]
+    #  diag(fullmatrix) <- as.numeric(-3)
+    # ggplot(sort(fullmatrix[,15])) + geom_bar()
+    #  levels(fullmatrix[,15]) <- RNAseq.data$features$bins
+    sig_bins <- which(fullmatrix[rev(Bin_Order_Index),which(dimnames(fullmatrix)[[1]]==Model_Bin)]<=Fish_Backgrounds[i])
+    sig_colors <- rep("gray",length(Bin_Order))
+    sig_colors[as.numeric(sig_bins)] <- "gray0"
+    
+    barplot(fullmatrix[rev(Bin_Order_Index),which(dimnames(fullmatrix)[[1]]==Model_Bin)], xlim=Yrange, horiz = TRUE, main = Module_Names[i], col= sig_colors)
+    abline(v=0, lwd=2)
+  }
+  
+}
