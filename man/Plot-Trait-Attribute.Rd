@@ -3,7 +3,6 @@
 \name{Plot Trait Attribute}
 \alias{Plot Trait Attribute}
 \alias{Traitattributes_To_Sbsmatrix}
-\alias{Plot Trait Attribute}
 \alias{Plot_Trait_Attribute_Expression}
 \title{Plot Trait Attribute}
 \usage{

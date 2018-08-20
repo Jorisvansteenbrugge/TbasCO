@@ -4,7 +4,8 @@
 \alias{Identify_Significance_Trait}
 \title{Identify_Significance_Trait}
 \usage{
-Identify_Significance_Trait(trait, RNAseq.data, pairwise.distances, bkgd.traits)
+Identify_Significance_Trait(trait, RNAseq.data, pairwise.distances,
+  bkgd.traits)
 }
 \arguments{
 \item{trait}{character string of the trait.}

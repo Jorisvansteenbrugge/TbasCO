@@ -11,6 +11,6 @@ License: some licence
 Encoding: UTF-8
 LazyData: false
 Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, BiocInstaller, RColorBrewer, ggplot2, gridExtra, arules, magrittr, reticulate
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 biocViews: RCy3
 Suggests: testthat

@@ -5,8 +5,8 @@
 \alias{Random_Trait_Background}
 \title{Generate a background distibution of composite Z scores}
 \usage{
-Random_Trait_Background(RNAseq.data, bkgd.individual.Zscores, N, Z, metrics,
-  threads = 4)
+Random_Trait_Background(RNAseq.data, bkgd.individual.Zscores, N, Z,
+  metrics, threads = 4)
 }
 \arguments{
 \item{RNAseq.data}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
