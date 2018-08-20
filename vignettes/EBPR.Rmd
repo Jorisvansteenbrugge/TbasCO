@@ -121,6 +121,9 @@ NRED <- function(rowA, rowB, RNAseq.features) {
 # Combine multiple distance metrics to complement each other.
 distance.metrics <- list("NRED" = NRED,
                          "PC"   = PC)
+
+# the size of all modules in the library, usefull for calculating the background distribution
+module_size_range <- lapply(RNAseq.data$features$annotation.db$module.dict,length) %>% as.numeric() %>% table() %>% names() %>% as.numeric()
 ```
 
 ### Actual Analysis
