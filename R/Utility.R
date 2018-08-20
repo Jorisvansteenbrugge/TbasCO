@@ -1360,6 +1360,7 @@ Go_Fish <- function(RNAseq.data){
 #' Module_Names_Pyrimidine_Metabolism <-c("M00051","M00052","M00053","M00046")
 #' Module_Names_Nitrogen_Metabolism <- c("M00175","M00531","M00530","M00529","M00528","M00804")
 #' Module_Names_CC_Metabolism <- c("M00001","M00002","M00003","M00307","M00009","M00010","M00011","M00004","M00006","M00007","M00580","M00005","M00008","M00308","M00633","M00309")
+#' Module_Names_ATP_synthesis <- c("M00144","M00143","M00146","M00147","M00149","M00150","M00148","M00162","M00151","M00152","M00154","M00155","M00153","M00417","M00416","M00156","M00157","M00159")
 #'}
 #' @export
 #' @author BO Oyserman
@@ -1390,15 +1391,19 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   for (i in 1:length(Module_Pool)) {
     fullmatrix <- Module_Pool[[i]][[1]]
     fullmatrix[lower.tri(fullmatrix, diag = FALSE)] <- fullmatrix[upper.tri(fullmatrix, diag = FALSE)]
+    Model_Comparison_vector<-fullmatrix[rev(Bin_Order_Index),which(dimnames(fullmatrix)[[1]]==Model_Bin)]
     #  diag(fullmatrix) <- as.numeric(-3)
-    # ggplot(sort(fullmatrix[,15])) + geom_bar()
     #  levels(fullmatrix[,15]) <- RNAseq.data$features$bins
     sig_bins <- which(fullmatrix[rev(Bin_Order_Index),which(dimnames(fullmatrix)[[1]]==Model_Bin)]<=Fish_Backgrounds[i])
     sig_colors <- rep("gray",length(Bin_Order))
     sig_colors[as.numeric(sig_bins)] <- "gray0"
 
-    barplot(fullmatrix[rev(Bin_Order_Index),which(dimnames(fullmatrix)[[1]]==Model_Bin)], xlim=Yrange, horiz = TRUE, main = Module_Names[i], col= sig_colors)
-    abline(v=0, lwd=2)
-  }
+    if(sum(is.na(Model_Comparison_vector))==length(Model_Comparison_vector)){
+      next
+    } else {
+      barplot(Model_Comparison_vector, xlim=Yrange, horiz = TRUE, main = Module_Names[i], col= sig_colors)
+    abline(v=0, lwd=1)
+    }
+    }
 
 }
