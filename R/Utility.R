@@ -1350,12 +1350,13 @@ Go_Fish <- function(RNAseq.data){
 #' @param Module_Pool
 #' @param Bin_Order
 #' @param Yrange It is optional to provide a Yrange
-#' @examples
+#' @examples Module_Model_List <- Model_Module(RNAseq.data, trait.attributes, '39', Module_Names, Bin_Order, c(-2.5,2.5), bkgd.traits)
 #'\dontrun{
 #' Model_Bin <- 39
 #' Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
 #' Yrange <- c(-2.5,2.5)
 #' Module_Names_Polymer_Metabolism <- c("M00001","M00307", "M00579","PHA", "M00173")
+#' Module_Names <- RNAseq.data$features$trait_presence_absence[,'39'] %>% which(. == T) %>% names
 #' Module_Names_Purine_Metabolism <-c("M00048","M00049","M00050","M00546")
 #' Module_Names_Pyrimidine_Metabolism <-c("M00051","M00052","M00053","M00046")
 #' Module_Names_ABC_transporters<-c("M00185","M00186","M00189","M00190","M00191","M00194","M00196","M00198","M00199","M00200","M00201","M00202","M00203","M00204","M00205","M00206","M00208","M00209","M00210","M00212","M00213","M00214","M00215","M00216","M00217")
@@ -1480,7 +1481,8 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
   # Can be moved to a new function using the output of Model_Module
 
-  par(mfrow = c(5,23),
+  par(mfrow =c(1,length(Module_Order_Index)),
+    #mfrow = c(5,23),
       mar   = c(2.1, 0.3, 1.1, 0.1))
 
   for (i in rev(Module_Order_Index)) {
