@@ -1369,7 +1369,8 @@ Go_Fish <- function(RNAseq.data){
 #' @export
 #' @author BO Oyserman
 #'
-Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange) {
+Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange,
+                         bkgd.traits) {
 
   annotation.db <- RNAseq.data$features$annotation.db
 # Step one, take the module list and match it to the module dictionary psoitions.
@@ -1389,8 +1390,8 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Model_Sig_Matrix         <- NULL
   Fish_Backgrounds_trimmed <- NULL
 
-  Module_lengths           <- as.numeric(lapply(annotation.db$module.dict[Module_Positions],
-                                                length))
+  Module_lengths           <- lapply(annotation.db$module.dict[Module_Positions],
+                                     length) %>% as.numeric
   Module_background_distribution_index <- match(as.numeric(Module_lengths),
                                                 as.numeric(names(bkgd.traits)))
 
@@ -1399,7 +1400,8 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
     Fish_Background  <- quantile(unlist( bkgd.traits[i]),
                                  probs = seq(0, 0.1, .01))[6]
-    Fish_Backgrounds <- c(Fish_Backgrounds,Fish_Background)
+    Fish_Backgrounds <- c(Fish_Backgrounds,
+                          Fish_Background)
 
   }
 
@@ -1412,7 +1414,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   }
 
   # Reorder the bins based on the input variable, hashed out for updated version in which order is defined based on similarity wt
-  Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]][[1]]))
+  Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
 
   Module_lengths                       <- annotation.db$module.dict[ Module_Positions ] %>%
                                                     lapply(length) %>% as.numeric
@@ -1449,14 +1451,15 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
 
   # Clean up the values, converting NaN to NA
-  Model_Comparison_Matrix[ which(Model_Comparison_Matrix=="NaN") ] < -NA
+  Model_Comparison_Matrix[ which(Model_Comparison_Matrix == "NaN") ] < -NA
 
   # Identify the bin orders their similarity with the model, and create an index
-  Sum_Similarity  <- apply(Model_Comparison_Matrix, 1, sum, na.rm=TRUE)
+  Sum_Similarity  <- apply(Model_Comparison_Matrix, 1, sum, na.rm = TRUE)
   Bin_Order       <- Model_Comparison_Matrix %>% apply(1, sum, na.rm = T) %>%
                           sort %>% names
 
-  Bin_Order_Index <- match(Bin_Order, rownames(Model_Comparison_Matrix)) %>% rev
+  Bin_Order_Index <- match(Bin_Order,
+                           rownames(Model_Comparison_Matrix)) %>% rev
 
   # Next make a matrix of whether a module is significant
   for (i in 1: ncol(Model_Comparison_Matrix) ) {
@@ -1467,15 +1470,15 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   }
 
   # Name the columns by module name
-  colnames(Model_Comparison_Matrix) <-Module_Name_vector
-  names(Fish_Backgrounds_trimmed)   <-Module_Name_vector
-  colnames(Model_Sig_Matrix)        <-Module_Name_vector
+  colnames(Model_Comparison_Matrix) <- Module_Name_vector
+  names(Fish_Backgrounds_trimmed)   <- Module_Name_vector
+  colnames(Model_Sig_Matrix)        <- Module_Name_vector
 
   # Identify the module orders based on their similarity with the model, and create an index
   Sum_Similarity_M   <- apply(Model_Comparison_Matrix, 2,
-                              sum, na.rm=TRUE)
+                              sum, na.rm = TRUE)
   Module_Order       <- names(sort(apply(Model_Comparison_Matrix, 2,
-                                         sum, na.rm=TRUE)))
+                                         sum, na.rm = TRUE)))
   Module_Order_Index <- match(Module_Order,
                               colnames(Model_Comparison_Matrix))
 
