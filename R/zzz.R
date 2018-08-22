@@ -1,4 +1,5 @@
 .onLoad <- function(libname, pkgname){
+  library(magrittr)
   os <- .Platform$OS.type
   if(os == "unix"){
     assign('file.path', paste0(libname,"/TcT/data/sample_data.csv"), envir = .GlobalEnv)
