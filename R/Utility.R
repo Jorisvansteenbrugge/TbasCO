@@ -1382,7 +1382,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
 
   Module_Positions         <- match(Module_Names,
-                                   names(RNAseq.data$features$annotation.db$module.dict))
+                                   names(annotation.db$module.dict))
   Module_Pool              <- NULL
   Model_Comparison_Matrix  <- NULL
   Module_Name_vector       <- NULL
@@ -1412,7 +1412,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   }
 
   # Reorder the bins based on the input variable, hashed out for updated version in which order is defined based on similarity wt
-  # Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]][[1]]))
+  Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]][[1]]))
 
   Module_lengths                       <- annotation.db$module.dict[ Module_Positions ] %>%
                                                     lapply(length) %>% as.numeric
@@ -1499,7 +1499,8 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
                             "Fish_Backgrounds_trimmed" = Fish_Backgrounds_trimmed,
                             "Model_Sig_Matrix"         = Model_Sig_Matrix,
                             "Bin_Order_Index"          = Bin_Order_Index,
-                            "Module_Order_Index"       = Module_Order_Index )
+                            "Module_Order_Index"
+                            = Module_Order_Index )
   return(Model_Module_List)
 
 
