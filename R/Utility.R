@@ -1390,7 +1390,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Model_Sig_Matrix         <- NULL
   Fish_Backgrounds_trimmed <- NULL
 
-  Module_lengths           <- lapply(annotation.db$module.dict[Module_Positions],
+  Module_lengths           <- lapply(annotation.db$module.dict[Module_Names],
                                      length) %>% as.numeric
   Module_background_distribution_index <- match(as.numeric(Module_lengths),
                                                 as.numeric(names(bkgd.traits)))
@@ -1413,14 +1413,10 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
   }
 
-  # Reorder the bins based on the input variable, hashed out for updated version in which order is defined based on similarity wt
+  # Reorder the bins based on the input variable, hashed out for updated version in which order is defined based on similarity
+  # If a predetermined bin order is  supplied ...
+
   Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
-
-  Module_lengths                       <- annotation.db$module.dict[ Module_Positions ] %>%
-                                                    lapply(length) %>% as.numeric
-
-  Module_background_distribution_index <- match(as.numeric(Module_lengths),
-                                                as.numeric(names(bkgd.traits)))
 
   # Make Model Comparison Matrix, filtering modules that were not present in the model organism
 
@@ -1475,28 +1471,34 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   colnames(Model_Sig_Matrix)        <- Module_Name_vector
 
   # Identify the module orders based on their similarity with the model, and create an index
-  Sum_Similarity_M   <- apply(Model_Comparison_Matrix, 2,
+  Sum_Similarity_M   <- apply(Model_Sig_Matrix, 2,
                               sum, na.rm = TRUE)
-  Module_Order       <- names(sort(apply(Model_Comparison_Matrix, 2,
+  Module_Order       <- names(sort(apply(Model_Sig_Matrix, 2,
                                          sum, na.rm = TRUE)))
   Module_Order_Index <- match(Module_Order,
                               colnames(Model_Comparison_Matrix))
 
-  par(mfrow = c(1, dim(Model_Comparison_Matrix)[2]),
-      mar   = c(5.1, 2, 4.1, 1.1))
+  # Can be moved to a new function using the output of Model_Module
 
-  for (i in Module_Order_Index) {
+  par(mfrow = c(5,23),
+      mar   = c(2.1, 0.3, 1.1, 0.1))
 
-    sig_colors                       <- rep("gray", length(Bin_Order))
+  for (i in rev(Module_Order_Index)) {
+
+    sig_colors                       <- rep("white", length(Bin_Order))
     sig_colors[Model_Sig_Matrix[,i]] <- "gray0"
 
     barplot(Model_Comparison_Matrix[Bin_Order_Index, i],
             xlim = Yrange, horiz = TRUE,
             main = Module_Name_vector[i],
-            col  = sig_colors[Bin_Order_Index])
+            col  = sig_colors[Bin_Order_Index],
+            yaxt = 'n'
+            )
     abline(v = 0, lwd = 1)
   }
 
+
+  # Return the various things calculated
 
   Model_Module_List <- list("Model_Comparison_Matrix"  = Model_Comparison_Matrix,
                             "Fish_Backgrounds_trimmed" = Fish_Backgrounds_trimmed,
@@ -1505,6 +1507,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
                             "Module_Order_Index"
                             = Module_Order_Index )
   return(Model_Module_List)
+
 
 
 
