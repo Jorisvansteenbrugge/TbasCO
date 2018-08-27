@@ -124,6 +124,15 @@ distance.metrics <- list("NRED" = NRED,
 
 # the size of all modules in the library, usefull for calculating the background distribution
 module_size_range <- lapply(RNAseq.data$features$annotation.db$module.dict,length) %>% as.numeric() %>% table() %>% names() %>% as.numeric()
+
+# again, the size of all modules but using the maximum length of the disjunctive form. Slightly shorter
+d_module_size_range_all<-c()
+for (i in 1:length(sub_modules)) {
+  d_module_size_range_all[i]<- max(sapply(sub_modules[[i]],length))
+}
+d_module_size_range<-sort(unique(d_module_size_range_all))
+
+
 ```
 
 ### Actual Analysis
@@ -138,7 +147,7 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
                                                    N = 10000, 
-                                                   Z = 1:15, 
+                                                   Z = d_module_size_range[1:25], 
                                                    metrics = distance.metrics,
                                                    threads = 4)
 
