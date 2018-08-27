@@ -53,6 +53,7 @@ calcmfrow <- function(x) {
   }
 }
 
+
 #' Plot Trait Attribute
 #' @name Plot Trait Attribute
 #' @description Plot the expression profile for all genomes expressing that
@@ -1359,17 +1360,7 @@ Go_Fish <- function(RNAseq.data){
 #' Model_Bin <- 39
 #' Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
 #' Yrange <- c(-2.5,2.5)
-#' Module_Names_Polymer_Metabolism <- c("M00001","M00307", "M00579","PHA", "M00173")
-#' Module_Names <- RNAseq.data$features$trait_presence_absence[,'39'] %>% which(. == T) %>% names
-#' Module_Names_Purine_Metabolism <-c("M00048","M00049","M00050","M00546")
-#' Module_Names_Pyrimidine_Metabolism <-c("M00051","M00052","M00053","M00046")
-#' Module_Names_ABC_transporters<-c("M00185","M00186","M00189","M00190","M00191","M00194","M00196","M00198","M00199","M00200","M00201","M00202","M00203","M00204","M00205","M00206","M00208","M00209","M00210","M00212","M00213","M00214","M00215","M00216","M00217")
-#' "M00218","M00219","M00220","M00222","M00223","M00224","M00225","M00226","M00227","M00228","M00229","M00230","M00231","M00232","M00233","M00234","M00235","M00237","M00238","M00239","M00240","M00241","M00242","M00245","M00246","M00249","M00250","M00251","M00252","M00253","M00255","M00256","M00257","M00259","M00298","M00299","M00300","M00301","M00302","M00314","M00316","M00317","M00318","M00319","M00320","M00321","M00322","M00323","M00324","M00325","M00348","M00349","M00423","M00435","M00436","M00437","M00438","M00439","M00440","M00442","M00491","M00566","M00581","M00582","M00583","M00584","M00585","M00586","M00587","M00589","M00590","M00591","M00592","M00593","M00599","M00600","M00601","M00602","M00603","M00604","M00605","M00606","M00607","M00619","M00634","M00635","M00731","M00732","M00739","M00747","M00762","M00791","M00792","M00813","M00817")
-#' Module_Names_Nitrogen_Metabolism <- c("M00175","M00531","M00530","M00529","M00528","M00804")
-#' Module_Names_CC_Metabolism <- c("M00001","M00002","M00003","M00307","M00009","M00010","M00011","M00004","M00006","M00007","M00580","M00005","M00008","M00308","M00633","M00309")
 #' Module_Names_ATP_synthesis <- c("M00144","M00143","M00146","M00147","M00149","M00150","M00148","M00162","M00151","M00152","M00154","M00155","M00153","M00417","M00416","M00156","M00157","M00159")
-#' Module_Names_Phosphotransferase_system<-c("M00265","M00809","M00267","M00266","M00806","M00282","M00269","M00271","M00272","M00270","M00303","M00268","M00273","M00306","M00274","M00305","M00281","M00275","M00280","M00279","M00807","M00276","M00764","M00304","M00278","M00277","M00287","M00610","M00283")
-#' Module_Names_MOI_transport_system <- c("M00185","M00189","M00423","M00186","M00438","M00321","M00188","M00435","M00436","M00437","M00190","M00191","M00299","M00300","M00193","M00301","M00302","M00208","M00209","M00442","M00192")
 #'}
 #' @export
 #' @author BO Oyserman
@@ -1377,8 +1368,10 @@ Go_Fish <- function(RNAseq.data){
 Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange,
                          bkgd.traits) {
 
-  annotation.db <- RNAseq.data$features$annotation.db
-# Step one, take the module list and match it to the module dictionary psoitions.
+#  no longer necessary
+#  annotation.db <- RNAseq.data$features$annotation.db
+
+  # Step one, take the module list and match it to the module dictionary psoitions.
 # This is done by parsing out the module.dict
 # There are various parts of this function
 # 1) making a matrix of pairwise distances to the model
@@ -1395,8 +1388,12 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Model_Sig_Matrix         <- NULL
   Fish_Backgrounds_trimmed <- NULL
 
-  Module_lengths           <- lapply(annotation.db$module.dict[Module_Names],
-                                     length) %>% as.numeric
+  # Using non-disjunctive form
+  # Module_lengths           <- lapply(annotation.db$module.dict[Module_Names],
+  #                                    length) %>% as.numeric
+
+  Module_lengths           <- d_module_size_range_all[which(names(annotation.db$module.dict)%in%Module_Names)]
+
   Module_background_distribution_index <- match(as.numeric(Module_lengths),
                                                 as.numeric(names(bkgd.traits)))
 
@@ -1421,7 +1418,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   # Reorder the bins based on the input variable, hashed out for updated version in which order is defined based on similarity
   # If a predetermined bin order is  supplied ...
 
-  Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
+  # Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
 
   # Make Model Comparison Matrix, filtering modules that were not present in the model organism
 
@@ -1475,7 +1472,9 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   names(Fish_Backgrounds_trimmed)   <- Module_Name_vector
   colnames(Model_Sig_Matrix)        <- Module_Name_vector
 
-  # Identify the module orders based on their similarity with the model, and create an index
+  # Identify the module orders based on their similarity with the model, and create an index.
+  # Similarity is based on the number of significantly similar
+
   Sum_Similarity_M   <- apply(Model_Sig_Matrix, 2,
                               sum, na.rm = TRUE)
   Module_Order       <- names(sort(apply(Model_Sig_Matrix, 2,
@@ -1489,19 +1488,20 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
     #mfrow = c(5,23),
       mar   = c(2.1, 0.3, 1.1, 0.1))
 
-  for (i in rev(Module_Order_Index)) {
+  # for (i in rev(Module_Order_Index)) {
 
-    sig_colors                       <- rep("white", length(Bin_Order))
-    sig_colors[Model_Sig_Matrix[,i]] <- "gray0"
+  #  sig_colors                       <- rep("white", length(Bin_Order))
+  #  sig_colors[Model_Sig_Matrix[,i]] <- "gray0"
 
-    barplot(Model_Comparison_Matrix[Bin_Order_Index, i],
-            xlim = Yrange, horiz = TRUE,
-            main = Module_Name_vector[i],
-            col  = sig_colors[Bin_Order_Index],
-            yaxt = 'n'
-            )
-    abline(v = 0, lwd = 1)
-  }
+  #  barplot(Model_Comparison_Matrix[Bin_Order_Index, i],
+  #          xlim = Yrange, horiz = TRUE,
+  #          main = Module_Name_vector[i],
+  #          col  = sig_colors[Bin_Order_Index],
+  #          yaxt = 'n'
+  #          )
+  #  abline(v = 0, lwd = 1)
+  # }
+
 
 
   # Return the various things calculated
@@ -1510,12 +1510,53 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
                             "Fish_Backgrounds_trimmed" = Fish_Backgrounds_trimmed,
                             "Model_Sig_Matrix"         = Model_Sig_Matrix,
                             "Bin_Order_Index"          = Bin_Order_Index,
-                            "Module_Order_Index"
-                            = Module_Order_Index )
+                            "Module_Order_Index"       = Module_Order_Index,
+                            "Module_Order"             = Module_Order
+                            )
   return(Model_Module_List)
 
 
 
 
+}
+
+
+#
+#' Plot_Model_Module
+#' @name Plot_Model_Module
+#' @description Creates a bar plot of pairwise comparisons between the traits of a model genome.
+#' If a distance is less than the 99% quantile of the background distances for a module of similar size,
+#' The bar is presented in dark grey.
+#' @seealso \code{\link{Pre_process_input}} for the full list of parameters,
+#' \url{https://github.com/Jorisvansteenbrugge/TcT/wiki/The-RNAseq.data-object}
+#' for more information.
+#' @param Model_Module_List
+#' @param Model_Bin
+#' @param Module_Names
+#' @export
+#' @author BO Oyserman
+#'
+Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names) {
+
+  par(mfrow = c(5,23),
+      mar   = c(2.1, 1, 2.1, 1))
+
+
+  barplot(Model_Module_List[[1]][Model_Module_List[[4]], 1], col = NA, border = NA, axes = FALSE, xlim = c(-2,1), ylim =c(0,19), yaxt = 'n', xaxt = 'n')
+  text(x=rep(-1,19), y=seq(from = 1, to = 18, by =17/18),labels=rownames(Model_Module_List[[3]])[Model_Module_List[[4]]],cex=1)
+
+  for (i in rev(Model_Module_List[[5]])) {
+
+    sig_colors                       <- rep("white", length(Model_Module_List[[4]]))
+    sig_colors[Model_Module_List[[3]][,i]] <- "gray0"
+
+    barplot(Model_Module_List[[1]][Model_Module_List[[4]], i],
+            xlim = c(-2,1), horiz = TRUE,
+            main = colnames(Model_Module_List[[1]])[i],
+            col  = sig_colors[Model_Module_List[[4]]],
+            yaxt = 'n'
+    )
+    abline(v = 0, lwd = 1)
   }
+}
 
