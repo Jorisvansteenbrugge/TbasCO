@@ -1361,8 +1361,7 @@ Go_Fish <- function(RNAseq.data){
 #' @export
 #' @author BO Oyserman
 #'
-Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange,
-                         bkgd.traits) {
+Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,bkgd.traits) {
 
 #  no longer necessary
 #  annotation.db <- RNAseq.data$features$annotation.db
@@ -1478,27 +1477,6 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Module_Order_Index <- match(Module_Order,
                               colnames(Model_Comparison_Matrix))
 
-  # Can be moved to a new function using the output of Model_Module
-
-  par(mfrow = c(5,23),
-      mar   = c(2.1, 0.3, 1.1, 0.1))
-
-  # for (i in rev(Module_Order_Index)) {
-
-  #  sig_colors                       <- rep("white", length(Bin_Order))
-  #  sig_colors[Model_Sig_Matrix[,i]] <- "gray0"
-
-  #  barplot(Model_Comparison_Matrix[Bin_Order_Index, i],
-  #          xlim = Yrange, horiz = TRUE,
-  #          main = Module_Name_vector[i],
-  #          col  = sig_colors[Bin_Order_Index],
-  #          yaxt = 'n'
-  #          )
-  #  abline(v = 0, lwd = 1)
-  # }
-
-
-
   # Return the various things calculated
 
   Model_Module_List <- list("Model_Comparison_Matrix"  = Model_Comparison_Matrix,
@@ -1531,9 +1509,9 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 #' @export
 #' @author BO Oyserman
 #'
-Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names) {
+Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margins) {
 
-  par(mfrow = c(5,23),
+  par(mfrow = margins,
       mar   = c(2.1, 1, 2.1, 1))
 
 
