@@ -126,7 +126,11 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute,
 #' @param trait.names a vector containing the names of traits, as provided in the
 #' RNAseq.data$features$annotation.db$module.dict object
 #' @export
-#' @example Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
+#' @examples Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
+#' \dontrun{
+#' shared_ten_genomes <- c('M00335', 'M00120', 'M00144', 'M00149', 'M00260', 'M00082', 'M00360', 'M00022', 'M00023')
+#' niche_traits <- c("M00150", 'M00064', 'M00123', 'M00186', 'M00244', 'M00223', 'M00323', 'M00328', 'M00453', 'M00515', 'M00523', 'M00579', 'M00772')
+#' }
 #' @author JJM van Steenbrugge
 Network_Trait_Genomes <- function(trait.names, trait.attributes.pruned,
                                   genome.phylogeny) {
@@ -157,9 +161,9 @@ Network_Trait_Genomes <- function(trait.names, trait.attributes.pruned,
 
       for (genome in attributes[[attribute]]$genomes) {
         if (!genome %in% added_nodes) {
-          if (!missing(genome.phylogeny)) {
-            nodes <- rbind(nodes, c(genome, "genome", genome.phylogeny[[genome]]))
-          } else {
+           if (!missing(genome.phylogeny)) {
+             nodes <- rbind(nodes, c(genome, "genome", genome.phylogeny[[genome]]))
+           } else {
             nodes <- rbind(nodes, c(genome, "genome", "."))
           }
           added_nodes <- c(added_nodes, genome)
@@ -1351,7 +1355,7 @@ Go_Fish <- function(RNAseq.data){
 #' @param Module_Pool
 #' @param Bin_Order
 #' @param Yrange It is optional to provide a Yrange
-#' @examples
+#' @examples Module_Model_List <- Model_Module(RNAseq.data, trait.attributes, '39', Module_Names, Bin_Order, c(-2.5,2.5), bkgd.traits)
 #'\dontrun{
 #' Model_Bin <- 39
 #' Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
@@ -1477,6 +1481,31 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Module_Order_Index <- match(Module_Order,
                               colnames(Model_Comparison_Matrix))
 
+<<<<<<< HEAD
+=======
+  # Can be moved to a new function using the output of Model_Module
+
+  par(mfrow =c(1,length(Module_Order_Index)),
+    #mfrow = c(5,23),
+      mar   = c(2.1, 0.3, 1.1, 0.1))
+
+  # for (i in rev(Module_Order_Index)) {
+
+  #  sig_colors                       <- rep("white", length(Bin_Order))
+  #  sig_colors[Model_Sig_Matrix[,i]] <- "gray0"
+
+  #  barplot(Model_Comparison_Matrix[Bin_Order_Index, i],
+  #          xlim = Yrange, horiz = TRUE,
+  #          main = Module_Name_vector[i],
+  #          col  = sig_colors[Bin_Order_Index],
+  #          yaxt = 'n'
+  #          )
+  #  abline(v = 0, lwd = 1)
+  # }
+
+
+
+>>>>>>> 49a825cd88f9450280502c725c8fc32f531513c3
   # Return the various things calculated
 
   Model_Module_List <- list("Model_Comparison_Matrix"  = Model_Comparison_Matrix,

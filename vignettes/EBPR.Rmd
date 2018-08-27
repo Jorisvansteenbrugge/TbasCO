@@ -73,25 +73,25 @@ genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
                          '53' = 'f_Flavobacteriaceae'
                          )
 # Phylum ----
-genome.taxonomy.phylum <- list('8'  = '8 - p__Bacteroidetes',
-                         '11' = '11 - p__Proteobacteria',
-                         '16' = '16 - p__Proteobacteria',
-                         '17' = '17 - .',
-                         '19' = '19 - p__Bacteroidetes',
-                         '20' = '20 - .',
-                         '22' = '22 - p__Proteobacteria',
-                         '25' = '25 - p__Bacteroidetes',
-                         '26' = '26 - p__Actinobacteria',
-                         '28' = '28 - p__Bacteroidetes',
-                         '29' = '29 - p__Proteobacteria',
-                         '31' = '31 - p__Proteobacteria',
-                         '32' = '32 - p__Proteobacteria',
-                         '36' = '36 - p__Actinobacteria',
-                         '39' = '39 - p__Proteobacteria',
-                         '42' = '42 - p__Bacteroidetes',
-                         '45' = '45 - p__Bacteroidetes',
-                         '48' = '48 - p__Proteobacteria',
-                         '53' = '53 - p__Bacteroidetes'
+genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
+                         '11' = 'p__Proteobacteria',
+                         '16' = 'p__Proteobacteria',
+                         '17' = '.',
+                         '19' = 'p__Bacteroidetes',
+                         '20' = '.',
+                         '22' = 'p__Proteobacteria',
+                         '25' = 'p__Bacteroidetes',
+                         '26' = 'p__Actinobacteria',
+                         '28' = 'p__Bacteroidetes',
+                         '29' = 'p__Proteobacteria',
+                         '31' = 'p__Proteobacteria',
+                         '32' = 'p__Proteobacteria',
+                         '36' = 'p__Actinobacteria',
+                         '39' = 'p__Proteobacteria',
+                         '42' = 'p__Bacteroidetes',
+                         '45' = 'p__Bacteroidetes',
+                         '48' = 'p__Proteobacteria',
+                         '53' = 'p__Bacteroidetes'
                          )
 ```
 
@@ -162,7 +162,6 @@ trait.attributes        <- Identify_Trait_Attributes(RNAseq.data,
                                                      pairwise.distances,
                                                      threads = 4)
 
-
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data,
                                                   p.threshold = 0.05,
@@ -170,7 +169,6 @@ trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits,
 
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, 
                                                         RNAseq.data$features$bins)
-
 ```
 
 ## Plotting
