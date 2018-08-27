@@ -125,7 +125,11 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute,
 #' @param trait.names a vector containing the names of traits, as provided in the
 #' RNAseq.data$features$annotation.db$module.dict object
 #' @export
-#' @example Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
+#' @examples Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
+#' \dontrun{
+#' shared_ten_genomes <- c('M00335', 'M00120', 'M00144', 'M00149', 'M00260', 'M00082', 'M00360', 'M00022', 'M00023')
+#' niche_traits <- c("M00150", 'M00064', 'M00123', 'M00186', 'M00244', 'M00223', 'M00323', 'M00328', 'M00453', 'M00515', 'M00523', 'M00579', 'M00772')
+#' }
 #' @author JJM van Steenbrugge
 Network_Trait_Genomes <- function(trait.names, trait.attributes.pruned,
                                   genome.phylogeny) {
@@ -156,9 +160,9 @@ Network_Trait_Genomes <- function(trait.names, trait.attributes.pruned,
 
       for (genome in attributes[[attribute]]$genomes) {
         if (!genome %in% added_nodes) {
-          if (!missing(genome.phylogeny)) {
-            nodes <- rbind(nodes, c(genome, "genome", genome.phylogeny[[genome]]))
-          } else {
+           if (!missing(genome.phylogeny)) {
+             nodes <- rbind(nodes, c(genome, "genome", genome.phylogeny[[genome]]))
+           } else {
             nodes <- rbind(nodes, c(genome, "genome", "."))
           }
           added_nodes <- c(added_nodes, genome)

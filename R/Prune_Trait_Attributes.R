@@ -20,6 +20,30 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
   }
 
+  .Calc_P_pairwise <- function(bins, trait){
+    kos <- RNAseq.data$features$annotation.db$module.dict[[trait]]
+    distances <- kos %>% sapply(function(ko) {
+      dists <- pairwise.distances[[ko]] [bins, bins]
+      return(dists[ which(!is.na(dists)) ])
+    }) %>% unlist %>% as.numeric
+
+    zscores <-  bkgd.individual.Zscores$zscores$`Genes with the same annotation`
+
+    bkgd <- (-zscores$PC) + zscores$NRED
+
+
+    pval <- 30
+    try(pval <- t.test(distances, bkgd,
+               alternative = 'less')$p.value
+        ,silent = T)
+
+    return(
+      pval
+    )
+
+
+  }
+
   .Calc_P <- function(trait, p.threshold, annotation.db){
     n.genes <- length(annotation.db$module.dict[[trait]])
     trait.attributes.current <- trait.attributes[[trait]]
@@ -33,12 +57,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
     for(cluster in clusters){
       bins.cluster <- bins[which(trait.attributes.current$clusters$membership == cluster)]
 
-      # number of bins <= 2 would end up with only 1 avg zscore which is not enough for a t.test
-      if ( length(bins.cluster) <= 2 ) {
-        next()
-      }
-
-     # Filter for completion
+      # Filter for completion
       bins_remove <- .Filter_Completion(features, trait, bins.cluster)
 
       if ( length(bins_remove) == length(bins.cluster) ) {
@@ -47,22 +66,43 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
         bins.cluster <- bins.cluster[!bins.cluster %in% bins_remove]
       }
 
-      bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
-      p.val <- NA
-      tryCatch({
+
+      # number of bins <= 2 would end up with only 1 avg zscore which is not enough for a t.test
+      if ( length(bins.cluster) < 2 ) {
+        next()
+      } else if ( length(bins.cluster) == 2){
+        p.val <- .Calc_P_pairwise(bins.cluster, trait)
+
+      }
+      else {
+        bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
+
+
         p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value
         p.val <- p.adjust(p.val, method = 'BH', length(clusters))
 
-        if( p.val <= p.threshold){
-          cluster.attributes[[cluster]] <- list("genomes"= unique(bins.cluster),
-                                                "p-val"  = p.val)
-        }
-      },
-      error = function(cond) {
+      }
 
-      })
-    }
+
+      tryCatch(
+        {
+          if( p.val <= p.threshold){
+            cluster.attributes[[cluster]] <- list("genomes"= unique(bins.cluster),
+                                                  "p-val"  = p.val)
+            }
+          },
+        error = function(cond) {
+        })
+
+
+      }
+
+
+
+
+
+
 
     return(cluster.attributes)
   }

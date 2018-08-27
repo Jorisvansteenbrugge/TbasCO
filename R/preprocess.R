@@ -140,7 +140,6 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 #' @author JJM van Steenbrugge
 Get_trait_presence_absence <- function(RNAseq.data) {
 
-
   # nrow = number of traits
   # ncol = 0 because columns will be added at runtime
   output <- matrix(nrow = 0, ncol=length(RNAseq.data$features$bins) )
@@ -194,6 +193,77 @@ Get_trait_presence_absence <- function(RNAseq.data) {
   return(output)
 
 }
+
+
+Expand_module_database <- function(RNAseq.data) {
+
+  .get_trait_pa <- function(module_kos) {
+
+    pa <- sapply(RNAseq.data$features$bins,function(bin) {
+
+
+
+      tfs <- c()
+
+
+        tryCatch({
+          kos <- RNAseq.data$features$annotation_presence_absence[module_kos, bin]
+
+        },
+        error = function(e){
+          print(e)
+        })
+
+
+        true_sum <- kos %>% sum
+        if (true_sum == length(module_kos)) {
+          return(T)
+        }
+
+
+      return(F)
+
+
+    })
+
+    return(pa)
+  }
+
+  expanded_annotation.db <- list()
+  # nrow = number of traits
+  # ncol = 0 because columns will be added at runtime
+  trait_pa <- matrix(nrow = 0, ncol=length(RNAseq.data$features$bins) )
+  saved_expansions <- c()
+
+  for(module in names(RNAseq.data$features$annotation.db$module.dict)) {
+
+    sub_mods <- sub_modules[[module]]
+
+    for (i in 1:length(sub_mods)) {
+
+      module_completions     <- rep(F, length(RNAseq.data$features$bins))
+      try({
+        module_completions <- .get_trait_pa(sub_mods[[i]])
+
+      })
+
+
+      if(sum(module_completions) >= 0.8) {
+        module_flavor <- paste(module, i, sep = '_')
+
+        expanded_annotation.db[[ module_flavor ]] <- sub_mods[[i]]
+        saved_expansions <- c(saved_expansions, module_flavor)
+        trait_pa <- rbind(trait_pa, module_completions)
+      }
+    }
+    print(paste0(module, " done"))
+
+  }
+
+  rownames(trait_pa) <- saved_expansions
+  return(trait_pa)
+}
+
 
 #' Normalize RNAseq data
 #' @param RNAseq.table
