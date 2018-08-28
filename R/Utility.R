@@ -1368,8 +1368,8 @@ Go_Fish <- function(RNAseq.data){
 Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names, Bin_Order, Yrange,
                          bkgd.traits) {
 
-#  no longer necessary
-#  annotation.db <- RNAseq.data$features$annotation.db
+
+  annotation.db <- RNAseq.data$features$annotation.db
 
   # Step one, take the module list and match it to the module dictionary psoitions.
 # This is done by parsing out the module.dict
@@ -1410,15 +1410,13 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   # For each module name, get the number of genes in the module. This needs to be updated to use the disjunctive normalized forms.
 
   for (i in 1: length(Module_Names)) {
-
     Module_Pool[i] <- list(trait.attributes[[ Module_Positions[i] ]] [2])
-
   }
 
   # Reorder the bins based on the input variable, hashed out for updated version in which order is defined based on similarity
   # If a predetermined bin order is  supplied ...
 
-  # Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
+  Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
 
   # Make Model Comparison Matrix, filtering modules that were not present in the model organism
 
@@ -1432,6 +1430,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
     Model_Comparison_vector <- fullmatrix[ rev(Bin_Order_Index),
                                            which(dimnames(fullmatrix) [[1]] == Model_Bin
                                                   )]
+    print (Model_Comparison_vector)
 
     # If the vector is empty, go to the next module. Else, cbind the vector to a growing matrix containing all Module comparisons for that Model genome
     if(sum(is.na(Model_Comparison_vector)) == length(Model_Comparison_vector)){
@@ -1445,6 +1444,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
       Fish_Backgrounds_trimmed <- c(Fish_Backgrounds_trimmed,
                                     Fish_Backgrounds[i])
     }
+
   }
 
 
@@ -1484,9 +1484,9 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
   # Can be moved to a new function using the output of Model_Module
 
-  par(mfrow =c(1,length(Module_Order_Index)),
+  # par(mfrow =c(1,length(Module_Order_Index)),
     #mfrow = c(5,23),
-      mar   = c(2.1, 0.3, 1.1, 0.1))
+    #  mar   = c(2.1, 0.3, 1.1, 0.1))
 
   # for (i in rev(Module_Order_Index)) {
 
