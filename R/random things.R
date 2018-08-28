@@ -78,19 +78,23 @@ Model_Module_List_PP_Metabolism <- Model_Module(RNAseq.data, trait.attributes, 3
 Plot_Model_Module(Model_Module_List_PP_Metabolism, 39, Module_Names_PP_Metabolism)
 
 
-Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names, Bin_Order_Index, Yrange, bkgd.traits)
-Plot_Model_Module(Model_Module_List_All, 39, Module_Names)
+margins =c(5,23)
+Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names, bkgd.traits)
+Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome=NULL)
 
+margins =c(5,23)
+Model_Module_List_ATP_synthesis <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names_ATP_synthesis, bkgd.traits)
+Plot_Model_Module(Model_Module_List_ATP_synthesis, 39, Module_Names_ATP_synthesis,margins, sortbygenome="16")
 
 Model_Module_List_Phosphotransferase_system <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names_Phosphotransferase_system, bkgd.traits)
-Plot_Model_Module(Model_Module_List_Phosphotransferase_system, 39, Module_Names_Phosphotransferase_system)
+Plot_Model_Module(Model_Module_List_Phosphotransferase_system, 39, Module_Names_Phosphotransferase_system,margins)
 
 Model_Module_List_MOI_transport_system <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names_MOI_transport_system, bkgd.traits)
-Plot_Model_Module(Model_Module_List_MOI_transport_system, 39, Module_Names_MOI_transport_system)
+Plot_Model_Module(Model_Module_List_MOI_transport_system, 39, Module_Names_MOI_transport_system,margins)
 
 
 Model_Module_List_ABC_transporters <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names_ABC_transporters, bkgd.traits)
-Plot_Model_Module(Model_Module_List_ABC_transporters, 39, Module_Names_ABC_transporters)
+Plot_Model_Module(Model_Module_List_ABC_transporters, 39, Module_Names_ABC_transporters,margins)
 
 Model_Module_List_CC_Metabolism <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names_CC_Metabolism, bkgd.traits)
 Plot_Model_Module(Model_Module_List_CC_Metabolism, 39, Module_Names_CC_Metabolism,margins)
