@@ -1481,8 +1481,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Module_Order_Index <- match(Module_Order,
                               colnames(Model_Comparison_Matrix))
 
-<<<<<<< HEAD
-=======
+
   # Can be moved to a new function using the output of Model_Module
 
   # par(mfrow =c(1,length(Module_Order_Index)),
@@ -1505,7 +1504,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
 
 
->>>>>>> 49a825cd88f9450280502c725c8fc32f531513c3
+
   # Return the various things calculated
 
   Model_Module_List <- list("Model_Comparison_Matrix"  = Model_Comparison_Matrix,
@@ -1561,4 +1560,3 @@ Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margin
     abline(v = 0, lwd = 1)
   }
 }
-
