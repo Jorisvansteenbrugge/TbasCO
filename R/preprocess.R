@@ -216,7 +216,7 @@ Expand_module_database <- function(RNAseq.data) {
 
 
         true_sum <- kos %>% sum
-        if (true_sum == length(module_kos)) {
+        if ((true_sum /length(module_kos) >= 0.9)) {
           return(T)
         }
 
@@ -232,7 +232,8 @@ Expand_module_database <- function(RNAseq.data) {
   expanded_annotation.db <- list()
   # nrow = number of traits
   # ncol = 0 because columns will be added at runtime
-  trait_pa <- matrix(nrow = 0, ncol=length(RNAseq.data$features$bins) )
+  trait_pa <- matrix(nrow = 0,
+                     ncol = length(RNAseq.data$features$bins) )
   saved_expansions <- c()
 
   for(module in names(RNAseq.data$features$annotation.db$module.dict)) {
@@ -243,17 +244,17 @@ Expand_module_database <- function(RNAseq.data) {
 
       module_completions     <- rep(F, length(RNAseq.data$features$bins))
       try({
-        module_completions <- .get_trait_pa(sub_mods[[i]])
+        module_completions   <- .get_trait_pa(sub_mods[[i]])
 
       })
 
 
-      if(sum(module_completions) >= 0.8) {
+      if(sum(module_completions) >= 1) {
         module_flavor <- paste(module, i, sep = '_')
 
         expanded_annotation.db[[ module_flavor ]] <- sub_mods[[i]]
-        saved_expansions <- c(saved_expansions, module_flavor)
-        trait_pa <- rbind(trait_pa, module_completions)
+        saved_expansions                          <- c(saved_expansions, module_flavor)
+        trait_pa                                  <- rbind(trait_pa, module_completions)
       }
     }
     print(paste0(module, " done"))
