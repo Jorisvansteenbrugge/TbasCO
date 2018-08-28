@@ -158,14 +158,17 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              show.progress = T,
                                                              threads = 4)
 
-trait.attributes        <- Identify_Trait_Attributes(RNAseq.data, 
-                                                     pairwise.distances,
-                                                     threads = 4)
+trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
+                                                     pairwise.distances = pairwise.distances,
+                                                     annotation.db = expanded_annotation.db,
+                                                     threads = 2)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data,
                                                   p.threshold = 0.05,
-                                                  pairwise.distances = pairwise.distances)
+                                                  pairwise.distances = pairwise.distances,
+                                                  annotation.db = expanded_annotation.db,
+                                                  trait_presence_absence = trait_pa_expanded)
 
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, 
                                                         RNAseq.data$features$bins)

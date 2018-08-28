@@ -8,14 +8,22 @@
 #' @export
 #' @author JJM van Steenbrugge
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
-                                   p.threshold = 0.05, pairwise.distances){
+                                   p.threshold = 0.05, pairwise.distances,
+                                   annotation.db, trait_presence_absence){
 
   features <- RNAseq.data$features
-  annotation.db <- features$annotation.db
+
+  if (missing(annotation.db)){
+    annotation.db <- features$annotation.db
+  }
+  if (missing(trait_presence_absence)) {
+    trait_presence_absence <- features$trait_presence_absence
+  }
+
 
   .Filter_Completion <- function(features, trait, bins){
 
-    bin.completions <- as.logical(features$trait_presence_absence[trait, bins])
+    bin.completions <- as.logical(trait_presence_absence[trait, bins])
     return(features$bins[!bin.completions])
 
   }
@@ -78,8 +86,12 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
       else {
         bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
+        p.val <- 1
+        try(
+          {p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value},
+          silent = T
+        )
 
-        p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value
         p.val <- p.adjust(p.val, method = 'BH', length(clusters))
 
       }
