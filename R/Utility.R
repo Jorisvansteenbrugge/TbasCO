@@ -1520,20 +1520,31 @@ Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margin
       mar   = c(2.1, 1, 2.1, 1))
 
 
-  barplot(Model_Module_List[[1]][Model_Module_List[[4]], 1], col = NA, border = NA, axes = FALSE, xlim = c(-2,1), ylim =c(0,19), yaxt = 'n', xaxt = 'n')
-  text(x=rep(-1,19), y=seq(from = 1, to = 18, by =17/18),labels=rownames(Model_Module_List[[3]])[Model_Module_List[[4]]],cex=1)
+  barplot( Model_Module_List[[1]][ Model_Module_List[[4]], 1 ],
+           col    = NA,
+           border = NA,
+           axes   = FALSE,
+           xlim   = c(-2,1),
+           ylim   = c(0,19),
+           yaxt   = 'n',
+           xaxt   = 'n')
+  text( x = rep(-1,19),
+        y = seq(from = 1, to = 18, by = 17 / 18),
+        labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 1)
 
-  for (i in rev(Model_Module_List[[5]])) {
+  for (i in rev(Model_Module_List[[5]] )) {
 
-    sig_colors                       <- rep("white", length(Model_Module_List[[4]]))
+    sig_colors                             <- rep("white", length(Model_Module_List[[4]]))
     sig_colors[Model_Module_List[[3]][,i]] <- "gray0"
 
-    barplot(Model_Module_List[[1]][Model_Module_List[[4]], i],
-            xlim = c(-2,1), horiz = TRUE,
-            main = colnames(Model_Module_List[[1]])[i],
-            col  = sig_colors[Model_Module_List[[4]]],
-            yaxt = 'n'
+    barplot(Model_Module_List[[1]][ Model_Module_List[[4]], i],
+            xlim  = c(-2,1),
+            horiz = TRUE,
+            main  = colnames(Model_Module_List[[1]])[i],
+            col   = sig_colors[Model_Module_List[[4]]],
+            yaxt  = 'n'
     )
-    abline(v = 0, lwd = 1)
+    abline(v   = 0,
+           lwd = 1)
   }
 }
