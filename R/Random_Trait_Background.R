@@ -7,7 +7,8 @@
 #' calculated between Genome A and Genome B, as described in the previous section
 #' @param RNAseq.data Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
 #' @param N Number of genes to include in the random module
-#' @param Z Number of iterations
+#' @param Z Number of iterations, if left empty the actual sizes of the modules in the database
+#' will be used.
 #' @param metrics Named list containing possibly multiple functions for distance
 #' @param threads Number of cpu cores to be used
 #' @export
@@ -16,9 +17,10 @@
 Random_Trait_Background <- function(RNAseq.data,
                                     bkgd.individual.Zscores,
                                     N,
-                                    Z,
                                     metrics,
+                                    Z,
                                     threads = 4){
+
 
 
   .Procedure <- function(RNAseq.data,
@@ -65,6 +67,11 @@ Random_Trait_Background <- function(RNAseq.data,
   registerDoSNOW(cl)
 
   bkgd.modules <- list()
+
+  if(missing(Z)) {
+    Z <- RNAseq.data$features$annotation.db$module.dict %>% sapply(length) %>% as.numeric %>% unique
+  }
+
 
   for(Z.size in Z){
     bkgd.modules[[as.character(Z.size)]] <- unlist(.Procedure(RNAseq.data,
