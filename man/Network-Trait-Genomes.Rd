@@ -17,6 +17,13 @@ Draw a network of trait(-attributes) with its associated genomes
 in Cytoscape (\url{http://www.cytoscape.org/}) automatically via Cytoscape's
 REST API..
 }
+\examples{
+Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
+\dontrun{
+shared_ten_genomes <- c('M00335', 'M00120', 'M00144', 'M00149', 'M00260', 'M00082', 'M00360', 'M00022', 'M00023')
+niche_traits <- c("M00150", 'M00064', 'M00123', 'M00186', 'M00244', 'M00223', 'M00323', 'M00328', 'M00453', 'M00515', 'M00523', 'M00579', 'M00772')
+}
+}
 \author{
 JJM van Steenbrugge
 }
