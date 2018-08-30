@@ -1516,6 +1516,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 
 Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margins, sortbygenome) {
 
+num_genes <-  length( Model_Module_List[[4]])
 par(mfrow = margins,
     mar   = c(2.1, 1, 2.1, 1))
 
@@ -1536,8 +1537,8 @@ if (length(sortbygenome)==1) {
                yaxt   = 'n',
                xaxt   = 'n')
       text(x = rep(-1,19),
-           y = seq(from = 1, to = 18, by = 17 / 18),
-           labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 0.75)
+           y = seq(from = 1, to = (num_genes-1), by = (num_genes-2) / (num_genes-1)),
+           labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 1)
 
     } else {
 
@@ -1570,8 +1571,8 @@ if (length(sortbygenome)==1) {
                yaxt   = 'n',
                xaxt   = 'n')
       text(x = rep(-1,19),
-           y = seq(from = 1, to = 18, by = 17 / 18),
-           labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 0.75)
+           y = seq(from = 1, to = (num_genes-1), by = (num_genes-2) / (num_genes-1)),
+           labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 1)
 
     } else {
 
