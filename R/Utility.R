@@ -1367,8 +1367,8 @@ Go_Fish <- function(RNAseq.data){
 #'
 Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,bkgd.traits) {
 
-#  no longer necessary
-#  annotation.db <- RNAseq.data$features$annotation.db
+
+  annotation.db <- RNAseq.data$features$annotation.db
 
   # Step one, take the module list and match it to the module dictionary psoitions.
 # This is done by parsing out the module.dict
@@ -1409,15 +1409,13 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   # For each module name, get the number of genes in the module. This needs to be updated to use the disjunctive normalized forms.
 
   for (i in 1: length(Module_Names)) {
-
     Module_Pool[i] <- list(trait.attributes[[ Module_Positions[i] ]] [2])
-
   }
 
   # Reorder the bins based on the input variable, hashed out for updated version in which order is defined based on similarity
   # If a predetermined bin order is  supplied ...
 
-  # Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
+  Bin_Order_Index <- match(Bin_Order, rownames(Module_Pool[[1]] [[1]]))
 
   # Make Model Comparison Matrix, filtering modules that were not present in the model organism
 
@@ -1431,6 +1429,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
     Model_Comparison_vector <- fullmatrix[ rev(Bin_Order_Index),
                                            which(dimnames(fullmatrix) [[1]] == Model_Bin
                                                   )]
+    print (Model_Comparison_vector)
 
     # If the vector is empty, go to the next module. Else, cbind the vector to a growing matrix containing all Module comparisons for that Model genome
     if(sum(is.na(Model_Comparison_vector)) == length(Model_Comparison_vector)){
@@ -1444,6 +1443,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
       Fish_Backgrounds_trimmed <- c(Fish_Backgrounds_trimmed,
                                     Fish_Backgrounds[i])
     }
+
   }
 
 
@@ -1519,6 +1519,7 @@ Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margin
   par(mfrow = margins,
       mar   = c(2.1, 1, 2.1, 1))
 
+<<<<<<< HEAD
   # How it sorted? If by a particular genome then do the following
   if (length(sortbygenome)==1) {
     j=0
@@ -1589,5 +1590,34 @@ Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margin
       }
       }
     }
-}
+=======
 
+  barplot( Model_Module_List[[1]][ Model_Module_List[[4]], 1 ],
+           col    = NA,
+           border = NA,
+           axes   = FALSE,
+           xlim   = c(-2,1),
+           ylim   = c(0,19),
+           yaxt   = 'n',
+           xaxt   = 'n')
+  text( x = rep(-1,19),
+        y = seq(from = 1, to = 18, by = 17 / 18),
+        labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 1)
+
+  for (i in rev(Model_Module_List[[5]] )) {
+
+    sig_colors                             <- rep("white", length(Model_Module_List[[4]]))
+    sig_colors[Model_Module_List[[3]][,i]] <- "gray0"
+
+    barplot(Model_Module_List[[1]][ Model_Module_List[[4]], i],
+            xlim  = c(-2,1),
+            horiz = TRUE,
+            main  = colnames(Model_Module_List[[1]])[i],
+            col   = sig_colors[Model_Module_List[[4]]],
+            yaxt  = 'n'
+    )
+    abline(v   = 0,
+           lwd = 1)
+  }
+>>>>>>> f5f9c53324b0ff6df7875faa53dde4cef99abf27
+}

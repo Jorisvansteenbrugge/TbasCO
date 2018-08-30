@@ -1,3 +1,4 @@
+random <- function() {
 library(gplots)
 heatmap.2(sbs.trait.attributes[,as.numeric(which(colSums(sbs.trait.attributes[,])>3))])
 heatmap.2(pa_trait[which(rowSums(pa_trait) > 3),])
@@ -109,3 +110,14 @@ Plot_Model_Module(Model_Module_List_Polymer_Metabolism, 39, Module_Names_Polymer
 
 sapply(sapply(sub_modules[], length), max)
 
+
+
+
+
+
+sapply(modules, function(module) {
+  grep(module, rownames(trait_pa_expanded)) %>% length
+}) %>% sort
+
+
+}

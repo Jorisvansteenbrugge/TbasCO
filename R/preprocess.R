@@ -58,7 +58,15 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
   }
 
   # Add trait presence absence later
-  RNAseq.data$features$trait_presence_absence <- Get_trait_presence_absence(RNAseq.data)
+ # RNAseq.data$features$trait_presence_absence <- Get_trait_presence_absence(RNAseq.data)
+
+
+  all_kos <- RNAseq.data$features$annotation.db$`all annotations in a module`
+  expansion <- Expand_module_database(RNAseq.data)
+  RNAseq.data$features$annotation.db          <- expansion$annotation.db
+  RNAseq.data$features$annotation.db$`all annotations in a module` <- all_kos
+  RNAseq.data$features$trait_presence_absence <- expansion$trait_presence_absence
+
 
   # Combine the table and the features in one object
   return(RNAseq.data)
@@ -131,7 +139,7 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
 }
 
 
-#' Determine for each genome whether a trait is present or absent
+#' (DEPRECATED) Determine for each genome whether a trait is present or absent
 #' @name Get_trait_presence_absence
 #' @description
 #' @param annotation_presence_absence
@@ -177,12 +185,11 @@ Get_trait_presence_absence <- function(RNAseq.data) {
   }
 
   for(module in names(RNAseq.data$features$annotation.db$module.dict)){
-    print(module)
+
 
     module_completions     <- rep(F, length(RNAseq.data$features$bins))
     try({
       module_completions <- .get_trait_pa(module)
-      print(paste0(module, " done"))
       })
 
     output <- rbind(output, module_completions)
@@ -216,7 +223,7 @@ Expand_module_database <- function(RNAseq.data) {
 
 
         true_sum <- kos %>% sum
-        if (true_sum == length(module_kos)) {
+        if ((true_sum /length(module_kos) >= 1)) {
           return(T)
         }
 
@@ -229,10 +236,11 @@ Expand_module_database <- function(RNAseq.data) {
     return(pa)
   }
 
-  expanded_annotation.db <- list()
+  expanded_annotation.db <- list("module.dict" = list())
   # nrow = number of traits
   # ncol = 0 because columns will be added at runtime
-  trait_pa <- matrix(nrow = 0, ncol=length(RNAseq.data$features$bins) )
+  trait_pa_expanded <- matrix(nrow = 0,
+                     ncol = length(RNAseq.data$features$bins) )
   saved_expansions <- c()
 
   for(module in names(RNAseq.data$features$annotation.db$module.dict)) {
@@ -243,25 +251,27 @@ Expand_module_database <- function(RNAseq.data) {
 
       module_completions     <- rep(F, length(RNAseq.data$features$bins))
       try({
-        module_completions <- .get_trait_pa(sub_mods[[i]])
+        module_completions   <- .get_trait_pa(sub_mods[[i]])
 
       })
 
-
-      if(sum(module_completions) >= 0.8) {
+      if(sum(module_completions) >= 1) {
         module_flavor <- paste(module, i, sep = '_')
 
-        expanded_annotation.db[[ module_flavor ]] <- sub_mods[[i]]
+        expanded_annotation.db$module.dict[[ module_flavor ]] <- sub_mods[[i]]
         saved_expansions <- c(saved_expansions, module_flavor)
-        trait_pa <- rbind(trait_pa, module_completions)
+        trait_pa_expanded         <- rbind(trait_pa_expanded, module_completions)
       }
+
     }
-    print(paste0(module, " done"))
+
 
   }
 
-  rownames(trait_pa) <- saved_expansions
-  return(trait_pa)
+  rownames(trait_pa_expanded) <- saved_expansions
+  return(list("trait_presence_absence" = trait_pa_expanded,
+              "annotation.db"          = expanded_annotation.db)
+  )
 }
 
 
