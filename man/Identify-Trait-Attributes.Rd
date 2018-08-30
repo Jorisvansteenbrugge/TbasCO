@@ -9,7 +9,8 @@ Identify_Trait_Attributes(RNAseq.data, pairwise.distances, annotation.db,
   threads = 4)
 }
 \arguments{
-\item{RNAseq.data}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
+\item{RNAseq.data}{Collection of multple components, include RNA seq data, annotations, etc.
+See \code{\link{Pre_process_input}} for the full list.}
 
 \item{pairwise.distances}{Named list containing possibly multiple functions for distance}
 

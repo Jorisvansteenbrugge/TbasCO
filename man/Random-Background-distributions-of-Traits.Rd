@@ -5,17 +5,18 @@
 \alias{Random_Trait_Background}
 \title{Generate a background distibution of composite Z scores}
 \usage{
-Random_Trait_Background(RNAseq.data, bkgd.individual.Zscores, N, Z,
-  metrics, threads = 4)
+Random_Trait_Background(RNAseq.data, bkgd.individual.Zscores, N, metrics,
+  Z, threads = 4)
 }
 \arguments{
 \item{RNAseq.data}{Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
 
 \item{N}{Number of genes to include in the random module}
 
-\item{Z}{Number of iterations}
-
 \item{metrics}{Named list containing possibly multiple functions for distance}
+
+\item{Z}{Number of iterations, if left empty the actual sizes of the modules in the database
+will be used.}
 
 \item{threads}{Number of cpu cores to be used}
 }

@@ -36,7 +36,7 @@ variable.
 The package supports different options for normalization. By default the `Pre_process_input` function
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
-```{r}
+```{r Preprocessing}
 normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
                   'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
                   'library_size' = c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166),
@@ -100,7 +100,7 @@ In this vignette, the Pearson Correlation and the Normalized Rank Euclidean Dist
 The user is free to implement different metrics, as long as the function parameters
 are identical to the ones in the example PC and NRED functions.
 In these examples, rowA and rowB are rows from RNAseq.data$table.
-```{r}
+```{r Defining Distance Metrics}
 # Calculates the Pearson Correlation
 PC <- function(rowA, rowB, RNAseq.features){
   return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
@@ -136,20 +136,20 @@ d_module_size_range<-sort(unique(d_module_size_range_all))
 ```
 
 ### Actual Analysis
-```{r}
+```{r Main Analysis}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
-                                                            N       = 10000, 
+                                                            N       = 1000, 
                                                             metrics = distance.metrics,
                                                             threads = 3)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
-
+start <- Sys.time()
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
                                                    N = 10000, 
-                                                   Z = d_module_size_range[1:25], 
                                                    metrics = distance.metrics,
-                                                   threads = 4)
+                                                   threads = 6)
+end <- Sys.time()
 
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,
@@ -174,19 +174,7 @@ sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned,
                                                         RNAseq.data$features$bins)
 ```
 
-## Plotting
-```{r}
-Plot_Trait_Attribute_Expression('ribo', trait.attributes.pruned, RNAseq.data)
-plot(RNAseq.data$table[which(RNAseq.data$table$Annotation == 'K01977'),
-                       RNAseq.data$features$rank.columns])
-Plot_Background_Individual_Genes(bkgd.individual.Zscores)
-Plot_Background_Modules(bkgd.modules)
 
-Network_Trait_Genomes(c('PHA','PolyP', 'Glyco'), trait.attributes.pruned,
-                      genome.phylogeny)
-
-Draw_Expression(trait = 'PHA', RNAseq.data, trait.attributes.pruned)
-```
 
 ## Apriori
 ```{r}
