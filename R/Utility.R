@@ -1430,7 +1430,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
     Model_Comparison_vector <- fullmatrix[ rev(Bin_Order_Index),
                                            which(dimnames(fullmatrix) [[1]] == Model_Bin
                                                   )]
-    print (Model_Comparison_vector)
+    # print (Model_Comparison_vector)
 
     # If the vector is empty, go to the next module. Else, cbind the vector to a growing matrix containing all Module comparisons for that Model genome
     if(sum(is.na(Model_Comparison_vector)) == length(Model_Comparison_vector)){
@@ -1514,38 +1514,82 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
 #' @param Module_Names
 #' @export
 #' @author BO Oyserman
-#'
-Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margins) {
 
-  par(mfrow = margins,
-      mar   = c(2.1, 1, 2.1, 1))
+Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margins, sortbygenome) {
 
+num_genes <-  length( Model_Module_List[[4]])
+par(mfrow = margins,
+    mar   = c(2.1, 1, 2.1, 1))
 
-  barplot( Model_Module_List[[1]][ Model_Module_List[[4]], 1 ],
-           col    = NA,
-           border = NA,
-           axes   = FALSE,
-           xlim   = c(-2,1),
-           ylim   = c(0,19),
-           yaxt   = 'n',
-           xaxt   = 'n')
-  text( x = rep(-1,19),
-        y = seq(from = 1, to = 18, by = 17 / 18),
-        labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 1)
+# How it sorted? If by a particular genome then do the following
+if (length(sortbygenome)==1) {
+  j=0
+  # if it is the first plot in a row, plot the labels
 
-  for (i in rev(Model_Module_List[[5]] )) {
+  for (i in order(Model_Module_List$Model_Comparison_Matrix[sortbygenome,])) {
+    j = j +1
+    if (j %in% (which(1:(margins[1]%*%margins[2]) %in% as.numeric(margins[2]%*%seq(1,margins[1]))==TRUE)-(margins[2]-1))) {
+      barplot( Model_Module_List[[1]][ Model_Module_List[[4]], 1 ],
+               col    = NA,
+               border = NA,
+               axes   = FALSE,
+               xlim   = c(-2,1),
+               ylim   = c(0,19),
+               yaxt   = 'n',
+               xaxt   = 'n')
+      text(x = rep(-1,19),
+           y = seq(from = 1, to = (num_genes-1), by = (num_genes-2) / (num_genes-1)),
+           labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 1)
 
-    sig_colors                             <- rep("white", length(Model_Module_List[[4]]))
-    sig_colors[Model_Module_List[[3]][,i]] <- "gray0"
+    } else {
 
-    barplot(Model_Module_List[[1]][ Model_Module_List[[4]], i],
-            xlim  = c(-2,1),
-            horiz = TRUE,
-            main  = colnames(Model_Module_List[[1]])[i],
-            col   = sig_colors[Model_Module_List[[4]]],
-            yaxt  = 'n'
-    )
-    abline(v   = 0,
-           lwd = 1)
+      sig_colors                       <- rep("white", length(Model_Module_List[[4]]))
+      sig_colors[Model_Module_List[[3]][,i]] <- "gray0"
+
+      barplot(Model_Module_List[[1]][Model_Module_List[[4]], i],
+              xlim = c(-2,1), horiz = TRUE,
+              main = colnames(Model_Module_List[[1]])[i],
+              col  = sig_colors[Model_Module_List[[4]]],
+              yaxt = 'n'
+      )
+      abline(v = 0, lwd = 1)
+    }
   }
+  # How it sorted? If NOT by a particular genome then sort by most significant modules
+} else {
+  j=0
+
+  for (i in rev(Model_Module_List[[5]])) {
+
+    j = j +1
+    if (j %in% (which(1:(margins[1]%*%margins[2]) %in% as.numeric(margins[2]%*%seq(1,margins[1]))==TRUE)-(margins[2]-1))) {
+      barplot( Model_Module_List[[1]][ Model_Module_List[[4]], 1 ],
+               col    = NA,
+               border = NA,
+               axes   = FALSE,
+               xlim   = c(-2,1),
+               ylim   = c(0,19),
+               yaxt   = 'n',
+               xaxt   = 'n')
+      text(x = rep(-1,19),
+           y = seq(from = 1, to = (num_genes-1), by = (num_genes-2) / (num_genes-1)),
+           labels = rownames(Model_Module_List[[3]])[Model_Module_List[[4]]], cex = 1)
+
+    } else {
+
+      sig_colors                        <- rep("white", length(Model_Module_List[[4]]))
+      sig_colors[Model_Module_List[[3]][,i]] <- "gray0"
+
+      barplot(Model_Module_List[[1]][Model_Module_List[[4]], i],
+              xlim = c(-2,1), horiz = TRUE,
+              main = colnames(Model_Module_List[[1]])[i],
+              cex.main = 0.75,
+              col  = sig_colors[Model_Module_List[[4]]],
+              yaxt = 'n'
+      )
+      abline(v = 0, lwd = 1)
+    }
+  }
+}
+
 }
