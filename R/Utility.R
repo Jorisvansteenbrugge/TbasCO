@@ -1182,7 +1182,8 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
     return(sum(row))
   })
 
-  ta.pa <- ta.pa[which(ta.pa != 0)]
+  ta.pa[which(ta.pa <= 3)] %>% length
+
   sort(ta.pa) %>% barplot(xaxt='n', ylim = c(0,20))
 
 }
