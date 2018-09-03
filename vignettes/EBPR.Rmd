@@ -190,6 +190,12 @@ Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$fe
 ## Experimental
 ```{r}
 Go_Fish(RNAseq.data)
+# Retrieving all M00009 attributes
+M00009 <- names(trait.attributes.pruned) %>% grep("M00009", .)
+M00009_attributes <- trait.attributes.pruned[M00009] %>% 
+                          sapply(length) %>% `!=` (0) %>% which %>% names
+
+trait.attributes.pruned[M00009_attributes]
 ```
 
 ## Publication figure creating
