@@ -208,6 +208,8 @@ Network_Trait_Genomes <- function(trait.names, trait.attributes.pruned,
     }
   }
 
+
+
   # Label text colors
   setNodeLabelColorBypass(
     node.names = nodes[which(nodes[, 2] == "genome"), 1],
@@ -1187,11 +1189,22 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
 
 }
 
-Plot_traits_vs_attributes <- function() {
+Plot_traits_vs_attributes <- function(model_bin) {
   point.matrix <- matrix(ncol=3, nrow=0)
+  point.matrix_39 <- matrix(ncol=3, nrow=0)
+
   t.pa <- RNAseq.data$features$trait_presence_absence
 
-  for (pair in combn(RNAseq.data$features$bins, 2, simplify = F)){
+  combinations <- combn(RNAseq.data$features$bins, 2, simplify = F)
+
+  if(!missing(model_bin)){
+    combinations_39 <- lapply(RNAseq.data$features$bins, function(bin){
+      return(c(bin, model_bin))
+    })
+  }
+
+
+  for (pair in combinations){
     try({
       A <- pair[1] %>% as.character
       B <- pair[2] %>% as.character
@@ -1219,16 +1232,16 @@ Plot_traits_vs_attributes <- function() {
   point.df <- data.frame(point.matrix, stringsAsFactors = F)
   point.df$traits %<>% as.numeric
   point.df$attributes %<>% as.numeric
+  ylim_plot1 <- c(0,max(point.df$attributes)+5)
+  xlim_plot1 <- c(0, max(point.df$traits)+5)
 
   plot(x = as.numeric(point.matrix[,2]),
        y = as.numeric(point.matrix[,3]),
        xlab = '# Overlap Traits',
        ylab = '# Overlap Attributes',
        main = "Pairwise Genome Comparisons",
-       ylim = c(0,50),
-       xlim = c(0, 110))
-
-
+       ylim = ylim_plot1,
+       xlim = xlim_plot1)
 
   model <- lm(attributes~traits, data = point.df)
   abline(model$coefficients)
@@ -1237,6 +1250,56 @@ Plot_traits_vs_attributes <- function() {
   abline(cinterval[,1])
   abline(cinterval[,2])
 
+
+  if(!missing(model_bin)){
+  for (pair in combinations_39){
+    try({
+      A <- pair[1] %>% as.character
+      B <- pair[2] %>% as.character
+
+      traits.A <- t.pa[, A] %>% which(. == T) %>% names
+      traits.B <- t.pa[, B] %>% which(. == T) %>% names
+      overlap.traits <- intersect(traits.A, traits.B) %>% length
+
+      attributes.A <- which(sbs.trait.attributes[A,]  == 1) %>% names
+      print(B)
+      attributes.B <- which(sbs.trait.attributes[B,]  == 1) %>% names
+      overlap.attributes <- intersect(attributes.A, attributes.B) %>% length
+
+      vs <- paste(pair, collapse = 'vs')
+
+      point.matrix_39 <- rbind(point.matrix_39,
+                            c(vs,
+                              overlap.traits,
+                              overlap.attributes))
+    })
+
+  }
+  colnames(point.matrix_39) <- c("pairs", 'traits', 'attributes')
+
+  point.df <- data.frame(point.matrix_39, stringsAsFactors = F)
+  point.df$traits %<>% as.numeric
+  point.df$attributes %<>% as.numeric
+
+
+  points(x = as.numeric(point.matrix_39[,2]),
+       y = as.numeric(point.matrix_39[,3]),
+       xlab = '# Overlap Traits',
+       ylab = '# Overlap Attributes',
+       main = "Pairwise Genome Comparisons",
+       ylim = ylim_plot1,
+       xlim = xlim_plot1,
+       pch=19)
+
+  model_39 <- lm(attributes~traits, data = point.df)
+  abline(model_39$coefficients, col="red")
+
+  cinterval_39 <- confint(model_39, level=.99)
+  abline(cinterval_39[,1], col="red")
+  abline(cinterval_39[,2], col="red")
+  #polygon
+
+  }
   identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
 }
 
