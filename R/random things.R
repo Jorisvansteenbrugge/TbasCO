@@ -19,9 +19,17 @@ plot(pa.clust.attributes, labels = genome.taxonomy.phylum)
 
 
 # overlap in niche specific 16 & 39
-# ta is from the Plot_Redundancy_Traits function in utility.R
-which(RNAseq.data$features$trait_presence_absence[names(which(ta.pa<4)), "16"] ==1)[which(RNAseq.data$features$trait_presence_absence[names(which(ta.pa<4)), "16"] ==1)%in%which(RNAseq.data$features$trait_presence_absence[names(which(ta.pa<4)), "39"] ==1)]
+# ta.pa is from the Plot_Redundancy_Traits function in utility.R
+a <- which(
+  RNAseq.data$features$trait_presence_absence[names(which(ta.pa<4)), "16"] ==1)[
+    which(RNAseq.data$features$trait_presence_absence[names(which(ta.pa<4)), "16"] ==1) %in%
+      which(RNAseq.data$features$trait_presence_absence[names(which(ta.pa<4)), "39"] ==1)
+    ]
 
+
+average_niche_per_genomce <- sapply(RNAseq.data$features$bins, function(bin){
+  which(RNAseq.data$features$trait_presence_absence[names(which(ta.pa<4)), bin] == T) %>% length
+}) %>% mean
 
 
 
