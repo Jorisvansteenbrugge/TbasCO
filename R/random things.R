@@ -87,9 +87,7 @@ Model_Module_List_PP_Metabolism <- Model_Module(RNAseq.data, trait.attributes, 3
 Plot_Model_Module(Model_Module_List_PP_Metabolism, 39, Module_Names_PP_Metabolism)
 
 
-margins =c(5,23)
-Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names, bkgd.traits)
-Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome=NULL)
+
 
 margins =c(5,23)
 Model_Module_List_ATP_synthesis <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names_ATP_synthesis, bkgd.traits)
@@ -129,3 +127,9 @@ sapply(modules, function(module) {
 
 
 }
+
+
+
+
+
+

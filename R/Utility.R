@@ -1184,10 +1184,53 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
     return(sum(row))
   })
 
-  ta.pa[which(ta.pa <= 3)] %>% length
-
+  ta.pa <- ta.pa[which(ta.pa != 0)]
   sort(ta.pa) %>% barplot(xaxt='n', ylim = c(0,20))
 
+}
+
+Calc_TnA_redundancy <- function() {
+  point.matrix <- matrix(ncol=4, nrow=0)
+
+  t.pa <- RNAseq.data$features$trait_presence_absence
+
+  combinations <- combn(RNAseq.data$features$bins, 2, simplify = F)
+
+  for (pair in combinations){
+    try({
+      A <- pair[1] %>% as.character
+      B <- pair[2] %>% as.character
+
+      traits.A <- t.pa[, A] %>% which(. == T) %>% names
+      traits.B <- t.pa[, B] %>% which(. == T) %>% names
+      overlap.traits <- intersect(traits.A, traits.B) %>% length
+
+      attributes.A <- which(sbs.trait.attributes[A,]  == 1) %>% names
+      print(B)
+      attributes.B <- which(sbs.trait.attributes[B,]  == 1) %>% names
+      overlap.attributes <- intersect(attributes.A, attributes.B) %>% length
+
+      point.matrix <- rbind(point.matrix,
+                            c(A, B,
+                              overlap.traits,
+                              overlap.attributes))
+    })
+
+  }
+  colnames(point.matrix) <- c("A","B", 'traits', 'attributes')
+
+  point.df <- data.frame(point.matrix, stringsAsFactors = F)
+  point.df$traits %<>% as.numeric
+  point.df$attributes %<>% as.numeric
+  all_bins <- unique(c(point.df[,1],point.df[,2]))
+  sum_traits <- NULL
+  sum_attributes <- NULL
+  for (i in as.numeric(all_bins)) {
+  bin_rows <- which(point.df[,1] == i | point.df[,2] == i)
+  sum_traits <- c(sum_traits, sum(point.df[bin_rows,3]))
+  sum_attributes <- c(sum_attributes,sum(point.df[bin_rows,4]))
+  }
+  return(cbind(all_bins, sum_traits, sum_attributes))
 }
 
 Plot_traits_vs_attributes <- function(model_bin) {
@@ -1200,7 +1243,9 @@ Plot_traits_vs_attributes <- function(model_bin) {
 
   if(!missing(model_bin)){
     combinations_39 <- lapply(RNAseq.data$features$bins, function(bin){
+      if(!bin==model_bin){
       return(c(bin, model_bin))
+      }
     })
   }
 
@@ -1290,18 +1335,140 @@ Plot_traits_vs_attributes <- function(model_bin) {
        main = "Pairwise Genome Comparisons",
        ylim = ylim_plot1,
        xlim = xlim_plot1,
-       pch=19)
+       pch=19,
+       cex=1.5,
+       col="red")
 
-  model_39 <- lm(attributes~traits, data = point.df)
-  abline(model_39$coefficients, col="red")
+  text(x=10,y=ylim_plot1[2]-5, paste("bin_",model_bin))
+#  model_39 <- lm(attributes~traits, data = point.df)
+#  abline(model_39$coefficients, col="red")
 
-  cinterval_39 <- confint(model_39, level=.99)
-  abline(cinterval_39[,1], col="red")
-  abline(cinterval_39[,2], col="red")
+#  cinterval_39 <- confint(model_39, level=.99)
+#  abline(cinterval_39[,1], col="red")
+#  abline(cinterval_39[,2], col="red")
   #polygon
 
   }
-  identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
+  # identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
+}
+
+Plot_traits_vs_attributes_highlight <- function(model_bin, string_to_colors) {
+  point.matrix <- matrix(ncol=3, nrow=0)
+  point.matrix_39 <- matrix(ncol=3, nrow=0)
+  
+  t.pa <- RNAseq.data$features$trait_presence_absence
+  
+  combinations <- combn(RNAseq.data$features$bins, 2, simplify = F)
+  
+  if(!missing(model_bin)){
+    combinations_39 <- lapply(RNAseq.data$features$bins, function(bin){
+      if(!bin==model_bin){
+        return(c(bin, model_bin))
+      }
+    })
+  }
+  
+  
+  for (pair in combinations){
+    try({
+      A <- pair[1] %>% as.character
+      B <- pair[2] %>% as.character
+      
+      traits.A <- t.pa[, A] %>% which(. == T) %>% names
+      traits.B <- t.pa[, B] %>% which(. == T) %>% names
+      overlap.traits <- intersect(traits.A, traits.B) %>% length
+      
+      attributes.A <- which(sbs.trait.attributes[A,]  == 1) %>% names
+      print(B)
+      attributes.B <- which(sbs.trait.attributes[B,]  == 1) %>% names
+      overlap.attributes <- intersect(attributes.A, attributes.B) %>% length
+      
+      vs <- paste(pair, collapse = 'vs')
+      
+      point.matrix <- rbind(point.matrix,
+                            c(vs,
+                              overlap.traits,
+                              overlap.attributes))
+    })
+    
+  }
+  colnames(point.matrix) <- c("pairs", 'traits', 'attributes')
+  
+  point.df <- data.frame(point.matrix, stringsAsFactors = F)
+  point.df$traits %<>% as.numeric
+  point.df$attributes %<>% as.numeric
+  ylim_plot1 <- c(0,max(point.df$attributes)+5)
+  xlim_plot1 <- c(0, max(point.df$traits)+5)
+  
+  plot(x = as.numeric(point.matrix[,2]),
+       y = as.numeric(point.matrix[,3]),
+       xlab = '# Overlap Traits',
+       ylab = '# Overlap Attributes',
+       main = "Pairwise Genome Comparisons",
+       ylim = ylim_plot1,
+       xlim = xlim_plot1)
+  
+  model <- lm(attributes~traits, data = point.df)
+  abline(model$coefficients)
+  
+  cinterval <- confint(model, level=.99)
+  abline(cinterval[,1])
+  abline(cinterval[,2])
+  
+  
+  if(!missing(model_bin)){
+    for (pair in combinations_39){
+      try({
+        A <- pair[1] %>% as.character
+        B <- pair[2] %>% as.character
+        
+        traits.A <- t.pa[, A] %>% which(. == T) %>% names
+        traits.B <- t.pa[, B] %>% which(. == T) %>% names
+        overlap.traits <- intersect(traits.A, traits.B) %>% length
+        
+        attributes.A <- which(sbs.trait.attributes[A,]  == 1) %>% names
+        print(B)
+        attributes.B <- which(sbs.trait.attributes[B,]  == 1) %>% names
+        overlap.attributes <- intersect(attributes.A, attributes.B) %>% length
+        
+        vs <- paste(pair, collapse = 'vs')
+        
+        point.matrix_39 <- rbind(point.matrix_39,
+                                 c(vs,
+                                   overlap.traits,
+                                   overlap.attributes))
+      })
+      
+    }
+    colnames(point.matrix_39) <- c("pairs", 'traits', 'attributes')
+    
+    point.df <- data.frame(point.matrix_39, stringsAsFactors = F)
+    point.df$traits %<>% as.numeric
+    point.df$attributes %<>% as.numeric
+    
+    
+    points(x = as.numeric(point.matrix_39[,2]),
+           y = as.numeric(point.matrix_39[,3]),
+           xlab = '# Overlap Traits',
+           ylab = '# Overlap Attributes',
+           main = "Pairwise Genome Comparisons",
+           ylim = ylim_plot1,
+           xlim = xlim_plot1,
+           pch=19,
+           cex=1.5,
+           col=string_to_colors)
+    
+    text(x=10,y=ylim_plot1[2]-5, paste("bin_",model_bin))
+    #  model_39 <- lm(attributes~traits, data = point.df)
+    #  abline(model_39$coefficients, col="red")
+    
+    #  cinterval_39 <- confint(model_39, level=.99)
+    #  abline(cinterval_39[,1], col="red")
+    #  abline(cinterval_39[,2], col="red")
+    #polygon
+    
+  }
+  # identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
 }
 
 Get_KEGG_Sub_Modules <- function(){
@@ -1419,7 +1586,7 @@ Go_Fish <- function(RNAseq.data){
 #' @param Module_Pool
 #' @param Bin_Order
 #' @param Yrange It is optional to provide a Yrange
-#' @examples Module_Model_List <- Model_Module(RNAseq.data, trait.attributes, '39', Module_Names, Bin_Order, c(-2.5,2.5), bkgd.traits)
+#' @examples Module_Model_List <- Model_Module(RNAseq.data, trait.attributes, '39', Module_Names, c(-2.5,2.5), bkgd.traits)
 #'\dontrun{
 #' Model_Bin <- 39
 #' Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)
@@ -1655,4 +1822,103 @@ if (length(sortbygenome)==1) {
   }
 }
 
+}
+
+
+
+##' Automatically convert a vector of strings into a color for easy plotting
+##'
+##' @title Convert between strings to colors
+##' @param string a vector of strings representing groups. 
+##' @param colors a vector of colors, one for each unique element in \code{string}.
+##' @export
+##' @return a vector of colors, one for each element in \code{string} 
+##' @aliases string.to.colors stringtocolor stringToColors string.to.color
+##' @author Dustin Fife
+##' @seealso \code{\link{number.to.colors}}
+##' @examples
+##' groups = sample(LETTERS[1:5], size=100, replace=TRUE)
+##' plot(rnorm(100), rnorm(100), col=string.to.colors(groups))
+##' plot(rnorm(100), rnorm(100), col=string.to.colors(groups), 
+##'    pch=as.numeric(string.to.colors(groups, colors=c(16:20))))
+##' @note This function can also be used to specify pch values, cex values, or any other plotting values
+##' the user may wish to differ across groups. See examples. 
+string.to.colors = function(string, colors=NULL){
+  if (is.factor(string)){
+    string = as.character(string)
+  }
+  if (!is.null(colors)){
+    if (length(colors)!=length(unique(string))){
+      break("The number of colors must be equal to the number of unique elements.")
+    }
+    else {
+      conv = cbind(unique(string), colors)
+    }
+  } else {
+    conv = cbind(unique(string), rainbow(length(unique(string))))
+  }
+  unlist(lapply(string, FUN=function(x){conv[which(conv[,1]==x),2]}))
+}
+
+
+##' Automatically convert a vector of numbers into a color for easy plotting
+##'
+##' @title Convert from numbers to colors
+##' @param value a vector of numbers. 
+##' @param colors a vector of two or more colors representing the inflection points of the gradients, passed to \code{\link{colorRampPalette}}.
+##' @param num The number of unique intervals for colors. Chose larger numbers for finer gradients (higher resolution).
+##' @export
+##' @return a vector of colors. 
+##' @aliases number.to.color numbers.to.colors integers.to.colors integer.to.colors numberToColors numberToColor
+##' @author Dustin Fife
+##' @seealso \code{\link{string.to.colors}} \code{\link{colorRampPalette}} \code{\link{gradient.legend}}
+##' @examples
+##' #### plot three variables, represent the third with a color
+##' d = mvrnorm(100, mu=c(0,0,0), Sigma=matrix(c(1, .6, .6, .6, 1, .6, .6, .6, 1), ncol=3))
+##' plot(d[,1:2], col=number.to.colors(d[,3], c("black", "pink")), pch=16)
+number.to.colors = function(value, colors=c("red", "blue"), num=100){
+  cols = colorRampPalette(colors)(num)
+  cols = 	cols[findInterval(value, vec=seq(from=min(value), to=max(value), length.out=num))]
+  cols
+}
+
+
+
+##' Create a gradiented legend
+##'	
+##' @param y the variable used to create the gradient, typically in \code{\link{number.to.colors}}
+##' @param yrange The range of y values. If y is supplied, it will pulls these from the actual y values.
+##' @param cols The color gradients to be used that are passed to \code{\link{colorRampPalette}}.
+##' @param location The location of the subplot, expressed in fractions of the entire plot (left x, right x,
+##' bottom y, top y).
+##' @param n the number of values used for the gradient. Higher numbers make a higher resolution
+##' @param ... other arguments passed to image
+##' @aliases gradient
+##' @seealso \code{\link{number.to.colors}} \code{\link{colorRampPalette}}
+##' @author Dustin Fife
+##' @export
+##' @examples
+##' y = rnorm(100); x = .6*y + rnorm(100,0,sqrt(1-.6^2))
+##' randnum = runif(100)
+##' plot(x,y, col=number.to.colors(randnum), pch=16)
+##' gradient.legend(randnum, xlab="", ylab="")
+gradient.legend = function(y=NULL, yrange=NULL, cols = c("red", "blue"),location=c(.075,.3,.575,.975), n=100,...){
+  
+  #### if they don't supply a y, make sure they give range
+  if (is.null(y) & is.null(yrange)){
+    stop("You must supply either a y value or a y range.")
+  }
+  if (is.null(yrange)){
+    yrange = range(y, na.rm=T)
+  }
+  
+  #### set location
+  par(fig=location, new=T, las=1, ps=9)
+  z=matrix(1:n,nrow=1)
+  x=1
+  y=seq(yrange[1],yrange[2],len=n) 
+  my.colors = colorRampPalette(cols)
+  image(x,y,z,col=my.colors(n),axes=FALSE,...)
+  axis(2)
+  par(fig=c(0,1,0,1))
 }

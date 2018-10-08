@@ -1,6 +1,6 @@
 ---
 title: "Trait-based Comparative Transcriptomics Analysis"
-author: "Joris van Steenbrugge"
+author: "Joris van Steenbrugge & Ben Oyserman"
 date: "August 23, 2017"
 output: html_document
 ---
@@ -174,6 +174,58 @@ sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned,
                                                         RNAseq.data$features$bins)
 ```
 
+### Plot background of individual genes
+```{r bunch_o_figs, fig.height=8, fig.width=12}
+Plot_Background_Individual_Genes(bkgd.individual.Zscores)
+
+```
+
+### Plot background of individual genes
+```{r bunch_o_figs, fig.height=8, fig.width=12}
+Plot_Background_Modules(bkgd.traits)
+
+```
+
+
+### Model_Module Figure
+```{r bunch_o_figs, fig.height=8, fig.width=12}
+Module_Names <- RNAseq.data$features$trait_presence_absence[,'39'] %>% which(. == T) %>% names
+margins =c(5,23)
+Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names, bkgd.traits)
+Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome="16")
+
+```
+
+### Figures of functional redundancy and linear regression
+```{r bunch_o_figs, fig.height=8, fig.width=8}
+
+TnA_redundancy <- Calc_TnA_redundancy()
+
+# Sort based on attributes
+Most_redundant_order <- TnA_redundancy[order(TnA_redundancy[,3]),1]
+
+# Color by taxonomy
+stc<- string.to.colors(genome.taxonomy.phylum)
+# Color by taxonomy in the order based on redundancy
+stc_highlights <- stc[match(rev(as.numeric(Most_redundant_order)),names(stc))]
+
+par(mfrow=c(4,5),mar=c(2,2,2,2))
+#Plot_traits_vs_attributes()
+
+plot(as.numeric(TnA_redundancy[,3])~as.numeric(TnA_redundancy[,2]), col=stc, xlim=c(500,1100), ylim=c(100,400), pch = 19, xlab = "Attributes", ylab = "Traits")
+
+# For some reason, legend is providing error
+#legend(x=500, y=400, legend= c("Bacteroidetes","Proteobacteria", "Bacteria","Actinobacteria"), pch=19, col = unique(stc_highlights), cex=0.5)
+
+as.numeric(Most_redundant_order)
+j= 1
+for (i in rev(as.numeric(Most_redundant_order))) {
+  Plot_traits_vs_attributes_highlight(i,stc_highlights[j])
+  j = j+1
+}
+
+
+```
 
 
 ## Apriori
