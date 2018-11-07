@@ -1,0 +1,36 @@
+---
+title: "TbasCO - The Basics"
+author: "Joris van Steenbrugge"
+date: "October 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Loading the package
+
+First we start by loading the package. By default, when TbasCO is loaded, the URLs of a sample dataset and annotation database is added to the environment as two separate variables `file.path` and `annotation.db.path`. If you are using Rstudio you can look at the environment tab before and after we run the following chunk of code. These two variables may be replaced by your own dataset.
+
+```{r}
+library(TcT)
+```
+
+
+#Loading and Preprocessing Data
+
+
+All of the preprocessing is handled by the `Pre_process_input` function.
+This function consecutively performs the following tasks:
+
+1. Data Loading
+2. Normalization -> Default normalization method between samples and by bin
+3. Filtering -> the choice between Mean Absolute Deviation (MAD) and based on Standard Deviation
+
+```{r}
+RNAseq.data <- Pre_process_input(file.path,
+                                 annotation.db.path,
+                                 normalize.method    = F,
+                                 filter.low.coverage = T)
+```
