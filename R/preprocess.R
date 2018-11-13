@@ -16,7 +16,7 @@
 #' a presence absence table of all annotations)
 #' @author JJM van Steenbrugge
 Pre_process_input <- function(file.path, annotation.db.path, normalize.method = T,
-                              filter.method = "stdev",
+                              filter.method = "MAD",
                               filter.low.coverage = T,
                               normalization.features = NULL){
 
