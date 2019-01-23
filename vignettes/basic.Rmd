@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 First we start by loading the package. By default, when TbasCO is loaded, the URLs of a sample dataset and annotation database is added to the environment as two separate variables `file.path` and `annotation.db.path`. If you are using Rstudio you can look at the environment tab before and after we run the following chunk of code. These two variables may be replaced by your own dataset.
 
 ```{r}
-library(TcT)
+library(TbasCO)
 ```
 
 
