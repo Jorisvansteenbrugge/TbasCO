@@ -5,7 +5,7 @@
 \title{Pre-processing of RNAseq data}
 \usage{
 Pre_process_input(file.path, annotation.db.path, normalize.method = T,
-  filter.method = "stdev", filter.low.coverage = T,
+  filter.method = "MAD", filter.low.coverage = T,
   normalization.features = NULL)
 }
 \arguments{

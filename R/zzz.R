@@ -14,6 +14,30 @@
     load(paste0(libname,'\\TbasCO\\data\\sub_modules.RData'), envir = .GlobalEnv)
   }
 
+
+
+  # Calculates the Pearson Correlation
+  PC <- function(rowA, rowB, RNAseq.features){
+    return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
+               as.numeric(rowB[RNAseq.features$sample.columns])
+    )
+    )
+  }
+
+  # Calculates the Normalized Rank Euclidean Distance
+  NRED <- function(rowA, rowB, RNAseq.features) {
+    r.A <- as.numeric(rowA[ RNAseq.features$rank.columns ])
+    r.B <- as.numeric(rowB[ RNAseq.features$rank.columns ])
+    return(
+      sum((r.A - r.B) * (r.A - r.B))
+    )
+  }
+
+  # Combine multiple distance metrics to complement each other.
+  distance.metrics <- list("NRED" = NRED,
+                           "PC"   = PC)
+
+  assign("distance.metrics", distance.metrics, envir = .GlobalEnv)
 }
 
 .onDetach <- function(libname, pkgname){

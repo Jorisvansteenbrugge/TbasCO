@@ -1355,11 +1355,11 @@ Plot_traits_vs_attributes <- function(model_bin) {
 Plot_traits_vs_attributes_highlight <- function(model_bin, string_to_colors) {
   point.matrix <- matrix(ncol=3, nrow=0)
   point.matrix_39 <- matrix(ncol=3, nrow=0)
-  
+
   t.pa <- RNAseq.data$features$trait_presence_absence
-  
+
   combinations <- combn(RNAseq.data$features$bins, 2, simplify = F)
-  
+
   if(!missing(model_bin)){
     combinations_39 <- lapply(RNAseq.data$features$bins, function(bin){
       if(!bin==model_bin){
@@ -1367,39 +1367,39 @@ Plot_traits_vs_attributes_highlight <- function(model_bin, string_to_colors) {
       }
     })
   }
-  
-  
+
+
   for (pair in combinations){
     try({
       A <- pair[1] %>% as.character
       B <- pair[2] %>% as.character
-      
+
       traits.A <- t.pa[, A] %>% which(. == T) %>% names
       traits.B <- t.pa[, B] %>% which(. == T) %>% names
       overlap.traits <- intersect(traits.A, traits.B) %>% length
-      
+
       attributes.A <- which(sbs.trait.attributes[A,]  == 1) %>% names
       print(B)
       attributes.B <- which(sbs.trait.attributes[B,]  == 1) %>% names
       overlap.attributes <- intersect(attributes.A, attributes.B) %>% length
-      
+
       vs <- paste(pair, collapse = 'vs')
-      
+
       point.matrix <- rbind(point.matrix,
                             c(vs,
                               overlap.traits,
                               overlap.attributes))
     })
-    
+
   }
   colnames(point.matrix) <- c("pairs", 'traits', 'attributes')
-  
+
   point.df <- data.frame(point.matrix, stringsAsFactors = F)
   point.df$traits %<>% as.numeric
   point.df$attributes %<>% as.numeric
   ylim_plot1 <- c(0,max(point.df$attributes)+5)
   xlim_plot1 <- c(0, max(point.df$traits)+5)
-  
+
   plot(x = as.numeric(point.matrix[,2]),
        y = as.numeric(point.matrix[,3]),
        xlab = '# Overlap Traits',
@@ -1407,46 +1407,46 @@ Plot_traits_vs_attributes_highlight <- function(model_bin, string_to_colors) {
        main = "Pairwise Genome Comparisons",
        ylim = ylim_plot1,
        xlim = xlim_plot1)
-  
+
   model <- lm(attributes~traits, data = point.df)
   abline(model$coefficients)
-  
+
   cinterval <- confint(model, level=.99)
   abline(cinterval[,1])
   abline(cinterval[,2])
-  
-  
+
+
   if(!missing(model_bin)){
     for (pair in combinations_39){
       try({
         A <- pair[1] %>% as.character
         B <- pair[2] %>% as.character
-        
+
         traits.A <- t.pa[, A] %>% which(. == T) %>% names
         traits.B <- t.pa[, B] %>% which(. == T) %>% names
         overlap.traits <- intersect(traits.A, traits.B) %>% length
-        
+
         attributes.A <- which(sbs.trait.attributes[A,]  == 1) %>% names
         print(B)
         attributes.B <- which(sbs.trait.attributes[B,]  == 1) %>% names
         overlap.attributes <- intersect(attributes.A, attributes.B) %>% length
-        
+
         vs <- paste(pair, collapse = 'vs')
-        
+
         point.matrix_39 <- rbind(point.matrix_39,
                                  c(vs,
                                    overlap.traits,
                                    overlap.attributes))
       })
-      
+
     }
     colnames(point.matrix_39) <- c("pairs", 'traits', 'attributes')
-    
+
     point.df <- data.frame(point.matrix_39, stringsAsFactors = F)
     point.df$traits %<>% as.numeric
     point.df$attributes %<>% as.numeric
-    
-    
+
+
     points(x = as.numeric(point.matrix_39[,2]),
            y = as.numeric(point.matrix_39[,3]),
            xlab = '# Overlap Traits',
@@ -1457,16 +1457,16 @@ Plot_traits_vs_attributes_highlight <- function(model_bin, string_to_colors) {
            pch=19,
            cex=1.5,
            col=string_to_colors)
-    
+
     text(x=10,y=ylim_plot1[2]-5, paste("bin_",model_bin))
     #  model_39 <- lm(attributes~traits, data = point.df)
     #  abline(model_39$coefficients, col="red")
-    
+
     #  cinterval_39 <- confint(model_39, level=.99)
     #  abline(cinterval_39[,1], col="red")
     #  abline(cinterval_39[,2], col="red")
     #polygon
-    
+
   }
   # identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
 }
@@ -1596,9 +1596,11 @@ Go_Fish <- function(RNAseq.data){
 #' @export
 #' @author BO Oyserman
 #'
-Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,bkgd.traits) {
+Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, bkgd.traits) {
 
 
+  Module_Names  <- RNAseq.data$features$trait_presence_absence[, Model_Bin] %>% which(. == T) %>% names
+  margins       <- c(5,23) # Manipulate the plotting window margins
   annotation.db <- RNAseq.data$features$annotation.db
 
   # Step one, take the module list and match it to the module dictionary psoitions.
@@ -1829,20 +1831,20 @@ if (length(sortbygenome)==1) {
 ##' Automatically convert a vector of strings into a color for easy plotting
 ##'
 ##' @title Convert between strings to colors
-##' @param string a vector of strings representing groups. 
+##' @param string a vector of strings representing groups.
 ##' @param colors a vector of colors, one for each unique element in \code{string}.
 ##' @export
-##' @return a vector of colors, one for each element in \code{string} 
+##' @return a vector of colors, one for each element in \code{string}
 ##' @aliases string.to.colors stringtocolor stringToColors string.to.color
 ##' @author Dustin Fife
 ##' @seealso \code{\link{number.to.colors}}
 ##' @examples
 ##' groups = sample(LETTERS[1:5], size=100, replace=TRUE)
 ##' plot(rnorm(100), rnorm(100), col=string.to.colors(groups))
-##' plot(rnorm(100), rnorm(100), col=string.to.colors(groups), 
+##' plot(rnorm(100), rnorm(100), col=string.to.colors(groups),
 ##'    pch=as.numeric(string.to.colors(groups, colors=c(16:20))))
 ##' @note This function can also be used to specify pch values, cex values, or any other plotting values
-##' the user may wish to differ across groups. See examples. 
+##' the user may wish to differ across groups. See examples.
 string.to.colors = function(string, colors=NULL){
   if (is.factor(string)){
     string = as.character(string)
@@ -1864,11 +1866,11 @@ string.to.colors = function(string, colors=NULL){
 ##' Automatically convert a vector of numbers into a color for easy plotting
 ##'
 ##' @title Convert from numbers to colors
-##' @param value a vector of numbers. 
+##' @param value a vector of numbers.
 ##' @param colors a vector of two or more colors representing the inflection points of the gradients, passed to \code{\link{colorRampPalette}}.
 ##' @param num The number of unique intervals for colors. Chose larger numbers for finer gradients (higher resolution).
 ##' @export
-##' @return a vector of colors. 
+##' @return a vector of colors.
 ##' @aliases number.to.color numbers.to.colors integers.to.colors integer.to.colors numberToColors numberToColor
 ##' @author Dustin Fife
 ##' @seealso \code{\link{string.to.colors}} \code{\link{colorRampPalette}} \code{\link{gradient.legend}}
@@ -1885,7 +1887,7 @@ number.to.colors = function(value, colors=c("red", "blue"), num=100){
 
 
 ##' Create a gradiented legend
-##'	
+##'
 ##' @param y the variable used to create the gradient, typically in \code{\link{number.to.colors}}
 ##' @param yrange The range of y values. If y is supplied, it will pulls these from the actual y values.
 ##' @param cols The color gradients to be used that are passed to \code{\link{colorRampPalette}}.
@@ -1903,7 +1905,7 @@ number.to.colors = function(value, colors=c("red", "blue"), num=100){
 ##' plot(x,y, col=number.to.colors(randnum), pch=16)
 ##' gradient.legend(randnum, xlab="", ylab="")
 gradient.legend = function(y=NULL, yrange=NULL, cols = c("red", "blue"),location=c(.075,.3,.575,.975), n=100,...){
-  
+
   #### if they don't supply a y, make sure they give range
   if (is.null(y) & is.null(yrange)){
     stop("You must supply either a y value or a y range.")
@@ -1911,12 +1913,12 @@ gradient.legend = function(y=NULL, yrange=NULL, cols = c("red", "blue"),location
   if (is.null(yrange)){
     yrange = range(y, na.rm=T)
   }
-  
+
   #### set location
   par(fig=location, new=T, las=1, ps=9)
   z=matrix(1:n,nrow=1)
   x=1
-  y=seq(yrange[1],yrange[2],len=n) 
+  y=seq(yrange[1],yrange[2],len=n)
   my.colors = colorRampPalette(cols)
   image(x,y,z,col=my.colors(n),axes=FALSE,...)
   axis(2)

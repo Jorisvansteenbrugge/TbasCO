@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set()
 ```
 
 #Loading the package
@@ -31,6 +31,27 @@ This function consecutively performs the following tasks:
 ```{r}
 RNAseq.data <- Pre_process_input(file.path,
                                  annotation.db.path,
-                                 normalize.method    = F,
+                                 normalize.method    = T,
                                  filter.low.coverage = T)
+```
+
+
+### Actual Analysis
+```{r Main Analysis, message=FALSE, warning=FALSE, include=FALSE, results=}
+Trait.attributes <- GetTraitAttributes(RNAseq.data = RNAseq.data,
+                                       metrics = distance.metrics, N =)
+
+```
+
+
+### Using a species as a model
+```{r}
+# The name of the Bin/genome, available options can be seen by running: RNAseq.data$features$bins
+my_model <- '39'
+
+# Extract the name of the traits that are present in 'my_model'
+
+Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, bkgd.traits)
+Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome="16")
+
 ```

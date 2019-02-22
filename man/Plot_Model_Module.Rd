@@ -4,7 +4,8 @@
 \alias{Plot_Model_Module}
 \title{Plot_Model_Module}
 \usage{
-Plot_Model_Module(Model_Module_List, Model_Bin, Module_Names, margins)
+Plot_Model_Module(Model_Module_List, Model_Bin, Module_Names, margins,
+  sortbygenome)
 }
 \description{
 Creates a bar plot of pairwise comparisons between the traits of a model genome.

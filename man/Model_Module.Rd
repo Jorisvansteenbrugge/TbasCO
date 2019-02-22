@@ -21,7 +21,7 @@ If a distance is less than the 99% quantile of the background distances for a mo
 The bar is presented in dark grey.
 }
 \examples{
-Module_Model_List <- Model_Module(RNAseq.data, trait.attributes, '39', Module_Names, Bin_Order, c(-2.5,2.5), bkgd.traits)
+Module_Model_List <- Model_Module(RNAseq.data, trait.attributes, '39', Module_Names, c(-2.5,2.5), bkgd.traits)
 \dontrun{
 Model_Bin <- 39
 Bin_Order <- c(48,32,31,29,22,11,39,16,53,45,42,28,20,25,19,8,36,26,17)

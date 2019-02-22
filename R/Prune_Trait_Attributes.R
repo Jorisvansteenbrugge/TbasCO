@@ -8,7 +8,7 @@
 #' @export
 #' @author JJM van Steenbrugge
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
-                                   p.threshold = 0.05, pairwise.distances,
+                                   p.threshold = 0.05, pairwise.distances, bkgd.individual.Zscores,
                                    annotation.db, trait_presence_absence){
 
   features <- RNAseq.data$features

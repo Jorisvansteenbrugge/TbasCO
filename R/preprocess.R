@@ -147,15 +147,13 @@ Expand_module_database <- function(RNAseq.data) {
 
 
       tfs <- c()
-
+      kos <- 0
 
         tryCatch({
           kos <- RNAseq.data$features$annotation_presence_absence[module_kos, bin]
 
         },
-        error = function(e){
-          print(e)
-        })
+        error = function(e){ })
 
 
         true_sum <- kos %>% sum
