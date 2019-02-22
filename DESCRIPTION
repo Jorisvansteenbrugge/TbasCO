@@ -1,7 +1,7 @@
 Package: TbasCO
 Type: Package
 Title: Trait-based Comparative Transcriptomics
-Version: 3.0.0
+Version: 3.1.0
 Authors@R: c(person("Joris", "van Steenbrugge", email="joris.vansteenbrugge@wur.nl", role = c("cre", "aut")),
              person("Ben", "Oyserman", email="ben.oyserman@wur.nl", role = c("aut")))
 Maintainer: Joris van Steenbrugge <joris.vansteenbrugge@wur.nl>

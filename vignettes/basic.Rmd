@@ -29,9 +29,10 @@ This function consecutively performs the following tasks:
 3. Filtering -> the choice between Mean Absolute Deviation (MAD) and based on Standard Deviation
 
 ```{r}
-RNAseq.data <- Pre_process_input(file.path,
+elizabeth.path <- "C:\\Users\\Joris\\Downloads\\raw-ebpr-counts-data.csv" # your path here :)
+RNAseq.data <- Pre_process_input(elizabeth.path,
                                  annotation.db.path,
-                                 normalize.method    = T,
+                                 normalize.method    = F,
                                  filter.low.coverage = T)
 ```
 
@@ -39,7 +40,7 @@ RNAseq.data <- Pre_process_input(file.path,
 ### Actual Analysis
 ```{r Main Analysis, message=FALSE, warning=FALSE, include=FALSE, results=}
 Trait.attributes <- GetTraitAttributes(RNAseq.data = RNAseq.data,
-                                       metrics = distance.metrics, N =)
+                                       metrics = distance.metrics, N = 10000, p = 3 )
 
 ```
 
@@ -47,11 +48,11 @@ Trait.attributes <- GetTraitAttributes(RNAseq.data = RNAseq.data,
 ### Using a species as a model
 ```{r}
 # The name of the Bin/genome, available options can be seen by running: RNAseq.data$features$bins
-my_model <- '39'
+my_model <- '3300026283-bin.28'
 
 # Extract the name of the traits that are present in 'my_model'
 
-Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, bkgd.traits)
-Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome="16")
+Model_Module_List_All <- Model_Module(RNAseq.data, Trait.attributes$Traitattributes, my_model, bkgd.traits = Trait.attributes$`Random backgrounds Traits`)
+Plot_Model_Module(Model_Module_List_All, my_model, Module_Names, sortbygenome = "3300026302-bin.62")
 
 ```

@@ -1596,12 +1596,12 @@ Go_Fish <- function(RNAseq.data){
 #' @export
 #' @author BO Oyserman
 #'
-Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, bkgd.traits) {
+Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, bkgd.traits, margins = c(5,23)) {
 
 
   Module_Names  <- RNAseq.data$features$trait_presence_absence[, Model_Bin] %>% which(. == T) %>% names
-  margins       <- c(5,23) # Manipulate the plotting window margins
   annotation.db <- RNAseq.data$features$annotation.db
+  Bin_Order <- RNAseq.data$features$bins
 
   # Step one, take the module list and match it to the module dictionary psoitions.
 # This is done by parsing out the module.dict
@@ -1624,6 +1624,14 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, bkgd.traits) 
   # Module_lengths           <- lapply(annotation.db$module.dict[Module_Names],
   #                                    length) %>% as.numeric
 
+  module_size_range <- lapply(RNAseq.data$features$annotation.db$module.dict,length) %>% as.numeric() %>% table() %>% names() %>% as.numeric()
+
+  # again, the size of all modules but using the maximum length of the disjunctive form. Slightly shorter
+  d_module_size_range_all<-c()
+  for (i in 1:length(sub_modules)) {
+    d_module_size_range_all[i]<- max(sapply(sub_modules[[i]],length))
+  }
+  d_module_size_range<-sort(unique(d_module_size_range_all))
   Module_lengths           <- d_module_size_range_all[which(names(annotation.db$module.dict)%in%Module_Names)]
 
   Module_background_distribution_index <- match(as.numeric(Module_lengths),
@@ -1747,7 +1755,7 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, bkgd.traits) 
 #' @export
 #' @author BO Oyserman
 
-Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margins, sortbygenome) {
+Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, sortbygenome, margins = c(5,23)) {
 
 num_genes <-  length( Model_Module_List[[4]])
 par(mfrow = margins,

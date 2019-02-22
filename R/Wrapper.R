@@ -47,4 +47,11 @@ GetTraitAttributes <- function(RNAseq.data = RNAseq.data, N = 1000, metrics = di
                                                     pairwise.distances = metrics,bkgd.individual.Zscores = bkgd.individual.Zscores)
 
 
+  return(list("Traitattributes" = trait.attributes,
+              "Traitattributes sig" = trait.attributes.pruned,
+              'Random background Individual' = bkgd.individual,
+              'zscores individual' = bkgd.individual.Zscores,
+              "Random backgrounds Traits" = bkgd.traits,
+              "Pairwise distances" = pairwise.distances)
+         )
 }
