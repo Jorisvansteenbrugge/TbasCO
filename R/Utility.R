@@ -1133,26 +1133,35 @@ Shared_traits <- function( RNAseq.data ) {
 
 }
 
-Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
+#' Plot_Shared_Attributes
+#' @name Plot_Shared_Attributes
+#' @description plots the number of shared attributes between a set of bins and the rest of the genomes
+#' @param trait.attributes.pruned 
+#' @param RNAseq.data Collection of multple components, include RNA seq data,
+#' @param bins_of_interest A vectr of interesting bins
+#' @example Plot_Shared_Attributes(trait.attributes.pruned, RNAseq.data, bins_of_interest = c("16","39"))
+#' Note: only works for more than 1 genome!
+#' @export
+#' @author 
+
+Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data, bins_of_interest) {
   library(magrittr)
   trait.names <- list()
-
-  accum_bins <- c('16',"39")
-
+  
   for (trait.name in names(trait.attributes.pruned)) {
     trait <- trait.attributes.pruned[[trait.name]]
-
+    
     for (attribute.name in names(trait)) {
       attribute <- trait[[attribute.name]]
       genomes <- attribute$genomes
-      if (sum(accum_bins %in% genomes) == 2) {
+      if (sum(bins_of_interest %in% genomes) == 2) {
         trait.names[[trait.name]] <- attribute.name
       }
     }
   }
-
-  other_bins <- RNAseq.data$features$bins[-which(RNAseq.data$features$bins %in% accum_bins)]
-
+  
+  other_bins <- RNAseq.data$features$bins[-which(RNAseq.data$features$bins %in% bins_of_interest)]
+  
   bin_occurences <- sapply(other_bins, function(bin) {
     occurences <- sapply(1:length(trait.names), function(i) {
       ta <- trait.attributes.pruned[[names(trait.names)[i]]][[trait.names[[i]]]]
@@ -1163,14 +1172,14 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
         return(0)
       }
     })
-
+    
     return(sum(occurences))
   }) %>%
     sort(decreasing = T) %T>%
     plot(
       type = "l", xaxt = "n",
       xlab = "Genomic bins",
-      ylab = "Number of attributes shared with CAA",
+      ylab = "Number of attributes shared with BOI", # Bins of interest
       ylim = c(0,30)
     )
   axis(1, at = 1:length(bin_occurences), labels = names(bin_occurences))
