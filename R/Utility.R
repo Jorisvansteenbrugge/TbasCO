@@ -1827,7 +1827,7 @@ if (length(sortbygenome)==1) {
 
 #
 #' Plot_Model_Module_Simple
-#' @name Plot_Model_Module
+#' @name Plot_Model_Module_Simple
 #' @description Creates a bar plot of pairwise comparisons between the traits of a model genome.
 #' If a distance is less than the 99% quantile of the background distances for a module of similar size,
 #' The bar is presented in dark grey.
@@ -1840,7 +1840,7 @@ if (length(sortbygenome)==1) {
 #' @export
 #' @author BO Oyserman
 
-Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, margins, sortbygenome) {
+Plot_Model_Module_Simple <- function(Model_Module_List, Model_Bin, Module_Names, margins, sortbygenome) {
   
   num_genes <-  length( Model_Module_List[[4]])
   par(mfrow = margins,
