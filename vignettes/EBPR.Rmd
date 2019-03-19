@@ -5,7 +5,7 @@ date: "August 23, 2017"
 output: html_document
 ---
 ```{r,results='hide'}
-library(TcT)
+library(TbasCO)
 library(magrittr)
 
 ```
@@ -178,6 +178,8 @@ sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned,
 ```{r bunch_o_figs, fig.height=8, fig.width=12}
 Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 
+Plot_Metric_Comparison(bkgd.individual)
+Plot_Redundancy_Traits(RNAseq.data)
 ```
 
 ### Plot background of individual genes
@@ -212,6 +214,8 @@ stc_highlights <- stc[match(rev(as.numeric(Most_redundant_order)),names(stc))]
 par(mfrow=c(4,5),mar=c(2,2,2,2))
 #Plot_traits_vs_attributes()
 
+
+#Figure 2-E
 plot(as.numeric(TnA_redundancy[,3])~as.numeric(TnA_redundancy[,2]), col=stc, xlim=c(500,1100), ylim=c(100,400), pch = 19, xlab = "Attributes", ylab = "Traits")
 
 # For some reason, legend is providing error

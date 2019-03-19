@@ -1,11 +1,12 @@
-#' Plot Trait Attribute
-#' @name Plot Trait Attribute
+#' Traitattributes To Sbsmatrix
+#' @name Traitattributes_To_Sbsmatrix
 #' @description Convert a list with trait attributes to a matrix where each
 #' collumn is a trait attribute and each row a genome. Presence or absence is
 #' indicated with either a zero (0) or one (1).
 #' @param trait.attributes The full list of all trait attributes
 #' @param genomes A vector containing the names of all genomes present in the
 #' sample.
+#' @example Traitattributes_To_Sbsmatrix(trait.attributes.pruned, RNAseq.data$features$bins)
 #' @export
 #' @author JJM van Steenbrugge
 Traitattributes_To_Sbsmatrix <- function(trait.attributes, genomes) {
@@ -41,21 +42,10 @@ Traitattributes_To_Sbsmatrix <- function(trait.attributes, genomes) {
   return(as.matrix(sbs.matrix))
 }
 
-calcmfrow <- function(x) {
-  temp <- sqrt(x)
-
-  if ((temp %% floor(temp)) == 0) {
-    return(c(temp, temp))
-  } else if ((temp %% floor(temp)) < 0.5) {
-    return(c(floor(temp), ceiling(temp)))
-  } else {
-    return(c(ceiling(temp), ceiling(temp)))
-  }
-}
 
 
 #' Plot Trait Attribute
-#' @name Plot Trait Attribute
+#' @name Plot Trait Attribute Expression
 #' @description Plot the expression profile for all genomes expressing that
 #' attribute. For each annotation a separate plot is created where the thick
 #' black line represents the mean expression of all genomes with that annotation.
@@ -120,9 +110,9 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute,
 
 #' Network Trait Genomes
 #' @name Network Trait Genomes
-#' @description Draw a network of trait(-attributes) with its associated genomes
+#' @description Draw a basic network of trait(-attributes) with its associated genomes
 #' in Cytoscape (\url{http://www.cytoscape.org/}) automatically via Cytoscape's
-#' REST API..
+#' REST API. Cytoscape (with REST API plugin installed ) should be running before executing this function.
 #' @param trait.names a vector containing the names of traits, as provided in the
 #' RNAseq.data$features$annotation.db$module.dict object
 #' @export
@@ -230,10 +220,11 @@ Network_Trait_Genomes <- function(trait.names, trait.attributes.pruned,
 
 #' Plot_Background_Individual_Genes
 #' @name Plot Background Individual Genes
-#' @description Plotting of each background distribution.
+#' @description Plotting of each background distribution (Figure 2A.
 #' @param bkgd.individual.Zscores A list containing (composite) Zscores based on
 #' a random background distribution.
 #' See \code{\link{Calc_Z_scores}} for more information.
+#' @example Plot_Background_Individual_Genes(bkgd.individual.Zscores)
 #' @export
 #' @author BO Oyserman
 Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
@@ -275,8 +266,21 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
     colramp = rf, mincnt = 1, maxcnt = cnt.max,
     xlab = "PC", ylab = "NRED", main = "Genes with the same annotation"
   )
+
+  print("Be sure to check all plots (using the back and forth arrows)")
 }
 
+#' Plot_Metric_Comparison
+#' @name Plot Metric comparison
+#' @description A comparison of the two distance metrics used, with p-values plotted. Two comparisons
+#' are made for each distance metric: 1) The distances between random genes and random annotated genes 2)
+#' The distances between random annotated genes and random genes with the same annotation.
+#' @param bkgd.individual.Zscores A list containing (composite) Zscores based on
+#' a random background distribution.
+#' See \code{\link{Calc_Z_scores}} for more information.
+#' @example Plot_Background_Individual_Genes(bkgd.individual)
+#' @export
+#' @author BO Oyserman
 Plot_Metric_Comparison <- function(bkgd.individual) {
   t_test_KO_random_pearson <- t.test(bkgd.individual$`Random Annotated Genes`$PC,
     bkgd.individual$`Random Genes`$PC,
@@ -427,6 +431,7 @@ Plot_Metric_Comparison <- function(bkgd.individual) {
 #' @param bkgd.traits A collection of random background distributions of traits.
 #' See \code{\link{Random_Trait_Background}}.
 #' @export
+#' @example Plot_Background_Modules(bkgd.traits)
 #' @author JJM van Steenbrugge
 Plot_Background_Modules <- function(bkgd.traits) {
   if (length(bkgd.traits) < 1) {
@@ -468,196 +473,9 @@ Plot_Background_Modules <- function(bkgd.traits) {
   )
 }
 
-#' Calculate Association Rules
-#' @name Calculate Association Rules
-#' @description Calculate Association Rules using the apriori algorithm (as
-#' implemented in the arules package). This function lets the user decide on the
-#' number of rules to produce and estimates parameters to produce those results.
-#' @param sbs.trait.attributes Matrix where each collumn is a trait attribute
-#' and each row a genome. Presence or absence is indicated with either a one
-#' (1) or zero (0).
-#' @param lhs A vector containing one or multiple terms for the left-hand-side
-#' (antecedent) of the association rules. For more information see
-#' \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
-#' @param rhs A vector containing one or multiple terms for the right-hand-side
-#' (consequent) of the association rules. For more information see
-#' \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
-#' @param N The number of association rules to create (e.g. N = 100 will result
-#' in 100 association rules).
-#' @export
-#' @author JJM van Steenbrugge
-Association_Rules <- function(sbs.trait.attributes,
-                              lhs, rhs, N) {
-  require(arules)
-
-  .Reach_N <- function(N, lhs = c(), rhs = c()) {
-    n <- 0
-    support <- 1.0
-    confidence <- 1.0
-    while (n < N) {
-      apri <- apriori(sbs.trait.attributes,
-        parameter = list(
-          support = support,
-          confidence = confidence,
-          minlen = 2
-        ),
-        appearance = list(
-          lhs = lhs,
-          rhs = rhs
-        )
-      )
-
-      rules <- as(apri, "data.frame")
-      n <- nrow(rules)
-      print(n)
-      support <- support - 0.1
-      if (support <= 0) {
-        support <- 1.0
-        confidence <- confidence - 0.1
-      }
-    }
-    return(rules)
-  }
 
 
-
-  if (missing(lhs) && missing(rhs)) {
-    rules <- .Reach_N(N)
-  } else if (!missing(lhs) && !missing(rhs)) {
-    rules1 <- .Reach_N(N / 2, lhs = lhs)
-    rules2 <- .Reach_N(N / 2, rhs = rhs)
-
-    rules1 <- rules1[order(rules1[, 1]), ]
-    rules2 <- rules2[order(rules2[, 1]), ]
-
-    rules <- rbind(rules1[1:(N / 2), ], rules2[1:(N / 2), ])
-  } else if (!missing(lhs)) {
-    rules <- .Reach_N(N, lhs = lhs)
-  } else if (!missing(rhs)) {
-    rules <- .Reach_N(N, rhs = rhs)
-  }
-
-  return(rules)
-}
-
-#' Draw_Expression
-#' @name Draw Expression
-#' @description Creates a drawing of a trait (possibly with multiple different
-#' trait-attributes) where all its composing genes are plotting individually
-#' with their corresponding expression values.
-#' @param trait character string with the name of a trait.
-#' @param RNAseq.data Collection of multple components, include RNA seq data,
-#' annotations, etc.
-#' @seealso \code{\link{Pre_process_input}} for the full list of parameters,
-#' \url{https://github.com/Jorisvansteenbrugge/TcT/wiki/The-RNAseq.data-object}
-#' for more information.
-#' @param trait.attributes.pruned The full list of all pruned trait attributes.
-#' @export
-#' @author JJM van Steenbrugge
-Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
-  y.max <- 140
-  x.max <- 60
-
-
-  attributes <- trait.attributes.pruned[[trait]]
-  n.attributes <- length(attributes)
-  genes <- RNAseq.data$features$annotation.db$module.dict[[trait]]
-  n.genes <- length(genes)
-
-  plot(c(0, as.numeric(x.max)), c(0, y.max), type = "n", xlab = "", ylab = "", axes = F)
-
-  y.coords <- seq(y.max, 1, by = -15) # With this setting max of 7 genes
-  x.coords <- seq(0, x.max, by = 11)
-
-  # For each gene
-  for (i in 1:n.genes) {
-    gene <- genes[i]
-
-    # Gene name
-    graphics::text(
-      x = (x.coords[1] + 5),
-      y = (y.coords[i] - 5),
-      labels = gene
-    )
-
-    # for each attribute
-    for (y in 1:n.attributes) {
-      #      Draw Labels
-      graphics::text(x = (x.coords[y + 1] + 5), y = y.max, labels = paste(trait,
-        y,
-        sep = "."
-      ))
-
-      rect(
-        xleft = x.coords[y + 1], ybottom = y.coords[i] - 10,
-        xright = x.coords[y + 1] + 10, ytop = y.coords[i]
-      )
-
-      # Draw expression line
-      genomes <- attributes[[y]]$genomes
-      genomes.rna <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% genomes), ]
-      genomes.rna.gene <- genomes.rna[
-        which(genomes.rna$Annotation == gene),
-        RNAseq.data$features$rank.columns
-      ]
-      genomes.rna.gene.mean <- apply(genomes.rna.gene, 2, mean)
-
-      # Generate box colours
-      values <- seq(0.1, 1, by = 0.1)
-      cols <- colorRamp(c("white", "red"))
-      colours <- rgb(cols(values) / 255)
-
-      # Draw all the boxes!
-      box.coords <- seq(0, 10, length.out = (length(genomes.rna.gene.mean) + 1))
-      for (z in 2:length(box.coords)) {
-        rank <- genomes.rna.gene.mean[z - 1]
-        col <- "red"
-        if (is.nan(rank) || is.na(rank)) {
-          rank <- 1
-        }
-        # I am not proud of this
-        if (rank <= 1 && rank > 0.9) {
-          col <- colours[1]
-        }
-        else if (rank <= 0.9 && rank > 0.8) {
-          col <- colours[2]
-        } else if (rank <= 0.8 && rank > 0.7) {
-          col <- colours[3]
-        } else if (rank <= 0.7 && rank > 0.6) {
-          col <- colours[4]
-        } else if (rank <= 0.6 && rank > 0.5) {
-          col <- colours[5]
-        } else if (rank <= 0.5 && rank > 0.4) {
-          col <- colours[6]
-        } else if (rank <= 0.4 && rank > 0.3) {
-          col <- colours[7]
-        } else if (rank <= 0.3 && rank > 0.2) {
-          col <- colours[8]
-        } else if (rank <= 0.2 && rank > 0.1) {
-          col <- colours[9]
-        } else if (rank <= 0.1 && rank >= 0.0) {
-          col <- colours[10]
-        }
-        rect(
-          xleft = x.coords[y + 1] + box.coords[(z - 1)], ybottom = y.coords[i] - 10,
-          xright = x.coords[y + 1] + box.coords[z], ytop = y.coords[i],
-          col = col
-        )
-        for (line.idx in 1:nrow(genomes.rna.gene)) {
-          y.bot <- y.coords[i] - 10
-          rank.pos <- (genomes.rna.gene[line.idx, ] * 10) + y.bot
-          x.pos <- seq(1, 10, length.out = 6) + x.coords[y + 1]
-          graphics::lines(
-            x.pos,
-            rank.pos
-          )
-        }
-      }
-    }
-  }
-}
-
-
+#' Used by Plot_Pathway_genes internally
 getMetricDist <- function(metric, cat.genes, distance.metrics, RNAseq.data,
                           bkgd.individual, bkgd.individual.Zscores) {
   mean.distances <- matrix(nrow = 0, ncol = 4)
@@ -728,7 +546,7 @@ getMetricDist <- function(metric, cat.genes, distance.metrics, RNAseq.data,
 
   return(mean.distances)
 }
-
+#' Used by Plot_Pathway_modules internally
 getMetricDistModule <- function(metric, cat.modules) {
   mean.distances <- matrix(nrow = 0, ncol = 5)
 
@@ -792,6 +610,10 @@ getMetricDistModule <- function(metric, cat.modules) {
   return(mean.distances)
 }
 
+
+#'Plot Pathway Genes
+#' @name Plot Pathway genes
+#' @description (Figure 2b)
 #' @export
 Plot_Pathway_genes <- function(metric_name, distance.metrics, RNAseq.data,
                                bkgd.individual, bkgd.individual.Zscores) {
@@ -882,6 +704,11 @@ Plot_Pathway_genes <- function(metric_name, distance.metrics, RNAseq.data,
   ))
 }
 
+#'Plot Pathway Genes
+#' @name Plot Pathway genes
+#' @description Currently no example, this is an expanded version of Figure 2b,
+#' except at module level and not at pathway level.
+#' @export
 Plot_Pathway_modules <- function() {
   cat.modules <- list()
   con <- file("/home/joris/kegg_pathway_module.csv", "r")
@@ -951,172 +778,18 @@ Plot_Pathway_modules <- function() {
 }
 
 
-Plot_Trait_Expression <- function(trait, subset_genomes) {
-  dev.off()
-  .getRank <- function(genome, rows) {
-    genome.rows <- rows[
-      which(rows$Bin == genome),
-      RNAseq.data$features$rank.columns
-    ]
-
-    x <- genome.rows[sample.int(nrow(genome.rows), 1), ]
-
-    return(x)
-  }
 
 
-  annotations <- RNAseq.data$features$annotation.db$module.dict[[trait]]
-  par(mfrow = calcmfrow(length(annotations)))
+#'Identify shared traits
+#' @name Shared traits
+#' @description identify the shared traits between a subset of genomes
+#' @example Shared_traits(RNAseq.data, c('16','39','22','29', '32'))
+Shared_traits <- function( RNAseq.data, subset_genomes ) {
 
 
-
-  for (KO in annotations) {
-    print(KO)
-    rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO), ]
-
-    if (missing(subset_genomes)) {
-      genomes <- unique(rows$Bin)
-    } else {
-      genomes <- unique(rows$Bin)
-      genomes <- subset_genomes[which(subset_genomes %in% genomes)]
-    }
-
-    print(genomes)
-    if (length(genomes) == 0) {
-      next()
-    }
-
-    plot(1:length(RNAseq.data$features$rank.columns), .getRank(genomes[1], rows),
-      ylim = c(0, 1), main = KO, type = "l"
-    )
-    for (genome in genomes) {
-      lines(1:length(RNAseq.data$features$rank.columns), .getRank(genome, rows))
-    }
-  }
-}
-
-Plot_Venn <- function(trait.attributes.pruned) {
-  tap <- trait.attributes.pruned
-  b16 <- c()
-  b39 <- c()
-  total <- c()
-
-  for (trait.idx in 1:length(tap)) {
-    t <- tap[[trait.idx]]
-    #####
-    if (length(t) == 0) {
-      next
-    }
-    #####
-
-    for (ta.idx in 1:length(t)) {
-      ta <- t[[ta.idx]]
-      ta.name <- paste(names(tap)[trait.idx],
-        ta.idx,
-        sep = "."
-      )
-      total <- c(total, ta.name)
-      genomes <- ta$genomes
-
-      c <- F
-
-      if ("16" %in% genomes) {
-        b16 <- c(b16, ta.name)
-        c <- T
-      }
-
-      if ("39" %in% genomes) {
-        b39 <- c(b39, ta.name)
-        c <- T
-      }
-
-      # if (! c) {
-      #   total <- c(total, ta.name)
-      # }
-    }
-  }
-
-  o12 <- total[which(total %in% b39)]
-  o23 <- b39  [which(b39 %in% b16)]
-  o13 <- total[which(total %in% b16)]
-  o123 <- o12  [which(o12 %in% b16)]
-
-  VennDiagram::draw.triple.venn(length(total),
-    length(b39),
-    length(b16),
-    length(o12),
-    length(o23),
-    length(o13),
-    length(o123),
-    category = c("Total", "b39", "b16")
-  )
-
-  .getGenomeTraits <- function(genome) {
-    tas <- c()
-
-    for (trait.idx in 1:length(tap)) {
-      t <- tap[[trait.idx]]
-      #####
-      if (length(t) == 0) {
-        next
-      }
-      #####
-
-      for (ta.idx in 1:length(t)) {
-        ta <- t[[ta.idx]]
-        ta.name <- paste(names(tap)[trait.idx],
-          ta.idx,
-          sep = "."
-        )
-
-        genomes <- ta$genomes
-
-        c <- F
-
-        if (genome %in% genomes) {
-          tas <- c(tas, ta.name)
-          c <- T
-        }
-      }
-    }
-    return(tas)
-  }
-  library(RCy3)
-  nodes <- as.matrix(RNAseq.data$features$bins, ncol = 1)
-  colnames(nodes) <- "id"
-
-  edges <- matrix(ncol = 3, nrow = 0)
-  for (x in 1:(length(RNAseq.data$features$bins) - 1)) {
-    x.tas <- .getGenomeTraits(RNAseq.data$features$bins[x])
-    for (y in (x + 1):length(RNAseq.data$features$bins)) {
-      y.tas <- .getGenomeTraits(RNAseq.data$features$bins[y])
-      overlap <- length(x.tas[which(x.tas %in% y.tas)])
-      edges <- rbind(edges, c(
-        RNAseq.data$features$bins[x],
-        RNAseq.data$features$bins[y],
-        overlap
-      ))
-    }
-  }
-  colnames(edges) <- c("source", "target", "weight")
-  weights <- as.numeric(edges[, "weight"])
-  weights <- (weights / min(weights))^2
-
-  edges[, 3] <- weights
-
-  createNetworkFromDataFrames(data.frame(nodes, stringsAsFactors = F),
-    data.frame(edges, stringsAsFactors = F),
-    title = "title",
-    collection = "Network Traits and Genomes"
-  )
-}
-
-Shared_traits <- function( RNAseq.data ) {
-
-  interesting_bins <- c('16','39','22','29', '32')
-  other_bins <- RNAseq.data$features$bins[which(!(RNAseq.data$features$bins %in% interesting_bins))]
+  other_bins <- RNAseq.data$features$bins[which(!(RNAseq.data$features$bins %in% subset_genomes))]
   rows_shared <- RNAseq.data$features$trait_presence_absence %>% apply(1, function(row){
-    if (sum(row[interesting_bins]) == length(interesting_bins) && sum(row[other_bins]) == 0) {
+    if (sum(row[subset_genomes]) == length(subset_genomes) && sum(row[other_bins]) == 0) {
       return(T)
     } else{F}
   })
@@ -1133,11 +806,14 @@ Shared_traits <- function( RNAseq.data ) {
 
 }
 
-Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
+
+#'Plot shared attributes
+#' @name Shared traits
+#' @description plot the shared traits between a subset of genomes
+#' @example Shared_traits(RNAseq.data, c('16','39','22','29', '32'))
+Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data, subset_genomes ) {
   library(magrittr)
   trait.names <- list()
-
-  accum_bins <- c('16',"39")
 
   for (trait.name in names(trait.attributes.pruned)) {
     trait <- trait.attributes.pruned[[trait.name]]
@@ -1145,13 +821,13 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
     for (attribute.name in names(trait)) {
       attribute <- trait[[attribute.name]]
       genomes <- attribute$genomes
-      if (sum(accum_bins %in% genomes) == 2) {
+      if (sum(subset_genomes %in% genomes) == 2) {
         trait.names[[trait.name]] <- attribute.name
       }
     }
   }
 
-  other_bins <- RNAseq.data$features$bins[-which(RNAseq.data$features$bins %in% accum_bins)]
+  other_bins <- RNAseq.data$features$bins[-which(RNAseq.data$features$bins %in% subset_genomes)]
 
   bin_occurences <- sapply(other_bins, function(bin) {
     occurences <- sapply(1:length(trait.names), function(i) {
@@ -1176,6 +852,9 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
   axis(1, at = 1:length(bin_occurences), labels = names(bin_occurences))
 }
 
+
+#' See figure 2-B
+#' @export
 Plot_Redundancy_Traits <- function(RNAseq.data) {
   library(ggplot2)
   library(magrittr)
@@ -1189,6 +868,8 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
 
 }
 
+
+#' Calculates the number of overlapping traits and overlapping attributes for each pair of genomes
 Calc_TnA_redundancy <- function() {
   point.matrix <- matrix(ncol=4, nrow=0)
 
@@ -1233,6 +914,8 @@ Calc_TnA_redundancy <- function() {
   return(cbind(all_bins, sum_traits, sum_attributes))
 }
 
+
+# Figure 2-F
 Plot_traits_vs_attributes <- function(model_bin) {
   point.matrix <- matrix(ncol=3, nrow=0)
   point.matrix_39 <- matrix(ncol=3, nrow=0)
@@ -1471,6 +1154,8 @@ Plot_traits_vs_attributes_highlight <- function(model_bin, string_to_colors) {
   # identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
 }
 
+#' Calculate the Disjunctive Normal Form (DNF) of Kegg modules. This only has to be re-run if the KEGG database is updated.
+#' (Advanced function)
 Get_KEGG_Sub_Modules <- function(){
   library(reticulate)
   library(magrittr)
@@ -1747,14 +1432,13 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, bkgd.traits, 
 #' If a distance is less than the 99% quantile of the background distances for a module of similar size,
 #' The bar is presented in dark grey.
 #' @seealso \code{\link{Pre_process_input}} for the full list of parameters,
-#' \url{https://github.com/Jorisvansteenbrugge/TcT/wiki/The-RNAseq.data-object}
+#' \url{https://github.com/Jorisvansteenbrugge/TbasCO/wiki/The-RNAseq.data-object}
 #' for more information.
 #' @param Model_Module_List
 #' @param Model_Bin
 #' @param Module_Names
 #' @export
 #' @author BO Oyserman
-
 Plot_Model_Module <- function(Model_Module_List, Model_Bin, Module_Names, sortbygenome, margins = c(5,23)) {
 
 num_genes <-  length( Model_Module_List[[4]])
@@ -1853,6 +1537,7 @@ if (length(sortbygenome)==1) {
 ##'    pch=as.numeric(string.to.colors(groups, colors=c(16:20))))
 ##' @note This function can also be used to specify pch values, cex values, or any other plotting values
 ##' the user may wish to differ across groups. See examples.
+##' @author Dustin Fife
 string.to.colors = function(string, colors=NULL){
   if (is.factor(string)){
     string = as.character(string)
@@ -1931,4 +1616,372 @@ gradient.legend = function(y=NULL, yrange=NULL, cols = c("red", "blue"),location
   image(x,y,z,col=my.colors(n),axes=FALSE,...)
   axis(2)
   par(fig=c(0,1,0,1))
+}
+
+#' @author Thomas Schlesinger
+calcmfrow <- function(x) {
+  temp <- sqrt(x)
+
+  if ((temp %% floor(temp)) == 0) {
+    return(c(temp, temp))
+  } else if ((temp %% floor(temp)) < 0.5) {
+    return(c(floor(temp), ceiling(temp)))
+  } else {
+    return(c(ceiling(temp), ceiling(temp)))
+  }
+}
+
+################################
+
+
+
+#' Calculate Association Rules
+#' @name Calculate Association Rules
+#' @description Calculate Association Rules using the apriori algorithm (as
+#' implemented in the arules package). This function lets the user decide on the
+#' number of rules to produce and estimates parameters to produce those results.
+#' @param sbs.trait.attributes Matrix where each collumn is a trait attribute
+#' and each row a genome. Presence or absence is indicated with either a one
+#' (1) or zero (0).
+#' @param lhs A vector containing one or multiple terms for the left-hand-side
+#' (antecedent) of the association rules. For more information see
+#' \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
+#' @param rhs A vector containing one or multiple terms for the right-hand-side
+#' (consequent) of the association rules. For more information see
+#' \url{https://en.wikipedia.org/wiki/Association_rule_learning}.
+#' @param N The number of association rules to create (e.g. N = 100 will result
+#' in 100 association rules).
+#' @export
+#' @author JJM van Steenbrugge
+Association_Rules <- function(sbs.trait.attributes,
+                              lhs, rhs, N) {
+  require(arules)
+
+  .Reach_N <- function(N, lhs = c(), rhs = c()) {
+    n <- 0
+    support <- 1.0
+    confidence <- 1.0
+    while (n < N) {
+      apri <- apriori(sbs.trait.attributes,
+                      parameter = list(
+                        support = support,
+                        confidence = confidence,
+                        minlen = 2
+                      ),
+                      appearance = list(
+                        lhs = lhs,
+                        rhs = rhs
+                      )
+      )
+
+      rules <- as(apri, "data.frame")
+      n <- nrow(rules)
+      print(n)
+      support <- support - 0.1
+      if (support <= 0) {
+        support <- 1.0
+        confidence <- confidence - 0.1
+      }
+    }
+    return(rules)
+  }
+
+
+
+  if (missing(lhs) && missing(rhs)) {
+    rules <- .Reach_N(N)
+  } else if (!missing(lhs) && !missing(rhs)) {
+    rules1 <- .Reach_N(N / 2, lhs = lhs)
+    rules2 <- .Reach_N(N / 2, rhs = rhs)
+
+    rules1 <- rules1[order(rules1[, 1]), ]
+    rules2 <- rules2[order(rules2[, 1]), ]
+
+    rules <- rbind(rules1[1:(N / 2), ], rules2[1:(N / 2), ])
+  } else if (!missing(lhs)) {
+    rules <- .Reach_N(N, lhs = lhs)
+  } else if (!missing(rhs)) {
+    rules <- .Reach_N(N, rhs = rhs)
+  }
+
+  return(rules)
+}
+
+
+#' Draw_Expression
+#' @name Draw Expression
+#' @description Creates a drawing of a trait (possibly with multiple different
+#' trait-attributes) where all its composing genes are plotting individually
+#' with their corresponding expression values.
+#' @param trait character string with the name of a trait.
+#' @param RNAseq.data Collection of multple components, include RNA seq data,
+#' annotations, etc.
+#' @seealso \code{\link{Pre_process_input}} for the full list of parameters,
+#' \url{https://github.com/Jorisvansteenbrugge/TcT/wiki/The-RNAseq.data-object}
+#' for more information.
+#' @param trait.attributes.pruned The full list of all pruned trait attributes.
+#' @export
+#' @author JJM van Steenbrugge
+Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
+  y.max <- 140
+  x.max <- 60
+
+
+  attributes <- trait.attributes.pruned[[trait]]
+  n.attributes <- length(attributes)
+  genes <- RNAseq.data$features$annotation.db$module.dict[[trait]]
+  n.genes <- length(genes)
+
+  plot(c(0, as.numeric(x.max)), c(0, y.max), type = "n", xlab = "", ylab = "", axes = F)
+
+  y.coords <- seq(y.max, 1, by = -15) # With this setting max of 7 genes
+  x.coords <- seq(0, x.max, by = 11)
+
+  # For each gene
+  for (i in 1:n.genes) {
+    gene <- genes[i]
+
+    # Gene name
+    graphics::text(
+      x = (x.coords[1] + 5),
+      y = (y.coords[i] - 5),
+      labels = gene
+    )
+
+    # for each attribute
+    for (y in 1:n.attributes) {
+      #      Draw Labels
+      graphics::text(x = (x.coords[y + 1] + 5), y = y.max, labels = paste(trait,
+                                                                          y,
+                                                                          sep = "."
+      ))
+
+      rect(
+        xleft = x.coords[y + 1], ybottom = y.coords[i] - 10,
+        xright = x.coords[y + 1] + 10, ytop = y.coords[i]
+      )
+
+      # Draw expression line
+      genomes <- attributes[[y]]$genomes
+      genomes.rna <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% genomes), ]
+      genomes.rna.gene <- genomes.rna[
+        which(genomes.rna$Annotation == gene),
+        RNAseq.data$features$rank.columns
+        ]
+      genomes.rna.gene.mean <- apply(genomes.rna.gene, 2, mean)
+
+      # Generate box colours
+      values <- seq(0.1, 1, by = 0.1)
+      cols <- colorRamp(c("white", "red"))
+      colours <- rgb(cols(values) / 255)
+
+      # Draw all the boxes!
+      box.coords <- seq(0, 10, length.out = (length(genomes.rna.gene.mean) + 1))
+      for (z in 2:length(box.coords)) {
+        rank <- genomes.rna.gene.mean[z - 1]
+        col <- "red"
+        if (is.nan(rank) || is.na(rank)) {
+          rank <- 1
+        }
+        # I am not proud of this
+        if (rank <= 1 && rank > 0.9) {
+          col <- colours[1]
+        }
+        else if (rank <= 0.9 && rank > 0.8) {
+          col <- colours[2]
+        } else if (rank <= 0.8 && rank > 0.7) {
+          col <- colours[3]
+        } else if (rank <= 0.7 && rank > 0.6) {
+          col <- colours[4]
+        } else if (rank <= 0.6 && rank > 0.5) {
+          col <- colours[5]
+        } else if (rank <= 0.5 && rank > 0.4) {
+          col <- colours[6]
+        } else if (rank <= 0.4 && rank > 0.3) {
+          col <- colours[7]
+        } else if (rank <= 0.3 && rank > 0.2) {
+          col <- colours[8]
+        } else if (rank <= 0.2 && rank > 0.1) {
+          col <- colours[9]
+        } else if (rank <= 0.1 && rank >= 0.0) {
+          col <- colours[10]
+        }
+        rect(
+          xleft = x.coords[y + 1] + box.coords[(z - 1)], ybottom = y.coords[i] - 10,
+          xright = x.coords[y + 1] + box.coords[z], ytop = y.coords[i],
+          col = col
+        )
+        for (line.idx in 1:nrow(genomes.rna.gene)) {
+          y.bot <- y.coords[i] - 10
+          rank.pos <- (genomes.rna.gene[line.idx, ] * 10) + y.bot
+          x.pos <- seq(1, 10, length.out = 6) + x.coords[y + 1]
+          graphics::lines(
+            x.pos,
+            rank.pos
+          )
+        }
+      }
+    }
+  }
+}
+
+
+Plot_Trait_Expression <- function(trait, subset_genomes) {
+  dev.off()
+  .getRank <- function(genome, rows) {
+    genome.rows <- rows[
+      which(rows$Bin == genome),
+      RNAseq.data$features$rank.columns
+      ]
+
+    x <- genome.rows[sample.int(nrow(genome.rows), 1), ]
+
+    return(x)
+  }
+
+
+  annotations <- RNAseq.data$features$annotation.db$module.dict[[trait]]
+  par(mfrow = calcmfrow(length(annotations)))
+
+
+
+  for (KO in annotations) {
+    print(KO)
+    rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO), ]
+
+    if (missing(subset_genomes)) {
+      genomes <- unique(rows$Bin)
+    } else {
+      genomes <- unique(rows$Bin)
+      genomes <- subset_genomes[which(subset_genomes %in% genomes)]
+    }
+
+    print(genomes)
+    if (length(genomes) == 0) {
+      next()
+    }
+
+    plot(1:length(RNAseq.data$features$rank.columns), .getRank(genomes[1], rows),
+         ylim = c(0, 1), main = KO, type = "l"
+    )
+    for (genome in genomes) {
+      lines(1:length(RNAseq.data$features$rank.columns), .getRank(genome, rows))
+    }
+  }
+}
+
+Plot_Venn <- function(trait.attributes.pruned) {
+  tap <- trait.attributes.pruned
+  b16 <- c()
+  b39 <- c()
+  total <- c()
+
+  for (trait.idx in 1:length(tap)) {
+    t <- tap[[trait.idx]]
+    #####
+    if (length(t) == 0) {
+      next
+    }
+    #####
+
+    for (ta.idx in 1:length(t)) {
+      ta <- t[[ta.idx]]
+      ta.name <- paste(names(tap)[trait.idx],
+                       ta.idx,
+                       sep = "."
+      )
+      total <- c(total, ta.name)
+      genomes <- ta$genomes
+
+      c <- F
+
+      if ("16" %in% genomes) {
+        b16 <- c(b16, ta.name)
+        c <- T
+      }
+
+      if ("39" %in% genomes) {
+        b39 <- c(b39, ta.name)
+        c <- T
+      }
+
+      # if (! c) {
+      #   total <- c(total, ta.name)
+      # }
+    }
+  }
+
+  o12 <- total[which(total %in% b39)]
+  o23 <- b39  [which(b39 %in% b16)]
+  o13 <- total[which(total %in% b16)]
+  o123 <- o12  [which(o12 %in% b16)]
+
+  VennDiagram::draw.triple.venn(length(total),
+                                length(b39),
+                                length(b16),
+                                length(o12),
+                                length(o23),
+                                length(o13),
+                                length(o123),
+                                category = c("Total", "b39", "b16")
+  )
+
+  .getGenomeTraits <- function(genome) {
+    tas <- c()
+
+    for (trait.idx in 1:length(tap)) {
+      t <- tap[[trait.idx]]
+      #####
+      if (length(t) == 0) {
+        next
+      }
+      #####
+
+      for (ta.idx in 1:length(t)) {
+        ta <- t[[ta.idx]]
+        ta.name <- paste(names(tap)[trait.idx],
+                         ta.idx,
+                         sep = "."
+        )
+
+        genomes <- ta$genomes
+
+        c <- F
+
+        if (genome %in% genomes) {
+          tas <- c(tas, ta.name)
+          c <- T
+        }
+      }
+    }
+    return(tas)
+  }
+  library(RCy3)
+  nodes <- as.matrix(RNAseq.data$features$bins, ncol = 1)
+  colnames(nodes) <- "id"
+
+  edges <- matrix(ncol = 3, nrow = 0)
+  for (x in 1:(length(RNAseq.data$features$bins) - 1)) {
+    x.tas <- .getGenomeTraits(RNAseq.data$features$bins[x])
+    for (y in (x + 1):length(RNAseq.data$features$bins)) {
+      y.tas <- .getGenomeTraits(RNAseq.data$features$bins[y])
+      overlap <- length(x.tas[which(x.tas %in% y.tas)])
+      edges <- rbind(edges, c(
+        RNAseq.data$features$bins[x],
+        RNAseq.data$features$bins[y],
+        overlap
+      ))
+    }
+  }
+  colnames(edges) <- c("source", "target", "weight")
+  weights <- as.numeric(edges[, "weight"])
+  weights <- (weights / min(weights))^2
+
+  edges[, 3] <- weights
+
+  createNetworkFromDataFrames(data.frame(nodes, stringsAsFactors = F),
+                              data.frame(edges, stringsAsFactors = F),
+                              title = "title",
+                              collection = "Network Traits and Genomes"
+  )
 }

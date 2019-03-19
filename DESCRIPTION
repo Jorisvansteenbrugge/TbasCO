@@ -10,7 +10,8 @@ Description: More about what it does (maybe more than one line)
 License: some licence
 Encoding: UTF-8
 LazyData: false
-Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, BiocManager, RColorBrewer, ggplot2, gridExtra, arules, magrittr, reticulate
+Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, BiocManager, 
+    RColorBrewer, ggplot2, gridExtra, arules, magrittr, reticulate, xlsx
 RoxygenNote: 6.1.1
 biocViews: RCy3
 Suggests: testthat

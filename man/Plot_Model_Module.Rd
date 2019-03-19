@@ -4,8 +4,8 @@
 \alias{Plot_Model_Module}
 \title{Plot_Model_Module}
 \usage{
-Plot_Model_Module(Model_Module_List, Model_Bin, Module_Names, margins,
-  sortbygenome)
+Plot_Model_Module(Model_Module_List, Model_Bin, Module_Names, sortbygenome,
+  margins = c(5, 23))
 }
 \description{
 Creates a bar plot of pairwise comparisons between the traits of a model genome.
@@ -14,7 +14,7 @@ The bar is presented in dark grey.
 }
 \seealso{
 \code{\link{Pre_process_input}} for the full list of parameters,
-\url{https://github.com/Jorisvansteenbrugge/TcT/wiki/The-RNAseq.data-object}
+\url{https://github.com/Jorisvansteenbrugge/TbasCO/wiki/The-RNAseq.data-object}
 for more information.
 }
 \author{

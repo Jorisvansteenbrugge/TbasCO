@@ -27,12 +27,14 @@ the user may wish to differ across groups. See examples.
 \examples{
 groups = sample(LETTERS[1:5], size=100, replace=TRUE)
 plot(rnorm(100), rnorm(100), col=string.to.colors(groups))
-plot(rnorm(100), rnorm(100), col=string.to.colors(groups), 
+plot(rnorm(100), rnorm(100), col=string.to.colors(groups),
    pch=as.numeric(string.to.colors(groups, colors=c(16:20))))
 }
 \seealso{
 \code{\link{number.to.colors}}
 }
 \author{
+Dustin Fife
+
 Dustin Fife
 }
