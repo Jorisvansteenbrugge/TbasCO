@@ -18,7 +18,7 @@
 Pre_process_input <- function(file.path, annotation.db.path, normalize.method = T,
                               filter.method = "MAD",
                               filter.low.coverage = T,
-                              normalization.features = NULL){
+                              normalization.features = NULL, taxon_file = NULL){
 
   RNAseq.table     <- read.csv2(file.path)
 
@@ -316,7 +316,7 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
       RNAseq.data$features$sample.columns
     ]
     total <- sum(data)
-    LCG <- length(which(data > threshold))
+    LCG <- length(which(data >= threshold))
     n.samples <- length(RNAseq.data$features$sample.columns)
     mat <- rbind(mat, c((LCG / (nrow(data) * n.samples)), log2(total)))
   }
@@ -331,6 +331,14 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
   RNAseq.data$features$trait_presence_absence      <- RNAseq.data$features$trait_presence_absence[, bins.keep]
   return(RNAseq.data)
 
+}
+
+
+Parse_taxonomy <- function(RNAseq.features, taxonfile) {
+  library(xlsx)
+  if(is.null(taxonfile)){
+    table <- read.xlsx(taxonfile, sheetIndex = 1)
+  }
 }
 
 

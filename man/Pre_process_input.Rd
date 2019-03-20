@@ -6,7 +6,7 @@
 \usage{
 Pre_process_input(file.path, annotation.db.path, normalize.method = T,
   filter.method = "MAD", filter.low.coverage = T,
-  normalization.features = NULL)
+  normalization.features = NULL, taxon_file = NULL)
 }
 \arguments{
 \item{normalize.method}{User defined method to normalize data}
