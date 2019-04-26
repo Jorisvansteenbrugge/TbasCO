@@ -1,0 +1,296 @@
+---
+title: "Trait-based Comparative Transcriptomics Analysis"
+author: "Joris van Steenbrugge & Ben Oyserman"
+date: "August 23, 2017"
+output: html_document
+---
+```{r,results='hide'}
+library(TcT)
+library(magrittr)
+
+```
+#Loading and Preprocessing Data
+
+
+All of the preprocessing is handled by the `Pre_process_input` function.
+This function consequtively performs the following tasks:
+
+1. Data Loading
+2. Normalization
+3. Filtering
+
+
+### Data loading
+The data set should contain the following Elements:
+
+* A column named **Gene**
+* Multiple expression data columns that have at least the word **Sample** in it
+* A column named **Annotation**
+* A column named **Bin**
+
+Additional columns may be present but are not used in the analysis.
+Loading of data is done by assigning a file.path to the function's `filepath`
+variable.
+
+### Normalization
+The package supports different options for normalization. By default the `Pre_process_input` function
+does not normalize the data. To indicate if normalization should be performed, the function parameter 
+`normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
+```{r Preprocessing}
+normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
+                  'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
+                  'library_size' = c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166),
+                  'not_aligned'  = c(0, 0, 0, 0, 0, 0)
+                  )
+
+
+RNAseq.data <- Pre_process_input(file.path,
+                                 annotation.db.path,
+                                 normalize.method    = T,
+                                 filter.method       = 'MAD',
+                                 filter.low.coverage = T,
+                                 normalization.features)
+
+# Family ----
+genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
+                         '11' = 'f__Rubrivivax',
+                         '16' = 'f_Rhodocyclaceae',
+                         '17' = '.',
+                         '19' = 'f_Cytophagaceae',
+                         '20' = '.',
+                         '22' = 'f_Comamonadaceae',
+                         '25' = 'f_Chitinophagaceae',
+                         '26' = 'o_Actinomycetales',
+                         '28' = 'p_bacteroidetes',
+                         '29' = 'f_Comamonadaceae',
+                         '31' = 'f_Rhodobacteraceae',
+                         '32' = 'f_Xanthomonadaceae',
+                         '36' = 'o_Actinomycetales',
+                         '39' = 'f_Rhodocyclaceae',
+                         '42' = 'p_Bacteroidetes',
+                         '45' = 'f_Flavobacteriaceae',
+                         '48' = 'c_Alphaproteobacteria',
+                         '53' = 'f_Flavobacteriaceae'
+                         )
+# Phylum ----
+genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
+                         '11' = 'p__Proteobacteria',
+                         '16' = 'p__Proteobacteria',
+                         '17' = '.',
+                         '19' = 'p__Bacteroidetes',
+                         '20' = '.',
+                         '22' = 'p__Proteobacteria',
+                         '25' = 'p__Bacteroidetes',
+                         '26' = 'p__Actinobacteria',
+                         '28' = 'p__Bacteroidetes',
+                         '29' = 'p__Proteobacteria',
+                         '31' = 'p__Proteobacteria',
+                         '32' = 'p__Proteobacteria',
+                         '36' = 'p__Actinobacteria',
+                         '39' = 'p__Proteobacteria',
+                         '42' = 'p__Bacteroidetes',
+                         '45' = 'p__Bacteroidetes',
+                         '48' = 'p__Proteobacteria',
+                         '53' = 'p__Bacteroidetes'
+                         )
+```
+
+### Define the distance metrics to be used
+In this vignette, the Pearson Correlation and the Normalized Rank Euclidean Distance are used.
+The user is free to implement different metrics, as long as the function parameters
+are identical to the ones in the example PC and NRED functions.
+In these examples, rowA and rowB are rows from RNAseq.data$table.
+```{r Defining Distance Metrics}
+# Calculates the Pearson Correlation
+PC <- function(rowA, rowB, RNAseq.features){
+  return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
+             as.numeric(rowB[RNAseq.features$sample.columns])
+             )
+         )
+}
+
+# Calculates the Normalized Rank Euclidean Distance
+NRED <- function(rowA, rowB, RNAseq.features) {
+  r.A <- as.numeric(rowA[ RNAseq.features$rank.columns ])
+  r.B <- as.numeric(rowB[ RNAseq.features$rank.columns ])
+  return(
+    sum((r.A - r.B) * (r.A - r.B))
+  )
+}
+
+# Combine multiple distance metrics to complement each other.
+distance.metrics <- list("NRED" = NRED,
+                         "PC"   = PC)
+
+# the size of all modules in the library, usefull for calculating the background distribution
+module_size_range <- lapply(RNAseq.data$features$annotation.db$module.dict,length) %>% as.numeric() %>% table() %>% names() %>% as.numeric()
+
+# again, the size of all modules but using the maximum length of the disjunctive form. Slightly shorter
+d_module_size_range_all<-c()
+for (i in 1:length(sub_modules)) {
+  d_module_size_range_all[i]<- max(sapply(sub_modules[[i]],length))
+}
+d_module_size_range<-sort(unique(d_module_size_range_all))
+
+
+```
+
+### Actual Analysis
+```{r Main Analysis}
+bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
+                                                            N       = 1000, 
+                                                            metrics = distance.metrics,
+                                                            threads = 3)
+
+bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
+start <- Sys.time()
+bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
+                                                   bkgd.individual.Zscores,
+                                                   N = 10000, 
+                                                   metrics = distance.metrics,
+                                                   threads = 6)
+end <- Sys.time()
+
+pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
+                                                             RNAseq.data$features$annotation.db,
+                                                             distance.metrics,
+                                                             bkgd.individual.Zscores,
+                                                             show.progress = T,
+                                                             threads = 4)
+
+trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
+                                                     pairwise.distances = pairwise.distances,
+                                                     annotation.db = expanded_annotation.db,
+                                                     threads = 2)
+
+trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
+                                                  RNAseq.data,
+                                                  p.threshold = 0.05,
+                                                  pairwise.distances = pairwise.distances,
+                                                  annotation.db = expanded_annotation.db,
+                                                  trait_presence_absence = trait_pa_expanded)
+
+sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, 
+                                                        RNAseq.data$features$bins)
+```
+
+### Plot background of individual genes
+```{r bunch_o_figs, fig.height=8, fig.width=12}
+Plot_Background_Individual_Genes(bkgd.individual.Zscores)
+
+```
+
+### Plot background of individual genes
+```{r bunch_o_figs, fig.height=8, fig.width=12}
+Plot_Background_Modules(bkgd.traits)
+
+```
+
+
+### Model_Module Figure
+```{r bunch_o_figs, fig.height=8, fig.width=12}
+#For article
+
+
+# For supplemental
+Module_Names <- RNAseq.data$features$trait_presence_absence[,'39'] %>% which(. == T) %>% names
+Module_Names_16 <- RNAseq.data$features$trait_presence_absence[,'16'] %>% which(. == T) %>% names
+
+
+Module_Names_ATP_synthesis <- c("M00144","M00143","M00146","M00147","M00149","M00150","M00148","M00162","M00151","M00152","M00154","M00155","M00153","M00417","M00416","M00156","M00157","M00159")
+Location_Module_Names_ATP_synthesis<-which(sapply(strsplit(Module_Names,split="_", fixed=TRUE), `[`, 1) %in% Module_Names_ATP_synthesis)
+Module_DNF_Names_ATP_synthesis<-Module_Names[Location_Module_Names_ATP_synthesis]
+
+
+redundant_unique_modules<-c("M00144", "M00149", "M00432", "M00019", "M00009", "M00011", "M00434", "M00168", "M00082", "M00012", "M00005", "M00336", "M00335", "M00237", "M00210", "M00255", "M00001", "M00087", "M00123", "M00122", "M00127", "M00150", "M00530", "M00186", "M00244", "M00669", "M00223", "M00506", "M00515", "M00453", "M00523", "M00772") 
+Location_Module_Names_redundant_unique_modules<-which(sapply(strsplit(Module_Names,split="_", fixed=TRUE), `[`, 1) %in% redundant_unique_modules)
+Module_DNF_Names_redundant_unique_modules<-Module_Names[Location_Module_Names_redundant_unique_modules]
+
+
+
+margins =c(6,26)
+Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names, bkgd.traits)
+Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome=NULL)
+
+margins =c(3,21)
+Model_Module_redundant_unique_modules <- Model_Module(RNAseq.data, trait.attributes, 39, Module_DNF_Names_redundant_unique_modules, bkgd.traits)
+Plot_Model_Module(Model_Module_redundant_unique_modules, 39, Module_DNF_Names_redundant_unique_modules,margins, sortbygenome=NULL)
+
+                  
+margins =c(1,7)
+Model_Module_ATP_synthesis <- Model_Module(RNAseq.data, trait.attributes, 39, Module_DNF_Names_ATP_synthesis, bkgd.traits)
+Plot_Model_Module(Model_Module_ATP_synthesis, 39, Module_DNF_Names_ATP_synthesis,margins, sortbygenome="16")
+
+
+```
+
+### Figures of functional redundancy and linear regression
+```{r bunch_o_figs, fig.height=8, fig.width=8}
+
+TnA_redundancy <- Calc_TnA_redundancy()
+
+# Sort based on attributes
+ Most_redundant_order <- TnA_redundancy[order(TnA_redundancy[,3]),1]
+# Sort based on traits
+# Most_redundant_order <- TnA_redundancy[order(TnA_redundancy[,2]),1]
+
+
+# Color by taxonomy
+stc<- string.to.colors(genome.taxonomy.phylum)
+# Color by taxonomy in the order based on redundancy
+stc_highlights <- stc[match(rev(as.numeric(Most_redundant_order)),names(stc))]
+
+par(mfrow=c(4,5),mar=c(2,2,2,2))
+#Plot_traits_vs_attributes()
+
+plot(as.numeric(TnA_redundancy[,3])~as.numeric(TnA_redundancy[,2]), col=stc, xlim=c(500,1100), ylim=c(100,400), pch = 19, xlab = "Attributes", ylab = "Traits")
+
+# For some reason, legend is providing error
+#legend(x=500, y=400, legend= c("Bacteroidetes","Proteobacteria", "Bacteria","Actinobacteria"), pch=19, col = unique(stc_highlights), cex=0.5)
+
+as.numeric(Most_redundant_order)
+j= 1
+for (i in rev(as.numeric(Most_redundant_order))) {
+  Plot_traits_vs_attributes_highlight(i,stc_highlights[j])
+  j = j+1
+}
+
+
+```
+
+## Draw a base network of all genomes and attributes
+```{r}
+
+All_Modules_dnf <- names(RNAseq.data$features$trait_presence_absence[,1])
+
+Network_Trait_Genomes(trait.names = All_Modules_dnf, trait.attributes.pruned, genome.taxonomy.phylum)
+
+
+```
+
+## Apriori
+```{r}
+
+rules <- Association_Rules(sbs.trait.attributes, N = 30,
+                           rhs= c('PHA.1', 'PHA.2'))
+
+Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$features$annotation.db,
+             N = 30)
+```
+
+
+## Experimental
+```{r}
+Go_Fish(RNAseq.data)
+# Retrieving all M00009 attributes
+M00009 <- names(trait.attributes.pruned) %>% grep("M00009", .)
+M00009_attributes <- trait.attributes.pruned[M00009] %>% 
+                          sapply(length) %>% `!=` (0) %>% which %>% names
+
+trait.attributes.pruned[M00009_attributes]
+```
+
+## Publication figure creating
+```{r}
+Plot_Categories()
+```
