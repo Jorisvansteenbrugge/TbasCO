@@ -13,9 +13,9 @@ Network_Trait_Genomes(trait.names, trait.attributes.pruned,
 RNAseq.data$features$annotation.db$module.dict object}
 }
 \description{
-Draw a network of trait(-attributes) with its associated genomes
+Draw a basic network of trait(-attributes) with its associated genomes
 in Cytoscape (\url{http://www.cytoscape.org/}) automatically via Cytoscape's
-REST API..
+REST API. Cytoscape (with REST API plugin installed ) should be running before executing this function.
 }
 \examples{
 Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)

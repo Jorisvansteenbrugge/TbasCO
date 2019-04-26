@@ -13,7 +13,7 @@ a random background distribution.
 See \code{\link{Calc_Z_scores}} for more information.}
 }
 \description{
-Plotting of each background distribution.
+Plotting of each background distribution (Figure 2A.
 }
 \author{
 BO Oyserman
