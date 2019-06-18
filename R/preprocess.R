@@ -218,8 +218,8 @@ Normalization <- function(RNAseq.table, RNAseq.features,
                           normalize.method, normalization.features){
   if(typeof(normalize.method) == "closure"){
     return(normalize.method(RNAseq.table))
-  } else {
-    return(Normalize(RNAseq.table, RNAseq.features, normalization.features))
+  } else if(normalize.method == "simple"){
+    return(Normalize(RNAseq.table, RNAseq.features, normalization.features, simple = normalize.method))
   }
   return(RNAseq.table)
 }
@@ -368,18 +368,22 @@ Parse_taxonomy <- function(RNAseq.features, taxonfile) {
 #' \code{RNAseq_Annotated_Matrix[apply(RNAseq_Annotated_Matrix[, SS:SE], 1, function(x) !any(x == 0)), ]}
 #' \preformatted{Where SS and SE are the start and end columns of the samples (raw counts).}
 
-Normalize <- function(RNAseq.table, RNAseq.features, normalization.features){
+Normalize <- function(RNAseq.table, RNAseq.features, normalization.features, simple){
 
   # normalized by total of non-rRNA reads per sample mapped
   sum_aligned         <- apply(RNAseq.table[, RNAseq.features$sample.columns],
                                2, sum)
 
+  if (missing(simple)){
   total_nonRNA_reads  <- sum_aligned + normalization.features$no_feature
   total_nonRNA_reads  <-  total_nonRNA_reads + normalization.features$ambiguous
   total_nonRNA_reads  <-  total_nonRNA_reads  + normalization.features$not_aligned
 
-  normalized_by_total <- total_nonRNA_reads / max(total_nonRNA_reads)
 
+  normalized_by_total <- total_nonRNA_reads / max(total_nonRNA_reads)
+  } else{
+  normalized_by_total <- normalization.features / max(normalization.features)
+ }
   # An alternative would be to use the library size.
   # However, since the pool of rRNA is often both physically and bioinformatically removed,
   # the count of mRNA reads per sample is more intuitively relevant.
@@ -405,6 +409,8 @@ Normalize <- function(RNAseq.table, RNAseq.features, normalization.features){
 
 
 }
+
+
 
 #' @author BO Oyserman
 Normalize_by_bin <- function(RNAseq.table, RNAseq.features){
