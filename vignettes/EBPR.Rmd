@@ -199,7 +199,7 @@ Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome=
 ### Figures of functional redundancy and linear regression
 ```{r bunch_o_figs, fig.height=8, fig.width=8}
 
-TnA_redundancy <- Calc_TnA_redundancy()
+TnA_redundancy <- Calc_TnA_redundancy(RNAseq.data)
 
 # Sort based on attributes
 Most_redundant_order <- TnA_redundancy[order(TnA_redundancy[,3]),1]
