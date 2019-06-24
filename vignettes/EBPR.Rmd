@@ -51,28 +51,8 @@ RNAseq.data <- Pre_process_input(file.path,
                                  filter.low.coverage = T,
                                  normalization.features)
 
-# Family ----
-genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
-                         '11' = 'f__Rubrivivax',
-                         '16' = 'f_Rhodocyclaceae',
-                         '17' = '.',
-                         '19' = 'f_Cytophagaceae',
-                         '20' = '.',
-                         '22' = 'f_Comamonadaceae',
-                         '25' = 'f_Chitinophagaceae',
-                         '26' = 'o_Actinomycetales',
-                         '28' = 'p_bacteroidetes',
-                         '29' = 'f_Comamonadaceae',
-                         '31' = 'f_Rhodobacteraceae',
-                         '32' = 'f_Xanthomonadaceae',
-                         '36' = 'o_Actinomycetales',
-                         '39' = 'f_Rhodocyclaceae',
-                         '42' = 'p_Bacteroidetes',
-                         '45' = 'f_Flavobacteriaceae',
-                         '48' = 'c_Alphaproteobacteria',
-                         '53' = 'f_Flavobacteriaceae'
-                         )
-# Phylum ----
+
+# Phylum EBPR
 genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
                          '11' = 'p__Proteobacteria',
                          '16' = 'p__Proteobacteria',
@@ -93,6 +73,46 @@ genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
                          '48' = 'p__Proteobacteria',
                          '53' = 'p__Bacteroidetes'
                          )
+# Phylum Elizabeth
+genome.taxonomy.phylum <- list("3300026302-bin.46" = "p__Proteobacteria",
+                               "3300026282-bin.4"  = "p__Proteobacteria",
+                               "3300026302-bin.32" = "p__Bacteroidota",
+                               "3300009517-bin.31" = "p__Bacteroidota",
+                               "3300026288-bin.43" = "p__Actinobacteriota",
+                               "3300009517-bin.6"  = "p__Proteobacteria",
+                               "3300026303-bin.42" = "p__Bacteroidota",
+                               "3300009517-bin.1"  = "p__Bacteroidota",
+                               "3300009517-bin.42" = "p__Proteobacteria",
+                               "3300026284-bin.9"  = "p__Proteobacteria",
+                               "3300026302-bin.62" = "p__Cyanobacteriota",
+                               "3300009517-bin.3"  = "p__Bacteroidota",
+                               "3300009517-bin.47" = "p__Proteobacteria",
+                               "3300009517-bin.13" = "p__Proteobacteria",
+                               "3300009517-bin.12" = "p__Bacteroidota",
+                               "3300026302-bin.10" = "p__Proteobacteria"
+                               )
+
+# genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
+#                          '11' = 'f__Rubrivivax',
+#                          '16' = 'f_Rhodocyclaceae',
+#                          '17' = '.',
+#                          '19' = 'f_Cytophagaceae',
+#                          '20' = '.',
+#                          '22' = 'f_Comamonadaceae',
+#                          '25' = 'f_Chitinophagaceae',
+#                          '26' = 'o_Actinomycetales',
+#                          '28' = 'p_bacteroidetes',
+#                          '29' = 'f_Comamonadaceae',
+#                          '31' = 'f_Rhodobacteraceae',
+#                          '32' = 'f_Xanthomonadaceae',
+#                          '36' = 'o_Actinomycetales',
+#                          '39' = 'f_Rhodocyclaceae',
+#                          '42' = 'p_Bacteroidetes',
+#                          '45' = 'f_Flavobacteriaceae',
+#                          '48' = 'c_Alphaproteobacteria',
+#                          '53' = 'f_Flavobacteriaceae'
+#                          )
+
 ```
 
 ### Define the distance metrics to be used
@@ -204,10 +224,12 @@ TnA_redundancy <- Calc_TnA_redundancy(RNAseq.data)
 # Sort based on attributes
 Most_redundant_order <- TnA_redundancy[order(TnA_redundancy[,3]),1]
 
+
+
 # Color by taxonomy
 stc<- string.to.colors(genome.taxonomy.phylum)
 # Color by taxonomy in the order based on redundancy
-stc_highlights <- stc[match(rev(as.numeric(Most_redundant_order)),names(stc))]
+stc_highlights <- stc[match(rev(Most_redundant_order),names(stc))]
 
 par(mfrow=c(4,5),mar=c(2,2,2,2))
 #Plot_traits_vs_attributes()
@@ -221,7 +243,7 @@ plot(as.numeric(TnA_redundancy[,3])~as.numeric(TnA_redundancy[,2]), col=stc, xli
 
 as.numeric(Most_redundant_order)
 j= 1
-for (i in rev(as.numeric(Most_redundant_order))) {
+for (i in rev(Most_redundant_order)) {
   Plot_traits_vs_attributes_highlight(i,stc_highlights[j])
   j = j+1
 }

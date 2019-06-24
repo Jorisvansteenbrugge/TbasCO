@@ -1218,19 +1218,21 @@ Calc_TnA_redundancy <- function(RNAseq.data ) {
     })
 
   }
-  colnames(point.matrix) <- c("A","B", 'traits', 'attributes')
+  colnames(point.matrix) <- c("A", "B", 'traits', 'attributes')
 
   point.df <- data.frame(point.matrix, stringsAsFactors = F)
   point.df$traits %<>% as.numeric
   point.df$attributes %<>% as.numeric
-  all_bins <- unique(c(point.df[,1],point.df[,2]))
+  all_bins <- unique(c(point.df[, 1], point.df[, 2]))
   sum_traits <- NULL
   sum_attributes <- NULL
-  for (i in as.numeric(all_bins)) {
-  bin_rows <- which(point.df[,1] == i | point.df[,2] == i)
-  sum_traits <- c(sum_traits, sum(point.df[bin_rows,3]))
-  sum_attributes <- c(sum_attributes,sum(point.df[bin_rows,4]))
+
+  for (i in all_bins) {
+    bin_rows <- which(point.df[, 1] == i | point.df[, 2] == i)
+    sum_traits <- c(sum_traits, sum(point.df[bin_rows, 3]))
+    sum_attributes <- c(sum_attributes, sum(point.df[bin_rows, 4]))
   }
+
   return(cbind(all_bins, sum_traits, sum_attributes))
 }
 
@@ -1353,6 +1355,7 @@ Plot_traits_vs_attributes <- function(model_bin) {
   # identify(x= as.numeric(point.matrix[,2]), y = as.numeric(point.matrix[,3]), labels = point.matrix[,1])
 }
 
+#' @export
 Plot_traits_vs_attributes_highlight <- function(model_bin, string_to_colors) {
   point.matrix <- matrix(ncol=3, nrow=0)
   point.matrix_39 <- matrix(ncol=3, nrow=0)
