@@ -138,7 +138,7 @@ d_module_size_range<-sort(unique(d_module_size_range_all))
 ### Actual Analysis
 ```{r Main Analysis}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
-                                                            N       = 1000, 
+                                                            N       = 10000, 
                                                             metrics = distance.metrics,
                                                             threads = 3)
 
@@ -146,7 +146,7 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 start <- Sys.time()
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
-                                                   N = 10000, 
+                                                   N = 1000, 
                                                    metrics = distance.metrics,
                                                    threads = 6)
 end <- Sys.time()
@@ -160,15 +160,13 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
                                                      pairwise.distances = pairwise.distances,
-                                                     annotation.db = expanded_annotation.db,
                                                      threads = 2)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data,
                                                   p.threshold = 0.05,
                                                   pairwise.distances = pairwise.distances,
-                                                  annotation.db = expanded_annotation.db,
-                                                  trait_presence_absence = trait_pa_expanded)
+                                                  bkgd.individual.Zscores = bkgd.individual.Zscores)
 
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, 
                                                         RNAseq.data$features$bins)
