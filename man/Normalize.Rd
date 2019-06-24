@@ -4,7 +4,7 @@
 \alias{Normalize}
 \title{Normalized RNAseq raw read counts}
 \usage{
-Normalize(RNAseq.table, RNAseq.features, normalization.features)
+Normalize(RNAseq.table, RNAseq.features, normalization.features, simple)
 }
 \arguments{
 \item{RNAseq_Annotated_Matrix}{The original count matrix (See X for format details).}

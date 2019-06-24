@@ -1189,8 +1189,8 @@ Plot_Redundancy_Traits <- function(RNAseq.data) {
 
 }
 
-#'@export
-Calc_TnA_redundancy <- function(RNAseq.data, ) {
+#' @export
+Calc_TnA_redundancy <- function(RNAseq.data ) {
   point.matrix <- matrix(ncol=4, nrow=0)
 
   t.pa <- RNAseq.data$features$trait_presence_absence
