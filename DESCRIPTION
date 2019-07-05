@@ -4,14 +4,14 @@ Title: Trait-based Comparative Transcriptomics
 Version: 3.1.0
 Authors@R: c(person("Joris", "van Steenbrugge", email="joris.vansteenbrugge@wur.nl", role = c("cre", "aut")),
              person("Ben", "Oyserman", email="ben.oyserman@wur.nl", role = c("aut")),
-             person("Elizabeth", "McDaniel", email="emcdaniel@wisc.edu", role = c("rev","aut")))
+             person("Elizabeth", "McDaniel", email="emcdaniel@wisc.edu", role = c("aut")))
 Maintainer: Joris van Steenbrugge <joris.vansteenbrugge@wur.nl>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: some licence
 Encoding: UTF-8
 LazyData: false
-Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, BiocManager, 
+Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, 
     RColorBrewer, ggplot2, gridExtra, arules, magrittr, reticulate, xlsx
 RoxygenNote: 6.1.1
 biocViews: RCy3
