@@ -248,7 +248,10 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
     bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED
   )
 
-
+  random.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Genes`$PC,
+    bkgd.individual.Zscores$zscores$`Random Genes`$NRED,
+    ybnds = c(min(all_scores), max(all_scores))
+  )
 
   random.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
@@ -265,6 +268,10 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
     random.annotated.genes.hexb@count
   ))
 
+  plot(random.genes.hexb,
+  colramp = rf, mincnt = 1, maxcnt = cnt.max,
+  xlab = "PC", ylab = "NRED", main = "Random Genes"
+  )
 
   plot(random.annotated.genes.hexb,
     colramp = rf, mincnt = 1, maxcnt = cnt.max,
