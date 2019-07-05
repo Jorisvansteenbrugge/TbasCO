@@ -241,28 +241,34 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
   require(RColorBrewer)
   rf <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 
-  all_scores <- c(
+  all_scores_x <- c(
     bkgd.individual.Zscores$zscores$`Random Genes`$PC,
-    bkgd.individual.Zscores$zscores$`Random Genes`$NRED,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
-    bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
     bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
+  )
+  
+   all_scores_y <- c(
+    bkgd.individual.Zscores$zscores$`Random Genes`$NRED,
+    bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
     bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED
   )
 
   random.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Genes`$PC,
     bkgd.individual.Zscores$zscores$`Random Genes`$NRED,
-    ybnds = c(min(all_scores), max(all_scores))
+    ybnds = c(min(all_scores_y), max(all_scores_y),
+    xbnds = c(min(all_scores_x), max(all_scores_x))
   )
 
   random.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
-    ybnds = c(min(all_scores), max(all_scores))
+    ybnds = c(min(all_scores_y), max(all_scores_y),
+    xbnds = c(min(all_scores_x), max(all_scores_x))
   )
 
   random.identical.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
     bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED,
-    ybnds = c(min(all_scores), max(all_scores))
+    ybnds = c(min(all_scores_y), max(all_scores_y),
+    xbnds = c(min(all_scores_x), max(all_scores_x))
   )
 
   cnt.max <- max(c(
