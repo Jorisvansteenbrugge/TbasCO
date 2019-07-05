@@ -244,7 +244,7 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
   all_scores_x <- c(
     bkgd.individual.Zscores$zscores$`Random Genes`$PC,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
-    bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
+    bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC
   )
   
    all_scores_y <- c(
