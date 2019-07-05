@@ -242,6 +242,8 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
   rf <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 
   all_scores <- c(
+    bkgd.individual.Zscores$zscores$`Random Genes`$PC,
+    bkgd.individual.Zscores$zscores$`Random Genes`$NRED,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
     bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
