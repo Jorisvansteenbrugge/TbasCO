@@ -657,7 +657,22 @@ Draw_Expression <- function(trait, RNAseq.data, trait.attributes.pruned) {
   }
 }
 
+#' Get module categories
+#' @description Returns a list of the kegg categories with their corresponding modules
+#' @export
+Get_module_categories <- function(pythonfile){
+  reticulate::source_python(pythonfile)
+  parsed <- get_module_categories(kegg_categories)
 
+  cat.genes <- parsed[[1]]
+  names(cat.genes) <- parsed[[2]]
+
+  return(cat.genes)
+}
+
+#' Get Metric Dist
+#' @param metric either {'PC','NRED'}
+#' @param cat.genes list("Carbon")
 getMetricDist <- function(metric, cat.genes, distance.metrics, RNAseq.data,
                           bkgd.individual, bkgd.individual.Zscores) {
   mean.distances <- matrix(nrow = 0, ncol = 4)
@@ -729,6 +744,8 @@ getMetricDist <- function(metric, cat.genes, distance.metrics, RNAseq.data,
   return(mean.distances)
 }
 
+#' Get Metric Dist module
+#' @export
 getMetricDistModule <- function(metric, cat.modules) {
   mean.distances <- matrix(nrow = 0, ncol = 5)
 
@@ -883,19 +900,7 @@ Plot_Pathway_genes <- function(metric_name, distance.metrics, RNAseq.data,
 }
 
 Plot_Pathway_modules <- function() {
-  cat.modules <- list()
-  con <- file("/home/joris/kegg_pathway_module.csv", "r")
-  while (TRUE) {
-    line <- readLines(con, n = 1)
-    if (length(line) == 0) {
-      break
-    }
-    line <- unlist(strsplit(line, ";"))
 
-    cat.modules[[line[1]]] <- unique(line[2:length(line)])
-  }
-
-  close(con)
 
   sig.pathways <- nred.Z[which(nred.Z$sig == "significant"), "collection"]
   cat.modules.sig <- cat.modules[sig.pathways]
