@@ -157,6 +157,3 @@ def parse_module(module_name):
             print(err.args)
 
     return definition_parsed
-
-if __name__ == "__main__":
-    print(parse_module("M00002"))
