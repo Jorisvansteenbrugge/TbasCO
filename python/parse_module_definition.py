@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 
 def pprint(l):
     for val in l:
-        print val
+        print(val)
 
 def retrieve_definition(module_name):
     """Retrieves the html page based on the database entry. The module definition
@@ -140,7 +140,7 @@ def parse_definition(definitions):
     expr = parse_expr(expr_text, local_dict = symbol_dict)
 
     dnf = to_dnf(expr)
-    combinations = [d.translate(None,"() ") for d in str(dnf).split("|")]
+    combinations = [d.strip("() ").replace(" ", "") for d in str(dnf).split("|")]
 
     combinations = [x.split("&") for x in combinations]
 
@@ -159,4 +159,4 @@ def parse_module(module_name):
     return definition_parsed
 
 if __name__ == "__main__":
-    parse_module("M00814")
+    print(parse_module("M00002"))

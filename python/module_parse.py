@@ -1,66 +1,55 @@
-from HTMLParser import HTMLParser
+#!/usr/bin/env python2
+
+
 import requests
-import unicodedata
-
-class myhtmlparser(HTMLParser):
-    def __init__(self):
-        self.reset()
-        self.NEWTAGS = []
-        self.NEWATTRS = []
-        self.HTMLDATA = []
-    def handle_starttag(self, tag, attrs):
-        self.NEWTAGS.append(tag)
-        self.NEWATTRS.append(attrs)
-    def handle_data(self, data):
-        self.HTMLDATA.append(data)
-    def clean(self):
-        self.NEWTAGS = []
-        self.NEWATTRS = []
-        self.HTMLDATA = []
+import re
+from datetime import date
 
 
 
-def parse_HTML_list(html_list):
-    out = []
-    start = False
-    for val in html_list:
-        if 'Type' in val:
-            start = False
-        if start == True:
-            out.append(val)
-        elif 'Definition' in val:
-            start = True
+def get_module_names(file):
+    modules = []
+    with open(file) as kegg_brite:
+        for line in kegg_brite:
+            if not line.startswith("D"):
+                continue
 
-    # Pop empy lines
-    clean_out = []
-    for val in out:
-        if '\n' in val:
-            pass
-        else:
-            clean_out.append(val.encode('ascii'))
+            modules.append(line.strip().split()[1])
 
-    return clean_out
-
-
-def retrieve_module_versions(parsed_KOs):
-
+    return modules
 
 def parseModule(module):
     module_specific = "http://www.genome.jp/kegg-bin/show_module?{}"
     r = requests.get(module_specific.format(module))
     r = r.text
 
-    parser = myhtmlparser()
-    parser.feed(r)
-    # Extract data from parser
+    matches = list(set([ match.group(1) for match in re.finditer(r'>(K[0-9]{5})',r)]))
 
-    data  = parser.HTMLDATA
+    return matches
 
-    # Clean the parser
-    parser.clean()
 
-    parsed_KOs = parse_HTML_list(data)
+def writeModule(name, definition, file):
+    for ko in definition:
+        file.write(f"{name}\t{ko}\n")
 
 
 
-parseModule('M00050')
+if __name__ == "__main__":
+    date_today = str(date.today()).replace('-',"_")
+    outfile = open(f'kegg_modules_{date_today}.tsv','w')
+    outfile.write("Module\tAnnotation\n")
+
+
+    modules = get_module_names('tmp_ko00002_2019_7_23.keg')
+
+    total = len(modules)
+
+    c = 1
+    for module in modules:
+        definition = parseModule(module)
+        writeModule(module, definition, outfile)
+
+        print(f'done {c}/{total}')
+        c += 1
+
+    outfile.close()

@@ -43,13 +43,14 @@ normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 817
                   'not_aligned'  = c(0, 0, 0, 0, 0, 0)
                   )
 
+normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
 
-RNAseq.data <- Pre_process_input(file.path,
+
+RNAseq.data <- Pre_process_input("C:/Users/Joris/Downloads/2019-07-08-high-covg-tpm-normalized.tsv",
                                  annotation.db.path,
-                                 normalize.method    = T,
+                                 normalize.method    = F,
                                  filter.method       = 'MAD',
-                                 filter.low.coverage = T,
-                                 normalization.features)
+                                 filter.low.coverage = F)
 
 
 # Phylum: Run this for Ben's dataset
@@ -166,7 +167,7 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 start <- Sys.time()
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
-                                                   N = 1000, 
+                                                   N = 10000, 
                                                    metrics = distance.metrics,
                                                    threads = 6)
 end <- Sys.time()
@@ -176,7 +177,7 @@ pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              distance.metrics,
                                                              bkgd.individual.Zscores,
                                                              show.progress = T,
-                                                             threads = 4)
+                                                             threads = 6)
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
                                                      pairwise.distances = pairwise.distances,
@@ -209,10 +210,10 @@ Plot_Background_Modules(bkgd.traits)
 
 ### Model_Module Figure
 ```{r bunch_o_figs, fig.height=8, fig.width=12}
-Module_Names <- RNAseq.data$features$trait_presence_absence[,'39'] %>% which(. == T) %>% names
+Module_Names <- RNAseq.data$features$trait_presence_absence[,'3300026284-bin.9'] %>% which(. == T) %>% names
 margins =c(5,23)
 Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names, bkgd.traits)
-Plot_Model_Module(Model_Module_List_All, 39, Module_Names,margins, sortbygenome="16")
+Plot_Model_Module(Model_Module_List_All, 39, Module_Names, margins, sortbygenome="3300026282-bin.4")
 
 ```
 
@@ -249,6 +250,13 @@ for (i in rev(Most_redundant_order)) {
 }
 
 
+```
+
+
+Figure 2 C&D
+```{r}
+module_categories <- Get_module_categories(kegg_categories_script)
+a <- getMetricDistModule(metric = 'PC', module_categories)
 ```
 
 
