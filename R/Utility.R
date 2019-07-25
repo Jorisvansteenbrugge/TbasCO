@@ -246,7 +246,7 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
     bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC
   )
-  
+
    all_scores_y <- c(
     bkgd.individual.Zscores$zscores$`Random Genes`$NRED,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
@@ -255,20 +255,20 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
 
   random.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Genes`$PC,
     bkgd.individual.Zscores$zscores$`Random Genes`$NRED,
-    ybnds = c(min(all_scores_y), max(all_scores_y),
-    xbnds = c(min(all_scores_x), max(all_scores_x)
+    ybnds = c(min(all_scores_y), max(all_scores_y)),
+    xbnds = c(min(all_scores_x), max(all_scores_x))
   )
 
   random.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Random Annotated Genes`$PC,
     bkgd.individual.Zscores$zscores$`Random Annotated Genes`$NRED,
-    ybnds = c(min(all_scores_y), max(all_scores_y),
-    xbnds = c(min(all_scores_x), max(all_scores_x)
+    ybnds = c(min(all_scores_y), max(all_scores_y)),
+    xbnds = c(min(all_scores_x), max(all_scores_x))
   )
 
   random.identical.annotated.genes.hexb <- hexbin(bkgd.individual.Zscores$zscores$`Genes with the same annotation`$PC,
     bkgd.individual.Zscores$zscores$`Genes with the same annotation`$NRED,
-    ybnds = c(min(all_scores_y), max(all_scores_y),
-    xbnds = c(min(all_scores_x), max(all_scores_x)
+    ybnds = c(min(all_scores_y), max(all_scores_y)),
+    xbnds = c(min(all_scores_x), max(all_scores_x))
   )
 
   cnt.max <- max(c(
