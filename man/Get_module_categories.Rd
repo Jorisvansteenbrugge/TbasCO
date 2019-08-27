@@ -4,7 +4,7 @@
 \alias{Get_module_categories}
 \title{Get module categories}
 \usage{
-Get_module_categories()
+Get_module_categories(pythonfile)
 }
 \description{
 Returns a list of the kegg categories with their corresponding modules
