@@ -971,8 +971,8 @@ Plot_Pathway_modules <- function() {
 }
 
 
+
 Plot_Trait_Expression <- function(trait, subset_genomes) {
-  dev.off()
   .getRank <- function(genome, rows) {
     genome.rows <- rows[
       which(rows$Bin == genome),
