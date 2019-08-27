@@ -68,55 +68,37 @@ calcmfrow <- function(x) {
 #' @example Plot_Trait_Attribute('M00027.2', trait.attributes.pruned, RNAseq.data)
 #' @export
 #' @author JJM van Steenbrugge
-Plot_Trait_Attribute_Expression <- function(trait.attribute,
+Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
                                             trait.attributes.pruned,
                                             RNAseq.data) {
-  trait.attribute.s <- unlist(strsplit(x = trait.attribute, split = "[.]"))
+  t.data <- trait.attributes.pruned[[trait.attribute]]
+  annotations <- RNAseq.data$features$annotation.db$module.dict[[trait.attribute]]
+  n.att <- length(t.data)
+  n.annotations <- length(annotations)
 
-  trait.annotations <- RNAseq.data$features$annotation.db$module.dict[[trait.attribute.s[1]]]
-  attribute.genomes <- trait.attributes[[trait.attribute.s[1]]][[trait.attribute.s[2]]]$genomes
 
-  par(mfrow = calcmfrow(length(trait.annotations)))
+  par(mfrow = c(n.att, n.annotations), mar = c(1,1,1,1))
 
-  for (annotation in trait.annotations) {
-    annotation.expression <- RNAseq.data$table[which(RNAseq.data$table$Annotation == annotation &
-      RNAseq.data$table$Bin %in% attribute.genomes), ]
-    if (nrow(annotation.expression) == 1) {
-      expression <- annotation.expression[RNAseq.data$features$rank.columns]
-      plot(as.character(expression),
-        type = "l", ylab = "Expression value", xlab = "Points in time",
-        col = "black", lwd = "3", ylim = c(0, max(expression)), main = annotation
-      )
-      next()
-    }
-    mean.cols <- apply(
-      annotation.expression[RNAseq.data$features$rank.columns],
-      2, mean
-    )
-    sd.cols <- apply(
-      annotation.expression[RNAseq.data$features$rank.columns],
-      2, sd
-    ) / 2
 
-    mean.psd <- mean.cols + sd.cols
-    mean.msd <- mean.cols - sd.cols
+  for (attribute in names(t.data)){
+    attribute.data <- t.data[[attribute]]
+    for (anno in annotations){
+      print(anno)
+      counts <- RNAseq.data$table[which(RNAseq.data$table$Annotation == anno), ]
+      counts_specific <- counts[which(counts$Bin %in% attribute.data$genomes), RNAseq.data$features$rank.columns]
 
-    max.val <- max(mean.psd)
-    if (!is.nan(max.val)) {
-      plot(mean.cols,
-        type = "l", ylab = "Expression value", xlab = "Points in time",
-        col = "black", lwd = "3", ylim = c(0, 1), main = annotation
-      )
-      points(mean.psd, type = "l", col = "blue", lty = 2)
-      points(mean.msd, type = "l", col = "red", lty = 2)
-    } else {
-      plot(c(0, 20, 60, 100, 100, 100),
-        type = "n", main = annotation, ylab = "Expression value",
-        xlab = "Points in time"
-      )
+
+
+      counts_specific[1,] %>% as.numeric %>% plot(type="l", main = anno)
+      for (i in 2:nrow(counts_specific)){
+        counts_specific[i,] %>% as.numeric %>%  points(type="l", main = anno)
+      }
     }
   }
+
 }
+
+
 
 #' Network Trait Genomes
 #' @name Network Trait Genomes
