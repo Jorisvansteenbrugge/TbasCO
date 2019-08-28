@@ -274,6 +274,13 @@ Plot_Background_Individual_Genes <- function(bkgd.individual.Zscores) {
   )
 }
 
+
+#' Plot_Metric_Comparison
+#' @name Plot Metric Comparison
+#' @description Plotting densities and significance of each distance metric
+#' @param bkgd.individual
+#' @export
+#' @author BO Oyserman
 Plot_Metric_Comparison <- function(bkgd.individual) {
   t_test_KO_random_pearson <- t.test(bkgd.individual$`Random Annotated Genes`$PC,
     bkgd.individual$`Random Genes`$PC,
@@ -1178,6 +1185,13 @@ Plot_Shared_Attributes <- function(trait.attributes.pruned, RNAseq.data) {
   axis(1, at = 1:length(bin_occurences), labels = names(bin_occurences))
 }
 
+
+#' Plot_Redundancy_Traits
+#' @name Plot_Redundancy_Traits
+#' @description Plots a histogram of traits redundancy
+#' @param RNAseq.data Collection of multple components, include RNA seq data, annotations, etc. See \code{\link{Pre_process_input}} for the full list.
+#' @export
+#' @author JJM van Steenbrugge
 Plot_Redundancy_Traits <- function(RNAseq.data) {
   library(ggplot2)
   library(magrittr)

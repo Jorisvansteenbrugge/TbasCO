@@ -61,7 +61,7 @@ Pre_process_input <- function(file.path, annotation.db.path, normalize.method = 
  # RNAseq.data$features$trait_presence_absence <- Get_trait_presence_absence(RNAseq.data)
 
 
-  all_kos <- RNAseq.data$features$annotation.db$`all annotations in a module`
+  all_kos <- c(RNAseq.data$features$annotation.db$`all annotations in a module`, unique(RNAseq.data$table$Annotation))
   expansion <- Expand_module_database(RNAseq.data)
   RNAseq.data$features$annotation.db          <- expansion$annotation.db
   RNAseq.data$features$annotation.db$`all annotations in a module` <- all_kos
