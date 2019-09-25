@@ -11,6 +11,7 @@
     assign('ko.db.path', paste0(libname,'/TbasCO/data/KO_identifiers.keg'), envir = .GlobalEnv)
 
     load(paste0(libname,'/TbasCO/data/sub_modules.RData'), envir = .GlobalEnv)
+    load(paste0(libname,'/TbasCO/data/module_categories.RData'), envir = .GlobalEnv)
   }else if(os == 'windows'){
     assign('file.path', paste0(libname,"\\TbasCO\\data\\sample_data.csv"), envir = .GlobalEnv)
     assign('kegg_categories', paste0(libname,"\\TbasCO\\data\\kegg_categories.keg"), envir = .GlobalEnv)
@@ -18,6 +19,7 @@
     assign('annotation.db.path', paste0(libname,'\\TbasCO\\data\\kegg_modules_2019_07_23.tsv'), envir = .GlobalEnv)
     assign('ko.db.path', paste0(libname,'\\TbasCO\\data\\KO_identifiers.keg'), envir = .GlobalEnv)
     load(paste0(libname,'\\TbasCO\\data\\sub_modules.RData'), envir = .GlobalEnv)
+    load(paste0(libname,'\\TbasCO\\data\\module_categories.RData'), envir = .GlobalEnv)
   }
 
 

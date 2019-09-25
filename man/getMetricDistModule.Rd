@@ -4,7 +4,7 @@
 \alias{getMetricDistModule}
 \title{Get Metric Dist module}
 \usage{
-getMetricDistModule(metric, cat.modules)
+getMetricDistModule(metric, cat.modules, annotation_db)
 }
 \description{
 Get Metric Dist module

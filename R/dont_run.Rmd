@@ -1,0 +1,95 @@
+```{r}
+library(reticulate); library(magrittr)
+```
+
+```{python}
+
+def get_module_names(file):
+  modules = []
+  with open(file) as kdb:
+    for line in kdb:
+      if line.startswith("D"):
+        line = line.split()
+        modules.append(line[1])
+        
+  return modules
+
+def get_second_line_part(line):
+  return line.split()[1]
+  
+def get_second_line_part_cat(line):
+  return " ".join(line.split()[1:])
+
+def get_module_categories(file):
+  out = {}
+  
+  
+  current_buffer = None
+  current_cat = None
+  
+  with open(file) as kdb:
+    for line in kdb:
+    
+    
+      if line.startswith('C'):
+        if current_buffer:
+          out[current_cat] = current_buffer
+          current_buffer = []
+          current_cat  = get_second_line_part_cat(line)
+          
+        else: # first one
+          current_buffer = []
+          current_cat  = get_second_line_part_cat(line)
+        
+      elif line.startswith("D"):
+        current_buffer.append(get_second_line_part(line))
+        
+    out[current_cat] = current_buffer
+    
+  return out
+          
+def get_sub_modules(file, names_return = False):
+
+  names = []
+  submodules = []
+  
+  with open(file) as dnf_file:
+    for line in dnf_file:
+      line = line.strip().split(";")
+      names.append(line[0])
+      
+      sub_p = [x.split(',') for x in line[1:]]
+      
+      submodules.append(sub_p)
+
+  if names_return == True:
+    return names
+  else:
+    return submodules
+```
+
+
+```{r}
+
+KEGG_db_txt <- '/home/joris/Downloads/ko00002.keg'
+
+db <- RNAseq.data$features$annotation.db$module.dict
+sub_mod_names <- names(db) %>% sapply(.,function(nam){
+  strsplit(nam, split = '_') %>% unlist %>% .[1]
+}) 
+
+modules <- py$get_module_names(KEGG_db_txt)
+modules_ko <- list()
+
+
+for(module in modules){
+    KOs <- db[which(sub_mod_names == module)] %>% unlist %>% as.character %>% unique
+    modules_ko[[module]] <- KOs
+}
+
+
+# Categorize them
+categories <- py$get_module_categories(KEGG_db_txt)
+
+```
+

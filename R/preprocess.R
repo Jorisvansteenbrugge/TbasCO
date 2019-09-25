@@ -115,7 +115,8 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins,annotation.db){
   a <- unique(annotation.db$`all annotations in a module`)
   b <- unique(as.character(RNAseq.table$Annotation))
   c <- RNAseq.table$Annotation[which(RNAseq.table$Annotation != "")] %>% as.character
-  annotation_terms <- unique(c(a,b,c, annotation_terms))
+  d <- sub_modules %>% unlist %>% as.character %>% unique
+  annotation_terms <- unique(c(a,b,c,d, annotation_terms))
 
   .Lookup_bin <- function(bin){
 
@@ -149,15 +150,15 @@ Expand_module_database <- function(RNAseq.data) {
       tfs <- c()
       kos <- 0
 
-        tryCatch({
+        #tryCatch({
           kos <- RNAseq.data$features$annotation_presence_absence[module_kos, bin]
 
-        },
-        error = function(e){ })
+        #},
+        #error = function(e){ })
 
 
         true_sum <- kos %>% sum
-        if ((true_sum /length(module_kos) >= 1)) {
+        if ((true_sum /length(module_kos) >= 0.8)) {
           return(T)
         }
 

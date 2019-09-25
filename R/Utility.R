@@ -749,8 +749,8 @@ getMetricDist <- function(metric, cat.genes, distance.metrics, RNAseq.data,
 }
 
 #' Get Metric Dist module
-#' @export
-getMetricDistModule <- function(metric, cat.modules) {
+
+getMetricDistModule <- function(metric, cat.modules, annotation_db) {
   mean.distances <- matrix(nrow = 0, ncol = 5)
 
   for (category in names(cat.modules)) {
@@ -758,7 +758,7 @@ getMetricDistModule <- function(metric, cat.modules) {
     for (module in cat.modules[[category]]) {
       distances.list <- list()
 
-      for (KO in RNAseq.data$features$annotation.db$module.dict[[module]]) {
+      for (KO in annotation_db[[module]]) {
         data.rows <- RNAseq.data$table[which(RNAseq.data$table$Annotation == KO), ]
 
         genomes.present <- unique(data.rows$Bin)
@@ -813,104 +813,15 @@ getMetricDistModule <- function(metric, cat.modules) {
   return(mean.distances)
 }
 
+
 #' @export
-Plot_Pathway_genes <- function(metric_name, distance.metrics, RNAseq.data,
-                               bkgd.individual, bkgd.individual.Zscores) {
-  # Catogerized Modules
-  cat.modules <- read.csv("/home/joris/categorized_modules2.csv", sep = ";", header = F)
-
-  # Hacking categories because the order is known ----
-  categories <- c(
-    rep("P_Energy metabolism", 4),
-    rep("P_Carbohydrate and lipid metabolism", 10),
-    rep("P_Nucleotide and AA metabolism", 12),
-    rep("P_Secondary metabolism", 2),
-    rep("S_Energy metabolism", 2),
-    rep("S_Genetic information processing", 10),
-    rep("S_Environmental information processing", 9),
-    rep("F_Metabolism", 2),
-    rep("F_Environemntal information processing", 2),
-    rep("F_Cellular processes", 1),
-    rep("Si_Gene set", 4)
-  )
-  #
-  cat.genes <- list()
-
-  # Do this better in the future
-  con <- file("/home/joris/categorized_modules2.csv", "r")
-  while (TRUE) {
-    line <- readLines(con, n = 1)
-    if (length(line) == 0) {
-      break
-    }
-    line <- unlist(strsplit(line, ";"))
-
-    cat.genes[[line[1]]] <- unique(line[2:length(line)])
-  }
-
-  close(con)
-
-
-  # Get Zscores ----
-  metric.Z <- getMetricDist(
-    metric_name, cat.genes, distance.metrics, RNAseq.data,
-    bkgd.individual, bkgd.individual.Zscores
-  )
-
-  library(ggplot2)
-  ids <- 1:nrow(metric.Z)
-  metric.Z <- cbind(metric.Z, ids)
-  metric.Z <- cbind(metric.Z, categories)
-
-  colnames(metric.Z) <- c("value", "sig", "collection", "cex", "ids", "categories")
-
-
-  metric.Z <- as.data.frame(metric.Z, stringsAsFactors = F)
-  metric.Z$value <- as.numeric(metric.Z$value)
-  metric.Z$ids <- as.numeric(metric.Z$ids)
-  metric.Z$ids <- factor(metric.Z$ids, levels = metric.Z$ids)
-
-  metric.Z$cex <- exp(as.numeric(metric.Z$cex) / mean(as.numeric(metric.Z$cex),
-    na.rm =
-    ))
-
-  metric.plot <- ggplot(
-    metric.Z, aes(
-      x = ids, y = value,
-      colour = categories,
-      shape = factor(sig)
-    )
-    # ,size = cex
-  ) +
-    geom_point(size = 3) +
-    xlab("") +
-    ylab(paste(metric_name, "Z score", sep = " ")) +
-    facet_grid(. ~ categories, scales = "free_x", space = "free_x") +
-    geom_hline(yintercept = 0) +
-    theme(
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      legend.position = "none"
-    )
-
-
-  # Combine plot
-  # plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
-
-  return(list(
-    "data" = metric.Z,
-    "plot" = metric.plot
-  ))
-}
-
 Plot_Pathway_modules <- function() {
+  library(ggplot2)
+  library(gridExtra)
 
 
-  sig.pathways <- nred.Z[which(nred.Z$sig == "significant"), "collection"]
-  cat.modules.sig <- cat.modules[sig.pathways]
 
-
-  nred.modules.Z <- getMetricDistModule("NRED", cat.modules.sig)
+  nred.modules.Z <- getMetricDistModule("NRED", categories, modules_ko)
   nred.modules.Z <- cbind(nred.modules.Z, (1:nrow(nred.modules.Z)))
   colnames(nred.modules.Z) <- c("value", "pval", "sig", "pathway", "module", "ids")
   nred.modules.Z.df <- as.data.frame(nred.modules.Z, stringsAsFactors = F)
@@ -918,32 +829,22 @@ Plot_Pathway_modules <- function() {
   nred.modules.Z.df$ids <- as.numeric(nred.modules.Z.df$ids)
   nred.modules.Z.df$ids <- factor(nred.modules.Z.df$ids, levels = nred.modules.Z.df$ids)
 
-  nred.modules.Z.sig <- nred.modules.Z.df[which(nred.modules.Z.df$sig == "significant"), ]
 
-  ggplot(nred.modules.Z.sig, aes(x = ids, y = value, colour = pathway, shape = factor(sig))) +
+
+  nred <- ggplot(nred.modules.Z.df, aes(x = ids, y = value, colour = pathway, shape = factor(sig))) +
+    theme(strip.background = element_blank(), strip.text = element_blank()) +
     geom_point(size = 2) +
     xlab("") +
     ylab("NRED Z score") +
     facet_grid(. ~ pathway, scales = "free_x", space = "free_x") +
     geom_hline(yintercept = 0) +
+    ggtitle("NRED") +
     guides(colour = FALSE)
 
 
-  # for each pathway the % of sig
-  percentage_sig <- list()
-  for (pathway in unique(nred.modules.Z.df$pathway)) {
-    pathway_rows <- nred.modules.Z.df[which(
-      nred.modules.Z.df$pathway == pathway
-    ), ]
-
-    total <- nrow(pathway_rows)
-    sig <- nrow(pathway_rows[which(pathway_rows$sig == "significant"), ])
-    percentage_sig[[pathway]] <- ((sig * 100) / total)
-    cat(paste(pathway, ((sig * 100) / total), sep = ";"), "\n")
-  }
 
 
-  pc.modules.Z <- getMetricDistModule("PC", cat.modules.sig)
+  pc.modules.Z <- getMetricDistModule("PC", categories, modules_ko)
   pc.modules.Z <- cbind(pc.modules.Z, (1:nrow(pc.modules.Z)))
   colnames(pc.modules.Z) <- c("value", "pval", "sig", "pathway", "module", "ids")
   pc.modules.Z.df <- as.data.frame(pc.modules.Z, stringsAsFactors = F)
@@ -951,15 +852,112 @@ Plot_Pathway_modules <- function() {
   pc.modules.Z.df$ids <- as.numeric(pc.modules.Z.df$ids)
   pc.modules.Z.df$ids <- factor(pc.modules.Z.df$ids, levels = pc.modules.Z.df$ids)
 
-  pc.modules.Z.sig <- pc.modules.Z.df[which(pc.modules.Z.df$sig == "significant"), ]
+
+  pc <- ggplot(pc.modules.Z.df, aes(x = ids, y = value, colour = pathway, shape = factor(sig))) +
+    theme(strip.background = element_blank(), strip.text = element_blank()) +
+    geom_point(size = 2) +
+    xlab("") +
+    ylab("PC Z score") +
+    facet_grid(. ~ pathway, scales = "free_x", space = "free_x") +
+    geom_hline(yintercept = 0) +
+    ggtitle("PC") +
+    guides(colour = FALSE)
 
 
-  sigboth <- pc.modules.Z.sig[which(pc.modules.Z.sig$module %in%
-    nred.modules.Z.sig$module), ]
-  sigboth.pruned <- sigboth[which(sigboth$module %in% prune_lalala(sigboth)), ]
+ grid.arrange(nred, pc, ncol = 1, nrow =2)
 }
 
 
+
+
+#' Plot_Pathway_genes <- function(metric_name, distance.metrics, RNAseq.data,
+#'                                bkgd.individual, bkgd.individual.Zscores) {
+#'   # Catogerized Modules
+#'   cat.modules <- read.csv("/home/joris/categorized_modules2.csv", sep = ";", header = F)
+#'
+#'   # Hacking categories because the order is known ----
+#'   categories <- c(
+#'     rep("P_Energy metabolism", 4),
+#'     rep("P_Carbohydrate and lipid metabolism", 10),
+#'     rep("P_Nucleotide and AA metabolism", 12),
+#'     rep("P_Secondary metabolism", 2),
+#'     rep("S_Energy metabolism", 2),
+#'     rep("S_Genetic information processing", 10),
+#'     rep("S_Environmental information processing", 9),
+#'     rep("F_Metabolism", 2),
+#'     rep("F_Environemntal information processing", 2),
+#'     rep("F_Cellular processes", 1),
+#'     rep("Si_Gene set", 4)
+#'   )
+#'   #
+#'   cat.genes <- list()
+#'
+#'   # Do this better in the future
+#'   con <- file("/home/joris/categorized_modules2.csv", "r")
+#'   while (TRUE) {
+#'     line <- readLines(con, n = 1)
+#'     if (length(line) == 0) {
+#'       break
+#'     }
+#'     line <- unlist(strsplit(line, ";"))
+#'
+#'     cat.genes[[line[1]]] <- unique(line[2:length(line)])
+#'   }
+#'
+#'   close(con)
+#'
+#'
+#'   # Get Zscores ----
+#'   metric.Z <- getMetricDist(
+#'     metric_name, cat.genes, distance.metrics, RNAseq.data,
+#'     bkgd.individual, bkgd.individual.Zscores
+#'   )
+#'
+#'   library(ggplot2)
+#'   ids <- 1:nrow(metric.Z)
+#'   metric.Z <- cbind(metric.Z, ids)
+#'   metric.Z <- cbind(metric.Z, categories)
+#'
+#'   colnames(metric.Z) <- c("value", "sig", "collection", "cex", "ids", "categories")
+#'
+#'
+#'   metric.Z <- as.data.frame(metric.Z, stringsAsFactors = F)
+#'   metric.Z$value <- as.numeric(metric.Z$value)
+#'   metric.Z$ids <- as.numeric(metric.Z$ids)
+#'   metric.Z$ids <- factor(metric.Z$ids, levels = metric.Z$ids)
+#'
+#'   metric.Z$cex <- exp(as.numeric(metric.Z$cex) / mean(as.numeric(metric.Z$cex),
+#'     na.rm =
+#'     ))
+#'
+#'   metric.plot <- ggplot(
+#'     metric.Z, aes(
+#'       x = ids, y = value,
+#'       colour = categories,
+#'       shape = factor(sig)
+#'     )
+#'     # ,size = cex
+#'   ) +
+#'     geom_point(size = 3) +
+#'     xlab("") +
+#'     ylab(paste(metric_name, "Z score", sep = " ")) +
+#'     facet_grid(. ~ categories, scales = "free_x", space = "free_x") +
+#'     geom_hline(yintercept = 0) +
+#'     theme(
+#'       axis.text.x = element_blank(),
+#'       axis.ticks.x = element_blank(),
+#'       legend.position = "none"
+#'     )
+#'
+#'
+#'   # Combine plot
+#'   # plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
+#'
+#'   return(list(
+#'     "data" = metric.Z,
+#'     "plot" = metric.plot
+#'   ))
+#' }
 
 Plot_Trait_Expression <- function(trait, subset_genomes) {
   .getRank <- function(genome, rows) {
