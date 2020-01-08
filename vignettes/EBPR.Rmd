@@ -32,6 +32,16 @@ Additional columns may be present but are not used in the analysis.
 Loading of data is done by assigning a file.path to the function's `filepath`
 variable.
 
+
+## Databases
+```{r}
+load(file = 'data/kegg_module_2019_07_23.RData"')
+database <- Combine_databases(kegg_brite_20191208, kegg_module_20190723)
+
+```
+
+
+
 ### Normalization
 The package supports different options for normalization. By default the `Pre_process_input` function
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
@@ -46,11 +56,11 @@ normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 817
 normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
 
 
-RNAseq.data <- Pre_process_input("~/Desktop/table_normalized.csv",
-                                 annotation.db.path,
+RNAseq.data <- Pre_process_input(file.path,
+                                 database = database,
                                  normalize.method    = F,
                                  normalization.features = NULL,
-                                 filter.method       = NULL,
+                                 filter.method       = F,
                                  filter.low.coverage = F)
 
 

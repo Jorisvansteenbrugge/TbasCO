@@ -4,7 +4,7 @@
 \alias{Pre_process_input}
 \title{Pre-processing of RNAseq data}
 \usage{
-Pre_process_input(file.path, annotation.db.path, normalize.method = T,
+Pre_process_input(file.path, database, normalize.method = T,
   filter.method = "MAD", filter.low.coverage = T,
   normalization.features = NULL, taxon_file = NULL)
 }
