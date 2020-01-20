@@ -8,8 +8,11 @@
 \usage{
 Traitattributes_To_Sbsmatrix(trait.attributes, genomes)
 
-Plot_Trait_Attribute_Expression(trait.attribute = "M00793_1",
-  trait.attributes.pruned, RNAseq.data)
+Plot_Trait_Attribute_Expression(
+  trait.attribute = "M00793_1",
+  trait.attributes.pruned,
+  RNAseq.data
+)
 }
 \arguments{
 \item{trait.attributes}{The full list of all trait attributes}
@@ -21,8 +24,6 @@ sample.}
 
 \item{RNAseq.data}{Collection of multple components, include RNA seq data,
 annotations, etc. See \code{\link{Pre_process_input}} for the full list.}
-
-\item{trait.attributes}{The full list of all trait attributes}
 }
 \description{
 Convert a list with trait attributes to a matrix where each

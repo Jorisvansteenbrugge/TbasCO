@@ -104,8 +104,12 @@ Random_Trait_Background <- function(RNAseq.data,
 #' @export
 .Calc_Jaccard <- function(RNAseq.data, random.genomes, used.terms){
   presence.absence <- RNAseq.data$features$annotation_presence_absence
-  PA.genome.A <- presence.absence[used.terms, as.character(random.genomes[1])]
-  PA.genome.B <- presence.absence[used.terms, as.character(random.genomes[2])]
+
+  terms.A <- used.terms[[as.character(random.genomes[1])]] # terms.X[1] will always be NA
+  terms.B <- used.terms[[as.character(random.genomes[2])]]
+
+  PA.genome.A <- presence.absence[terms.A[2:length(terms.A)], as.character(random.genomes[1])]
+  PA.genome.B <- presence.absence[terms.B[2:length(terms.B)], as.character(random.genomes[2])]
 
   Jaccard_Distance <- 1 - (sum(which(PA.genome.A == 1) %in% which(PA.genome.B == 1))  /
                              (sum(which(PA.genome.A == 0) %in% which(PA.genome.B == 1))  +

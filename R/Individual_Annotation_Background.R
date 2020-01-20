@@ -94,6 +94,7 @@ Random.Genes.bkgd <- function(RNAseq.data, metrics, N){
 #' @param N
 #' @export
 Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
+  library(magrittr)
   out.terms = T
   RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
   #Pre select N pairs of two random genomes each
@@ -108,8 +109,12 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes)
     output[[metric]] <- rep(NA, N)
   }
 
-  used.terms <- c()
-
+  #format used.terms
+  used.terms <- list()
+  unique_random.genomes <- random.genomes %>% unlist %>% unique
+  for(genome in unique_random.genomes){
+    used.terms[[as.character(genome)]] <- NA
+  }
 
   for(i in 1:N){
 
@@ -120,8 +125,12 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes)
     position.A         <- sample(positions.genome.A, 1)
     position.B         <- sample(positions.genome.B, 1)
 
-    used.terms <- c(used.terms, as.character(RNAseq.data$annotation.only[position.A,]$Annotation))
-    used.terms <- c(used.terms, as.character(RNAseq.data$annotation.only[position.B,]$Annotation))
+    A.char <- as.character(random.genomes[[i]][1])
+    B.char <- as.character(random.genomes[[i]][2])
+    used.terms[[A.char]] <- c(used.terms[[A.char]],
+                                              as.character(RNAseq.data$annotation.only[position.A,]$Annotation))
+    used.terms[[B.char]] <- c(used.terms[[B.char]],
+                                              as.character(RNAseq.data$annotation.only[position.B,]$Annotation))
 
    for(metric.current in names(metrics)){
      row.A <- RNAseq.data$annotation.only[position.A, ]

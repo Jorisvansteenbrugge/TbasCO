@@ -4,8 +4,14 @@
 \alias{getMetricDist}
 \title{Get Metric Dist}
 \usage{
-getMetricDist(metric, cat.genes, distance.metrics, RNAseq.data,
-  bkgd.individual, bkgd.individual.Zscores)
+getMetricDist(
+  metric,
+  cat.genes,
+  distance.metrics,
+  RNAseq.data,
+  bkgd.individual,
+  bkgd.individual.Zscores
+)
 }
 \arguments{
 \item{metric}{either {'PC','NRED'}}

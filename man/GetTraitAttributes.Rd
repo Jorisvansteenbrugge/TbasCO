@@ -4,8 +4,13 @@
 \alias{GetTraitAttributes}
 \title{GetTraitAttributes}
 \usage{
-GetTraitAttributes(RNAseq.data = RNAseq.data, N = 1000,
-  metrics = distance.metrics, p = 4, show_progres = TRUE)
+GetTraitAttributes(
+  RNAseq.data = RNAseq.data,
+  N = 1000,
+  metrics = distance.metrics,
+  p = 4,
+  show_progres = TRUE
+)
 }
 \arguments{
 \item{N}{Number of iterations for the random background distributions}

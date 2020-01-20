@@ -5,9 +5,16 @@
 \alias{Prune_Trait_Attributes}
 \title{Prune Trait Attributes}
 \usage{
-Prune_Trait_Attributes(trait.attributes, bkgd.traits, RNAseq.data,
-  p.threshold = 0.05, pairwise.distances, bkgd.individual.Zscores,
-  annotation.db, trait_presence_absence)
+Prune_Trait_Attributes(
+  trait.attributes,
+  bkgd.traits,
+  RNAseq.data,
+  p.threshold = 0.05,
+  pairwise.distances,
+  bkgd.individual.Zscores,
+  annotation.db,
+  trait_presence_absence
+)
 }
 \arguments{
 \item{filepath}{RNAseq data file}

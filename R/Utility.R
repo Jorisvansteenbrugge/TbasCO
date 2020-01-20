@@ -11,9 +11,9 @@
 Traitattributes_To_Sbsmatrix <- function(trait.attributes, genomes) {
   sbs.matrix <- matrix(
     nrow = length(genomes),
-    ncol = 1
+    ncol = 0
   )
-  sbs.matrix <- sbs.matrix[, -1]
+
   traits.names <- names(trait.attributes)
   cols <- c()
 
@@ -21,6 +21,7 @@ Traitattributes_To_Sbsmatrix <- function(trait.attributes, genomes) {
   for (trait.name in traits.names) {
     trait <- trait.attributes[[trait.name]]
     if (length(trait) == 0) {
+      print('skip')
       next()
     }
     # Attributes

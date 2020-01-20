@@ -26,13 +26,15 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
 
 
   trait.names <- names(annotation.db$module.dict)
+  # for( i in 1:length(trait.names)){
+  #   print(trait.names[i])
 
   output.list <- foreach::foreach(i = 1: length(trait.names),
                           .export = c('.Calc_Jaccard_Module',
                                       '.Calc_Jaccard',
                                       '.Calc_Avg_Zscore_Module'),
                           .verbose = F) %dopar%{
-      # In case a bin has no presence for the trait
+  #     # In case a bin has no presence for the trait
 
       module.terms             <- annotation.db$module.dict[[i]]
 
@@ -72,6 +74,21 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
 
 .Calc_Jaccard_Module <- function(RNAseq.data, module.terms){
 
+  .Calc_Jaccard.oldstyle <- function(RNAseq.data, random.genomes, used.terms){
+    presence.absence <- RNAseq.data$features$annotation_presence_absence
+
+
+
+    PA.genome.A <- presence.absence[used.terms, as.character(random.genomes[1])]
+    PA.genome.B <- presence.absence[used.terms, as.character(random.genomes[2])]
+
+    Jaccard_Distance <- 1 - (sum(which(PA.genome.A == 1) %in% which(PA.genome.B == 1))  /
+                               (sum(which(PA.genome.A == 0) %in% which(PA.genome.B == 1))  +
+                                  sum(which(PA.genome.A == 1)%in%which(PA.genome.B == 0))   +
+                                  sum(which(PA.genome.A == 1)%in%which(PA.genome.B == 1))))
+    return(Jaccard_Distance)
+  }
+
   nbins <- length(RNAseq.data$features$bins)
 
   jaccard.module.distance <- matrix(data = NA,
@@ -83,13 +100,16 @@ Identify_Trait_Attributes <- function(RNAseq.data,pairwise.distances,
     bin.a <- RNAseq.data$features$bins[x]
     for (y in (x + 1): nbins) {
       bin.b <- RNAseq.data$features$bins[y]
-      jaccard.module.distance[x,y]  <- .Calc_Jaccard(RNAseq.data,
+      jaccard.module.distance[x,y]  <- .Calc_Jaccard.oldstyle(RNAseq.data,
                                                      c(bin.a, bin.b),
                                                      module.terms)
     }
   }
   return(jaccard.module.distance)
 }
+
+
+
 
 #' @export
 .Calc_Avg_Zscore_Module <- function(RNAseq.data, pairwise.distances,

@@ -5,8 +5,7 @@
 \title{Background distribution of two random random genes with the same
 random annotation in two random genomes.}
 \usage{
-Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, N,
-  random.genomes)
+Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, N, random.genomes)
 }
 \arguments{
 \item{random.genomes}{Allows reuse of this function in the module background function @see@seealso \code{\link{Random Background distributions of modules}}}

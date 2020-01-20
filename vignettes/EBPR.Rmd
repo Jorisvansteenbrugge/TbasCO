@@ -35,7 +35,7 @@ variable.
 
 ## Databases
 ```{r}
-load(file = 'data/kegg_module_2019_07_23.RData"')
+#load(file = 'data/kegg_module_2019_07_23.RData"')
 database <- Combine_databases(kegg_brite_20191208, kegg_module_20190723)
 
 ```
@@ -53,14 +53,14 @@ normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 817
                   'not_aligned'  = c(0, 0, 0, 0, 0, 0)
                   )
 
-normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
+#normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
 
 
 RNAseq.data <- Pre_process_input(file.path,
                                  database = database,
-                                 normalize.method    = F,
-                                 normalization.features = NULL,
-                                 filter.method       = F,
+                                 normalize.method    = T,
+                                 normalization.features = normalization.features,
+                                 filter.method       = 'MAD',
                                  filter.low.coverage = F)
 
 
@@ -86,23 +86,23 @@ genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
                          '53' = 'p__Bacteroidetes'
                          )
 # Phylum: Run this for Elizabeth's dataset
-genome.taxonomy.phylum <- list("3300026302-bin.46" = "p__Proteobacteria",
-                               "3300026282-bin.4"  = "p__Proteobacteria",
-                               "3300026302-bin.32" = "p__Bacteroidota",
-                               "3300009517-bin.31" = "p__Bacteroidota",
-                               "3300026288-bin.43" = "p__Actinobacteriota",
-                               "3300009517-bin.6"  = "p__Proteobacteria",
-                               "3300026303-bin.42" = "p__Bacteroidota",
-                               "3300009517-bin.1"  = "p__Bacteroidota",
-                               "3300009517-bin.42" = "p__Proteobacteria",
-                               "3300026284-bin.9"  = "p__Proteobacteria",
-                               "3300026302-bin.62" = "p__Cyanobacteriota",
-                               "3300009517-bin.3"  = "p__Bacteroidota",
-                               "3300009517-bin.47" = "p__Proteobacteria",
-                               "3300009517-bin.13" = "p__Proteobacteria",
-                               "3300009517-bin.12" = "p__Bacteroidota",
-                               "3300026302-bin.10" = "p__Proteobacteria"
-                               )
+# genome.taxonomy.phylum <- list("3300026302-bin.46" = "p__Proteobacteria",
+#                                "3300026282-bin.4"  = "p__Proteobacteria",
+#                                "3300026302-bin.32" = "p__Bacteroidota",
+#                                "3300009517-bin.31" = "p__Bacteroidota",
+#                                "3300026288-bin.43" = "p__Actinobacteriota",
+#                                "3300009517-bin.6"  = "p__Proteobacteria",
+#                                "3300026303-bin.42" = "p__Bacteroidota",
+#                                "3300009517-bin.1"  = "p__Bacteroidota",
+#                                "3300009517-bin.42" = "p__Proteobacteria",
+#                                "3300026284-bin.9"  = "p__Proteobacteria",
+#                                "3300026302-bin.62" = "p__Cyanobacteriota",
+#                                "3300009517-bin.3"  = "p__Bacteroidota",
+#                                "3300009517-bin.47" = "p__Proteobacteria",
+#                                "3300009517-bin.13" = "p__Proteobacteria",
+#                                "3300009517-bin.12" = "p__Bacteroidota",
+#                                "3300026302-bin.10" = "p__Proteobacteria"
+#                                )
 
 # genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
 #                          '11' = 'f__Rubrivivax',
@@ -153,18 +153,6 @@ NRED <- function(rowA, rowB, RNAseq.features) {
 # Combine multiple distance metrics to complement each other.
 distance.metrics <- list("NRED" = NRED,
                          "PC"   = PC)
-
-# the size of all modules in the library, usefull for calculating the background distribution
-module_size_range <- lapply(RNAseq.data$features$annotation.db$module.dict,length) %>% as.numeric() %>% table() %>% names() %>% as.numeric()
-
-# again, the size of all modules but using the maximum length of the disjunctive form. Slightly shorter
-d_module_size_range_all<-c()
-for (i in 1:length(sub_modules)) {
-  d_module_size_range_all[i]<- max(sapply(sub_modules[[i]],length))
-}
-d_module_size_range<-sort(unique(d_module_size_range_all))
-
-
 ```
 
 ### Actual Analysis
@@ -178,23 +166,20 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
-                                                   N = 10000, 
+                                                   N = 5000, 
                                                    metrics = distance.metrics,
-                                                   threads = 3)
+                                                   threads = 10)
 
-start <- Sys.time()
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,
                                                              distance.metrics,
                                                              bkgd.individual.Zscores,
                                                              show.progress = F,
-                                                             threads = 3)
-end <- Sys.time()
-print(end-start)
+                                                             threads = 10)
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
                                                      pairwise.distances = pairwise.distances,
-                                                     threads = 2)
+                                                     threads = 5)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data,

@@ -5,8 +5,12 @@
 \alias{Individual_Annotation_Background}
 \title{Individual Random Background distributions}
 \usage{
-Individual_Annotation_Background(RNAseq.data, N = 1000, threads = 3,
-  metrics = list(PC = PC, NRED = NRED))
+Individual_Annotation_Background(
+  RNAseq.data,
+  N = 1000,
+  threads = 3,
+  metrics = list(PC = PC, NRED = NRED)
+)
 }
 \arguments{
 \item{N}{Number of iterations}

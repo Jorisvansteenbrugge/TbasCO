@@ -4,8 +4,13 @@
 \alias{Model_Module}
 \title{Model Module}
 \usage{
-Model_Module(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
-  bkgd.traits)
+Model_Module(
+  RNAseq.data,
+  trait.attributes,
+  Model_Bin,
+  Module_Names,
+  bkgd.traits
+)
 }
 \arguments{
 \item{RNAseq.data}{Collection of multple components, include RNA seq data,

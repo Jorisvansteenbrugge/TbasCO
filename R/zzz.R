@@ -7,24 +7,28 @@
     assign('kegg_categories', paste0(libname,"/TbasCO/data/kegg_categories.keg"), envir = .GlobalEnv)
     assign('kegg_categories_script', paste0(libname,"/TbasCO/data/get_module_categories.py"), envir = .GlobalEnv)
 
-    assign('annotation.db.path', paste0(libname,'/TbasCO/data/kegg_modules_2019_07_23.tsv'), envir = .GlobalEnv)
-    assign('ko.db.path', paste0(libname,'/TbasCO/data/KO_identifiers.keg'), envir = .GlobalEnv)
+    #assign('annotation.db.path', paste0(libname,'/TbasCO/data/kegg_modules_2019_07_23.tsv'), envir = .GlobalEnv)
+    #assign('ko.db.path', paste0(libname,'/TbasCO/data/KO_identifiers.keg'), envir = .GlobalEnv)
 
-    load(paste0(libname,'/TbasCO/data/sub_modules.RData'), envir = .GlobalEnv)
-    load(paste0(libname,'/TbasCO/data/module_categories.RData'), envir = .GlobalEnv)
+    #load(paste0(libname,'/TbasCO/data/sub_modules.RData'), envir = .GlobalEnv)
+    #load(paste0(libname,'/TbasCO/data/module_categories.RData'), envir = .GlobalEnv)
+
     load(paste0(libname,'/TbasCO/data/kegg_brite_20191208_db.RData'), envir = .GlobalEnv)
-
+    load(paste0(libname, '//TbasCO/data/kegg_module_2019_07_23.RData'), envir = .GlobalEnv)
 
   }else if(os == 'windows'){
     assign('file.path', paste0(libname,"\\TbasCO\\data\\sample_data.csv"), envir = .GlobalEnv)
     assign('kegg_categories', paste0(libname,"\\TbasCO\\data\\kegg_categories.keg"), envir = .GlobalEnv)
     assign('kegg_categories_script', paste0(libname,"\\TbasCO\\data\\get_module_categories.py"), envir = .GlobalEnv)
-    assign('annotation.db.path', paste0(libname,'\\TbasCO\\data\\kegg_modules_2019_07_23.tsv'), envir = .GlobalEnv)
-    assign('ko.db.path', paste0(libname,'\\TbasCO\\data\\KO_identifiers.keg'), envir = .GlobalEnv)
 
-    load(paste0(libname,'\\TbasCO\\data\\sub_modules.RData'), envir = .GlobalEnv)
-    load(paste0(libname,'\\TbasCO\\data\\module_categories.RData'), envir = .GlobalEnv)
+    #assign('annotation.db.path', paste0(libname,'\\TbasCO\\data\\kegg_modules_2019_07_23.tsv'), envir = .GlobalEnv)
+    #assign('ko.db.path', paste0(libname,'\\TbasCO\\data\\KO_identifiers.keg'), envir = .GlobalEnv)
+
+    #load(paste0(libname,'\\TbasCO\\data\\sub_modules.RData'), envir = .GlobalEnv)
+    #load(paste0(libname,'\\TbasCO\\data\\module_categories.RData'), envir = .GlobalEnv)
+
     load(paste0(libname,'\\TbasCO\\data\\kegg_brite_20191208_db.RData'), envir = .GlobalEnv)
+    load(paste0(libname,'\\TbasCO\\data\\kegg_module_2019_07_23.RData'), envir = .GlobalEnv)
   }
 
 
@@ -50,11 +54,12 @@
   distance.metrics <- list("NRED" = NRED,
                            "PC"   = PC)
 
-  assign("distance.metrics", distance.metrics, envir = .GlobalEnv)
+ # assign("distance.metrics", distance.metrics, envir = .GlobalEnv)
 }
 
 .onDetach <- function(libname, pkgname){
   rm(file.path, envir = .GlobalEnv)
   rm(annotation.db.path, envir = .GlobalEnv)
+  rm
 }
 

@@ -20,8 +20,8 @@ Calc_Z_scores <- function(bkgd.individual, metrics){
 
     for(metric in names(metrics)){
 
-      mu    <- mean(current.bkgd[[metric]])
-      stdev <- sd(current.bkgd[[metric]])
+      mu    <- mean(current.bkgd[[metric]], na.rm = TRUE)
+      stdev <- sd(current.bkgd[[metric]], na.rm = TRUE)
 
       mu.values[[distribution]][[metric]] <- mu
       sd.values[[distribution]][[metric]] <- stdev
