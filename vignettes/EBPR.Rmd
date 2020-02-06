@@ -60,7 +60,7 @@ RNAseq.data <- Pre_process_input(file.path,
                                  database = database,
                                  normalize.method    = T,
                                  normalization.features = normalization.features,
-                                 filter.method       = 'MAD',
+                                 filter.method       ='MAD',
                                  filter.low.coverage = F)
 
 
@@ -166,16 +166,16 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
-                                                   N = 5000, 
+                                                   N = 10000, 
                                                    metrics = distance.metrics,
-                                                   threads = 10)
+                                                   threads = 6)
 
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,
                                                              distance.metrics,
                                                              bkgd.individual.Zscores,
                                                              show.progress = F,
-                                                             threads = 10)
+                                                             threads = 6)
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
                                                      pairwise.distances = pairwise.distances,
@@ -284,3 +284,66 @@ trait.attributes.pruned[M00009_attributes]
 ```{r}
 Plot_Categories()
 ```
+
+
+##Benchmark
+```{r}
+benchmark <- function(RNAseq.data, leave_n_out = 1){
+  working_RNAseq.data <- RNAseq.data
+  bins <- working_RNAseq.data$features$bins
+  to_remove <- sample(bins, leave_n_out, replace = FALSE)
+  working_RNAseq.data$features$bins %<>% .[-which(. %in% to_remove)]
+  
+  trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = working_RNAseq.data, 
+                                                     pairwise.distances = pairwise.distances,
+                                                     threads = 6)
+
+  trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
+                                                  working_RNAseq.data,
+                                                  p.threshold = 0.05,
+                                                  pairwise.distances = pairwise.distances,
+                                                  bkgd.individual.Zscores = bkgd.individual.Zscores)
+    
+  count <-  trait.attributes.pruned %>% sapply(., length) %>% sum
+  
+  #average number of attributes per genome
+  avg_ta_per_genome <- sapply(working_RNAseq.data$features$bins, function(bin){
+    
+    totals_current_genome <- sapply(trait.attributes.pruned, function(trait){
+      
+      has_ta <- sapply(trait, function(TA){
+        
+        return(bin %in% TA$genomes) 
+      }) %>% as.numeric
+      return(sum(has_ta))
+    }) %>% as.numeric %>% sum
+  }) %>% mean
+  
+  
+  genome_lengths <- c()
+  for(trait in trait.attributes.pruned){
+    for (TA in trait){
+      genomes <- TA$genomes
+      genome_lengths <- c(genome_lengths, length(genomes))
+    }
+  }
+  #Average number of genomes per attribute
+  genomes_per_attributes.avg <- genome_lengths %>% mean
+  return(list('count' = count,
+              'avg_per_trait' = genomes_per_attributes.avg,
+              'avg_per_genome' = avg_ta_per_genome) )
+  
+}
+
+
+benchmarks <- c(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10)
+
+totals <- matrix(ncol = 4, nrow = 0)
+
+for (leave_n_out in benchmarks){
+  output <- benchmark(RNAseq.data, leave_n_out = 3)  
+  
+  totals <- rbind(totals, c(leave_n_out, output$count, output$avg_per_trait, output$avg_per_genome ))
+}
+```
+

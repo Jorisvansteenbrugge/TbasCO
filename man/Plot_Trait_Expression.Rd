@@ -2,7 +2,7 @@
 % Please edit documentation in R/Utility.R
 \name{Plot_Trait_Expression}
 \alias{Plot_Trait_Expression}
-\title{}
+\title{Plot_Trait_Expression}
 \usage{
 Plot_Trait_Expression(trait, subset_genomes)
 }
