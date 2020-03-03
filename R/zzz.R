@@ -60,6 +60,6 @@
 .onDetach <- function(libname, pkgname){
   rm(file.path, envir = .GlobalEnv)
   rm(annotation.db.path, envir = .GlobalEnv)
-  rm
+  #rm
 }
 

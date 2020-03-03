@@ -45,10 +45,21 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
   }
   RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
-  if (filter.low.coverage) {
+  if (isTRUE(filter.low.coverage)) { #Defaults
     RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
                                             "features" = RNAseq.features))
-  } else {
+
+    #Assume the filter.low.coverage variable is a vector c(threshold, cutoff)
+  } else if(! isFALSE(filter.low.coverage)){
+    RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
+                                            "features" = RNAseq.features))
+      RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
+                                              "features" = RNAseq.features),
+                                         threshold = filter.low.coverage[1],
+                                         cutoff = filter.low.coverage[2])
+
+  }
+    else {
     RNAseq.data <- list("table"    = RNAseq.table,
                         "features" = RNAseq.features)
   }
@@ -77,9 +88,6 @@ Combine_databases <- function(...){
   return(list('module.dict' = combined,
               'all annotations in a module' = all_kos))
 }
-
-
-
 
 #' Automatically identify features based on column names
 #' @name Get_matrix_features
@@ -293,7 +301,7 @@ Create.Module.groups <- function (annotation.db) {
 
 }
 
-Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
+Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4, cutoff = 0.6) {
 
 
   mat <- matrix(ncol = 2, nrow = 0)
@@ -309,7 +317,7 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4) {
   }
 
 
-  bins.keep <- as.character(RNAseq.data$features$bins[which(mat[,1] >= 0.6)])
+  bins.keep <- as.character(RNAseq.data$features$bins[which(mat[,1] >= cutoff)])
 
   # Put the trash out
   RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]

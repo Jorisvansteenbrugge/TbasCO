@@ -906,59 +906,58 @@ Plot_Pathway_modules <- function() {
 #'   }
 #'
 #'   close(con)
-#'
-#'
-#'   # Get Zscores ----
-#'   metric.Z <- getMetricDist(
-#'     metric_name, cat.genes, distance.metrics, RNAseq.data,
-#'     bkgd.individual, bkgd.individual.Zscores
-#'   )
-#'
-#'   library(ggplot2)
-#'   ids <- 1:nrow(metric.Z)
-#'   metric.Z <- cbind(metric.Z, ids)
-#'   metric.Z <- cbind(metric.Z, categories)
-#'
-#'   colnames(metric.Z) <- c("value", "sig", "collection", "cex", "ids", "categories")
-#'
-#'
-#'   metric.Z <- as.data.frame(metric.Z, stringsAsFactors = F)
-#'   metric.Z$value <- as.numeric(metric.Z$value)
-#'   metric.Z$ids <- as.numeric(metric.Z$ids)
-#'   metric.Z$ids <- factor(metric.Z$ids, levels = metric.Z$ids)
-#'
-#'   metric.Z$cex <- exp(as.numeric(metric.Z$cex) / mean(as.numeric(metric.Z$cex),
-#'     na.rm =
-#'     ))
-#'
-#'   metric.plot <- ggplot(
-#'     metric.Z, aes(
-#'       x = ids, y = value,
-#'       colour = categories,
-#'       shape = factor(sig)
-#'     )
-#'     # ,size = cex
-#'   ) +
-#'     geom_point(size = 3) +
-#'     xlab("") +
-#'     ylab(paste(metric_name, "Z score", sep = " ")) +
-#'     facet_grid(. ~ categories, scales = "free_x", space = "free_x") +
-#'     geom_hline(yintercept = 0) +
-#'     theme(
-#'       axis.text.x = element_blank(),
-#'       axis.ticks.x = element_blank(),
-#'       legend.position = "none"
-#'     )
-#'
-#'
-#'   # Combine plot
-#'   # plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
-#'
-#'   return(list(
-#'     "data" = metric.Z,
-#'     "plot" = metric.plot
-#'   ))
-#' }
+#
+#
+#   # Get Zscores ----
+#   metric.Z <- getMetricDist(
+#     metric_name, cat.genes, distance.metrics, RNAseq.data,
+#     bkgd.individual, bkgd.individual.Zscores
+#   )
+#
+#   library(ggplot2)
+#   ids <- 1:nrow(metric.Z)
+#   metric.Z <- cbind(metric.Z, ids)
+#   metric.Z <- cbind(metric.Z, categories)
+#
+#   colnames(metric.Z) <- c("value", "sig", "collection", "cex", "ids", "categories")
+##
+#   metric.Z <- as.data.frame(metric.Z, stringsAsFactors = F)
+#   metric.Z$value <- as.numeric(metric.Z$value)
+#   metric.Z$ids <- as.numeric(metric.Z$ids)
+#   metric.Z$ids <- factor(metric.Z$ids, levels = metric.Z$ids)
+#
+#   metric.Z$cex <- exp(as.numeric(metric.Z$cex) / mean(as.numeric(metric.Z$cex),
+#     na.rm =
+#    ))
+#
+#   metric.plot <- ggplot(
+#     metric.Z, aes(
+#       x = ids, y = value,
+#       colour = categories,
+#       shape = factor(sig)
+#     )
+#     # ,size = cex
+#   ) +
+#     geom_point(size = 3) +
+#     xlab("") +
+#     ylab(paste(metric_name, "Z score", sep = " ")) +
+#     facet_grid(. ~ categories, scales = "free_x", space = "free_x") +
+#     geom_hline(yintercept = 0) +
+#     theme(
+#       axis.text.x = element_blank(),
+#       axis.ticks.x = element_blank(),
+#       legend.position = "none"
+#     )
+#
+#
+#   # Combine plot
+#   # plot(gridExtra::arrangeGrob(pearson.plot, nred.plot))
+#
+#   return(list(
+#     "data" = metric.Z,
+#     "plot" = metric.plot
+#   ))
+# }
 
 Plot_Trait_Expression <- function(trait, subset_genomes) {
   .getRank <- function(genome, rows) {
