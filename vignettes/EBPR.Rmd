@@ -175,9 +175,9 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
-                                                   N = 10000, 
+                                                   N = 5000, 
                                                    metrics = distance.metrics,
-                                                   threads = 6)
+                                                   threads = 10)
 
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,

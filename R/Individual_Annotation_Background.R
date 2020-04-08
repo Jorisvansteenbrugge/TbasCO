@@ -35,9 +35,9 @@ Individual_Annotation_Background <- function(RNAseq.data,
     if (i == 1){
       Random.Genes.bkgd(RNAseq.data, metrics, N)
     }else if (i == 2){
-      Random.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
+      Random.Annotated.Genes.bkgd.new(RNAseq.data, metrics, N)
     }else if (i == 3){
-       Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, N)
+      Random.Identical.Annotated.Genes.bkgd.new(RNAseq.data, metrics, N)
     }
   }
 
@@ -46,6 +46,76 @@ Individual_Annotation_Background <- function(RNAseq.data,
   # The names are essential
   names(result) <- c("Random Genes", "Random Annotated Genes", "Genes with the same annotation")
   return(result)
+}
+
+Generate_empty_output <- function(metrics, N){
+  # Creating the output format
+  output <- list()
+  for(metric in names(metrics)){
+    output[[metric]] <- rep(NA, N)
+  }
+
+  return(output)
+}
+
+Random.Annotated.Genes.bkgd.new <- function(RNAseq.data, metrics, N){
+
+  output <- Generate_empty_output(metrics, N)
+  rows.c <- nrow(RNAseq.data$annotation.only)
+
+  for(i in 1:N){
+    # Select two rows
+    selected_rows <- sample.int(n=rows.c, size=2)
+
+    for(metric.current in names(metrics)){
+      row.A <- RNAseq.data$annotation.only[selected_rows[1], ]
+      row.B <- RNAseq.data$annotation.only[selected_rows[2], ]
+
+      distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
+      output[[metric.current]][i] <- distance
+    }
+  }
+
+  return(output)
+}
+
+
+Get_non_unique_annotations <- function(RNAseq.data){
+  counts <- RNAseq.data$annotation.only$Annotation %>% table
+  non_uniq.counts <- which(counts>=2) %>% names
+
+  return(non_uniq.counts)
+}
+
+Sample_random_genes_identical_annotation <- function(RNAseq.data, duplicate_annotations){
+  random_gene <- sample(duplicate_annotations, 1)
+
+  tab <- RNAseq.data$table[which(RNAseq.data$table$Annotation == random_gene),]
+  tab.nrow <- nrow(tab)
+
+  rows.selected <- sample.int(tab.nrow, 2)
+  return(list("rowA" = tab[rows.selected[1], ],
+               "rowB" = tab[rows.selected[2], ])
+  )
+}
+
+Random.Identical.Annotated.Genes.bkgd.new <- function(RNAseq.data, metrics, N){
+  output <- Generate_empty_output(metrics, N)
+  duplicate_annotations <- Get_non_unique_annotations(RNAseq.data)
+
+  for(i in 1:N){
+    rows <- Sample_random_genes_identical_annotation(RNAseq.data, duplicate_annotations)
+    for(metric.current in names(metrics)){
+      row.A <- rows$rowA
+      row.B <- rows$rowB
+
+      distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
+      output[[metric.current]][i] <- distance
+    }
+
+  }
+
+  return(output)
 }
 
 #' Background distribution of any two random genes in two random genomes
@@ -104,10 +174,7 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes)
   }
 
   # Creating the output format
-  output <- list()
-  for(metric in names(metrics)){
-    output[[metric]] <- rep(NA, N)
-  }
+  output <- Generate_empty_output(metrics, N)
 
   #format used.terms
   used.terms <- list()
@@ -137,7 +204,7 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes)
      row.B <- RNAseq.data$annotation.only[position.B, ]
 
       # Call the distance metric function
-      distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
+     distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
      output[[metric.current]][i] <- distance
    }
 

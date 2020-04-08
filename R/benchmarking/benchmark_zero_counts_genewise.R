@@ -10,7 +10,7 @@ database <- Combine_databases(kegg_brite_20191208, kegg_module_20190723)
 RNAseq.data <- Pre_process_input(args[1],
                                  database = database,
                                  normalize.method    = F,
-                                 filter.method       ='stdev',
+                                 filter.method       ='MAD',
                                  filter.low.coverage = F,
                                  filter.genes.zero = args[2])
 
