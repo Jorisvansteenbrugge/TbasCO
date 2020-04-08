@@ -5,6 +5,7 @@
 #' @param filepath RNAseq data file
 #' @param normalize.method User defined method to normalize data
 #' @param filter.low.coverage boolean expression to wether we should filter out
+#' @param filter.genes.zero False or a number. The number indicates the number of zeros that can max be present. Genes with more zeros than the cut-off get pruned.
 #' genomes with a low overall expression level.
 #' @export
 #' @examples
@@ -18,10 +19,13 @@
 Pre_process_input <- function(file.path, database, normalize.method = T,
                               filter.method = "MAD",
                               filter.low.coverage = T,
+                              filter.genes.zero = F,
                               normalization.features = NULL, taxon_file = NULL){
 
+  cat("Reading table from file..\n")
   RNAseq.table     <- read.csv2(file.path, stringsAsFactors = F)
 
+  RNAseq.table$Annotation[is.na(RNAseq.table$Annotation)] <- ""
 
   RNAseq.features  <- Get_matrix_features(RNAseq.table, database)
   RNAseq.features$annotation.db <- database
@@ -33,12 +37,16 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
     RNAseq.table[, sample.col] <- as.numeric(RNAseq.table[, sample.col])
   }
   if (normalize.method != FALSE){
+    cat("Starting Normalization..\n\n")
     RNAseq.table <- Normalization(RNAseq.table,
                                   RNAseq.features,
                                   normalize.method,
                                   normalization.features)
+  }else{
+    cat("Skipping Normalization..\n")
   }
   if (filter.method    != FALSE){
+    cat("Filtering genes..\n")
     RNAseq.table <- Filter(RNAseq.table,
                            RNAseq.features$sample.columns,
                            filter.method)
@@ -46,11 +54,13 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
   RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
   if (isTRUE(filter.low.coverage)) { #Defaults
+    cat("Filtering low coverage genomes..\n")
     RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
                                             "features" = RNAseq.features))
 
     #Assume the filter.low.coverage variable is a vector c(threshold, cutoff)
   } else if(! isFALSE(filter.low.coverage)){
+    cat("Filtering low coverage genomes (alt)..\n")
     RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
                                             "features" = RNAseq.features))
       RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
@@ -60,10 +70,17 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
 
   }
     else {
+      cat("Skipping Filter of low coverage genomes..\n")
     RNAseq.data <- list("table"    = RNAseq.table,
                         "features" = RNAseq.features)
   }
 
+  if (! isFALSE(filter.genes.zero)){
+    cat("Filtering genes with zero counts..\n")
+    RNAseq.data <- Prune.Genes.Zeros(RNAseq.data, filter.genes.zero)
+  }else{
+    cat("Skipping filter of genes with zero counts..\n")
+  }
   #Add trait presence absence later
   #RNAseq.data$features$trait_presence_absence <- Get_trait_presence_absence(RNAseq.data)
 
@@ -73,6 +90,7 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
   # RNAseq.data$features$annotation.db          <- expansion$annotation.db
   # RNAseq.data$features$annotation.db$`all annotations in a module` <- all_kos
 
+  cat("Calculating trait presence absence..\n")
    RNAseq.data$features$trait_presence_absence <- Get_trait_presence_absence(RNAseq.data)
 
 
@@ -320,12 +338,46 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4, cutoff = 0.6) {
   bins.keep <- as.character(RNAseq.data$features$bins[which(mat[,1] >= cutoff)])
 
   # Put the trash out
+
+  return(Prune_bins(RNAseq.data, bins.keep))
+
+}
+
+
+Prune.Genes.Zeros <- function(RNAseq.data, threshold = 1){
+  rows.keep <- apply(RNAseq.data$table, 1,
+                     function(row){
+                       sample <- row[RNAseq.data$features$sample.columns] %>% as.numeric
+                       c <- length(which(sample == 0))
+
+                       return(c < threshold)
+                       }
+                     )
+  s <- sum(rows.keep)
+
+  RNAseq.data$table <- RNAseq.data$table[rows.keep,]
+
+  bins.keep <- c()
+  min_gene_cutoff <- 10
+  for(bin in RNAseq.data$features$bins){
+    rows <- RNAseq.data$table[which(RNAseq.data$table$Bin==bin),] %>% nrow
+    if (rows > min_gene_cutoff){
+      bins.keep <- c(bins.keep, bin)
+    }
+  }
+
+  ## Check if we pruned all genes from a genome
+  return(Prune_bins(RNAseq.data, bins.keep))
+
+}
+
+Prune_bins <- function(RNAseq.data, bins.keep){
   RNAseq.data$table <- RNAseq.data$table[which(RNAseq.data$table$Bin %in% bins.keep) ,]
   RNAseq.data$features$bins <- bins.keep
   RNAseq.data$features$annotation_presence_absence <- RNAseq.data$features$annotation_presence_absence[, bins.keep]
   RNAseq.data$features$trait_presence_absence      <- RNAseq.data$features$trait_presence_absence[, bins.keep]
-  return(RNAseq.data)
 
+  return(RNAseq.data)
 }
 
 
@@ -357,7 +409,7 @@ Parse_taxonomy <- function(RNAseq.features, taxonfile) {
 #' package are implemented as well
 #' @export
 #' @author BO Oyserman
-#' @return The normalized read counts  of \code{Sample 1} ... \code{Sample N}.
+#' @return The normalized read counts  of \code{Sample 1} ..\n. \code{Sample N}.
 #' @examples RNAseq_Normalize(RNAseq_Annotated_Matrix, no_feature,ambiguous, not_aligned)
 #' @note \preformatted{To remove rows that have a 0 for its read counts:}
 #' \code{RNAseq_Annotated_Matrix[apply(RNAseq_Annotated_Matrix[, SS:SE], 1, function(x) !any(x == 0)), ]}

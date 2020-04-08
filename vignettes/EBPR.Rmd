@@ -47,27 +47,30 @@ The package supports different options for normalization. By default the `Pre_pr
 does not normalize the data. To indicate if normalization should be performed, the function parameter 
 `normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
 ```{r Preprocessing}
-normalization.features <- list('no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
-                  'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
-                  'library_size' = c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166),
-                  'not_aligned'  = c(0, 0, 0, 0, 0, 0)
-                  )
+# normalization.features <- list(
+#   'no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
+#   'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
+#   'library_size' = c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166),
+#   'not_aligned'  = c(0, 0, 0, 0, 0, 0))
 
-#normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
+# normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
 
 
-RNAseq.data_default <- Pre_process_input(file.path,
+RNAseq.data <- Pre_process_input("~/Downloads/2013_R1R2_norm_table.csv",
                                  database = database,
-                                 normalize.method    = T,
+                                 normalize.method    = F,
                                  normalization.features = normalization.features,
                                  filter.method       ='MAD',
-                                 filter.low.coverage = T)
-RNAseq.data_filtercustom <- Pre_process_input(file.path,
-                                 database = database,
-                                 normalize.method    = T,
-                                 normalization.features = normalization.features,
-                                 filter.method       ='MAD',
-                                 filter.low.coverage = c(8, 0.6))
+                                 filter.low.coverage = F,
+                                filter.genes.zero = 4)
+
+
+# RNAseq.data_filtercustom <- Pre_process_input(file.path,
+#                                  database = database,
+#                                  normalize.method    = T,
+#                                  normalization.features = normalization.features,
+#                                  filter.method       ='MAD',
+#                                  filter.low.coverage = c(8, 0.6))
 
 
 # Phylum: Run this for Ben's dataset
@@ -164,7 +167,7 @@ distance.metrics <- list("NRED" = NRED,
 ### Actual Analysis
 ```{r Main Analysis}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
-                                                            N       = 10000, 
+                                                            N       = 5000, 
                                                             metrics = distance.metrics,
                                                             threads = 3)
 

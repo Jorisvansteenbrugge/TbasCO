@@ -117,7 +117,7 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes)
   }
 
   for(i in 1:N){
-
+    print(i)
     positions.genome.A <- which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][1])
 
     positions.genome.B <- which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][2])
@@ -139,10 +139,9 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes)
       # Call the distance metric function
       distance <- metrics[[metric.current]](row.A, row.B, RNAseq.data$features)
      output[[metric.current]][i] <- distance
-    }
+   }
 
   }
-
   if(out.terms){
     return(list("used terms" = used.terms,
                 "scores"  = output))
