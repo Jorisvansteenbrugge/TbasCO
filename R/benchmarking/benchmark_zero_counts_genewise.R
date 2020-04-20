@@ -1,75 +1,92 @@
-library(TbasCO)
 library(magrittr)
+library(dplyr)
+library(ggplot2)
 
-options(echo = TRUE)
-args <- commandArgs(trailingOnly = TRUE)
-print(args)
 
-database <- Combine_databases(kegg_brite_20191208, kegg_module_20190723)
+setwd("/home/joris/scratch/tbasco/")
+benchmarking_files <- list.files("/home/joris/scratch/tbasco/", pattern = '.RData', full.names = F)
 
-RNAseq.data <- Pre_process_input(args[1],
-                                 database = database,
-                                 normalize.method    = F,
-                                 filter.method       ='MAD',
-                                 filter.low.coverage = F,
-                                 filter.genes.zero = args[2])
-
-PC <- function(rowA, rowB, RNAseq.features){
-  return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
-             as.numeric(rowB[RNAseq.features$sample.columns])
-  )
-  )
+load_obj <- function(f){
+    env <- new.env()
+    nm <- load(f, env)[1]
+    return(env[[nm]])
 }
 
-# Calculates the Normalized Rank Euclidean Distance
-NRED <- function(rowA, rowB, RNAseq.features) {
-  r.A <- as.numeric(rowA[ RNAseq.features$rank.columns ])
-  r.B <- as.numeric(rowB[ RNAseq.features$rank.columns ])
-  return(
-    sum((r.A - r.B) * (r.A - r.B))
-  )
+# Calculate the full number of trait attributes that are created
+get_tas <- function(TAs){
+    count <- 0
+    for(trait in TAs){
+        count <- count + trait$clusters$membership %>% unique %>% length
+        
+    }
+    return(count)
 }
 
-# Combine multiple distance metrics to complement each other.
-distance.metrics <- list("NRED" = NRED,
-                         "PC"   = PC)
+get_num_genes <- function(RNAseq.data){
+    return (RNAseq.data$table %>% nrow)
+}
+
+get_sig_tas <- function(SigTAs){
+    return(sapply(SigTAs, length) %>% as.numeric %>% sum)
+}
+
+get_num_genomes <- function(RNAseq.data){
+    return(RNAseq.data$features$bins %>%  length)
+}
 
 
-bkgd.individual         <- Individual_Annotation_Background(RNAseq.data,
-                                                            N       = 5000,
-                                                            metrics = distance.metrics,
-                                                            threads = 2)
+get_genomes_per_attribute <- function(SigTas){
+    numbers <- c()
+    
+    for(trait in SigTas){
+        for(attri in trait){
+            g.len <- attri$genomes %>% length
+            numbers <- c(numbers,g.len)
+        }
+    }
+    return(numbers)
+}
 
-bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
-bkgd.traits             <- Random_Trait_Background(RNAseq.data,
-                                                   bkgd.individual.Zscores,
-                                                   N = 5000,
-                                                   Z = 1:25,
-                                                   metrics = distance.metrics,
-                                                   threads = 2)
 
-pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
-                                                             RNAseq.data$features$annotation.db,
-                                                             distance.metrics,
-                                                             bkgd.individual.Zscores,
-                                                             show.progress = F,
-                                                             threads = 2)
 
-trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data,
-                                                     pairwise.distances = pairwise.distances,
-                                                     threads = 2)
 
-trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits,
-                                                  RNAseq.data,
-                                                  p.threshold = 0.05,
-                                                  pairwise.distances = pairwise.distances,
-                                                  bkgd.individual.Zscores = bkgd.individual.Zscores)
+plot_data <- matrix(ncol = 5, nrow = 0)
 
-results <- list("RNAseq.data" = RNAseq.data,
-                'TAs' = trait.attributes,
-                "SigTAs" = trait.attributes.pruned,
-                'bkgd.traits' = bkgd.traits,
-                'zscores' = bkgd.individual.Zscores)
+avg_num_genomes <- data.frame(matrix(ncol=2, nrow = 0), stringsAsFactors = FALSE)
 
-save(results, file = args[3])
+for(benchmark in benchmarking_files){
+    data <- load_obj(benchmark)
+    
+    genes.count <- get_num_genes(data$RNAseq.data)
+    sig_ta_count <- get_sig_tas(data$SigTAs)
+    num_genomes <- get_num_genomes(data$RNAseq.data)
+    
+    
+    ta_count <- get_tas(data$TAs)
+    sig_ta_count <- get_sig_tas(data$SigTAs)
+   
+    
+    counts <- get_genomes_per_attribute(data$SigTAs)
+    for (c in counts){
+        avg_num_genomes <- rbind(avg_num_genomes, c(benchmark, c), stringsAsFactors = FALSE)
+    }
+  
+    
+    
+    plot_data <- rbind(plot_data, c(benchmark, ta_count, 
+                                    sig_ta_count, num_genomes,
+                                    genes.count))
+    
+}
+
+    plot_data %<>% as.data.frame(stringsAsFactors = F) %>% transmute(Label = V1,
+                                                                 TAs = as.numeric(V2),
+                                                                 SigTas = as.numeric(V3),
+                                                                 NumGenomes =  as.numeric(V4),
+                                                                 NumGenes = as.numeric(V5))
+
+colnames(avg_num_genomes) <- c("Benchmark", "Count")
+avg_num_genomes$Count %<>% as.numeric
+ggplot(data = avg_num_genomes) + geom_violin(aes(x = Benchmark, y = Count))
+    

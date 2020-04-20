@@ -56,13 +56,13 @@ does not normalize the data. To indicate if normalization should be performed, t
 # normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
 
 
-RNAseq.data <- Pre_process_input("~/Downloads/2013_R1R2_norm_table.csv",
+RNAseq.data <- Pre_process_input("~/Downloads/test_table.csv",
                                  database = database,
                                  normalize.method    = F,
                                  normalization.features = normalization.features,
-                                 filter.method       ='MAD',
+                                 filter.method       =F,
                                  filter.low.coverage = F,
-                                filter.genes.zero = 4)
+                                filter.genes.zero =3)
 
 
 # RNAseq.data_filtercustom <- Pre_process_input(file.path,

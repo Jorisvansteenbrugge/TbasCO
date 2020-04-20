@@ -51,11 +51,6 @@ plot_data %<>% as.data.frame(stringsAsFactors = F) %>% transmute(Label = V1,
 plot_data$Label %<>% factor(., levels = sort(.))
 
 library(gridExtra)
-a <- ggplot(plot_data, aes(x = TAs, y = SigTas)) + geom_point()
-d <- ggplot(plot_data, aes(x = NumGenomes, y = SigTas)) + geom_point()
-b <- ggplot(plot_data, aes(y = SigTas, x = Label)) + geom_bar( stat = 'identity')
-c <- ggplot(plot_data, aes(y = NumGenomes, x = Label)) + geom_bar(stat = 'identity')
-grid <- gridExtra::grid.arrange(a,d, ncol = 2)
 
 grid.arrange(b,c, ncol = 1)
 

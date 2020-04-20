@@ -344,30 +344,31 @@ Filter.Low.Coverage <-  function (RNAseq.data, threshold = 4, cutoff = 0.6) {
 }
 
 
-Prune.Genes.Zeros <- function(RNAseq.data, threshold = 1){
+Prune.Genes.Zeros <- function(RNAseq.data, threshold = 0){
   rows.keep <- apply(RNAseq.data$table, 1,
                      function(row){
-                       sample <- row[RNAseq.data$features$sample.columns] %>% as.numeric
-                       c <- length(which(sample == 0))
+                       sample_cols <- row[RNAseq.data$features$sample.columns] %>% as.numeric
+                       c <- length(which(sample_cols == 0))
 
-                       return(c < threshold)
+                       return(c <= threshold)
                        }
                      )
   s <- sum(rows.keep)
 
   RNAseq.data$table <- RNAseq.data$table[rows.keep,]
 
-  bins.keep <- c()
-  min_gene_cutoff <- 10
-  for(bin in RNAseq.data$features$bins){
-    rows <- RNAseq.data$table[which(RNAseq.data$table$Bin==bin),] %>% nrow
-    if (rows > min_gene_cutoff){
-      bins.keep <- c(bins.keep, bin)
-    }
-  }
+  RNAseq.data$features$bins <- RNAseq.data$table$Bin %>% unique
+  #
+  # min_gene_cutoff <- 1
+  # for(bin in RNAseq.data$features$bins){
+  #   rows <- RNAseq.data$table[which(RNAseq.data$table$Bin==bin),] %>% nrow
+  #   if (rows >= min_gene_cutoff){
+  #     bins.keep <- c(bins.keep, bin)
+  #   }
+  # }
 
   ## Check if we pruned all genes from a genome
-  return(Prune_bins(RNAseq.data, bins.keep))
+  return(RNAseq.data)
 
 }
 
