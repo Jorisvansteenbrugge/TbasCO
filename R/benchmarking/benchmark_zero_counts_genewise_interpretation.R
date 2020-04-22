@@ -59,15 +59,15 @@ for(benchmark in benchmarking_files){
     data <- load_obj(benchmark)
     
     genes.count <- get_num_genes(data$RNAseq.data)
-    sig_ta_count <- get_sig_tas(data$SigTAs)
+    sig_ta_count <- get_sig_tas(data$trait.attributes.pruned)
     num_genomes <- get_num_genomes(data$RNAseq.data)
     
     
-    ta_count <- get_tas(data$TAs)
-    sig_ta_count <- get_sig_tas(data$SigTAs)
+    ta_count <- get_tas(data$trait.attributes)
+    sig_ta_count <- get_sig_tas(data$trait.attributes.pruned)
    
     
-    counts <- get_genomes_per_attribute(data$SigTAs)
+    counts <- get_genomes_per_attribute(data$trait.attributes.pruned)
     for (c in counts){
         avg_num_genomes <- rbind(avg_num_genomes, c(benchmark, c), stringsAsFactors = FALSE)
     }
