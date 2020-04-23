@@ -27,7 +27,8 @@ Random_Trait_Background <- function(RNAseq.data,
                          bkgd.individual.Zscores,
                          N,
                          Z,
-                         metrics){
+                         metrics,
+                         sampleable_bins){
 
     #Runs in parallel
     result <- foreach::foreach(i = 1:N, .export = c("Random.Annotated.Genes.bkgd",
@@ -36,15 +37,15 @@ Random_Trait_Background <- function(RNAseq.data,
       print('start')
       #pick two genomes
       RNAseq.data$annotation.only <- RNAseq.data$table[which(RNAseq.data$table$Annotation != ""),]
-      random.genomes              <- sample(RNAseq.data$features$bins, 2)
+      random.genomes              <- sample(sampleable_bins, 2)
       random.genomes.combis       <- rep(list(random.genomes), Z) #Workaround to re-use function below
 
-      distances   <- Random.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
+      distances   <- Random.Identical.Annotated.Genes.bkgd(RNAseq.data, metrics, Z, random.genomes.combis)
       print('distances')
       distances.Z <- .Convert_zscores(distances$scores, metrics, bkgd.individual.Zscores)
       print("Z scores")
 
-      # This is quick and dirty composition
+
       composite.distance          <- mean( (-distances.Z$PC) + distances.Z$NRED,
                                            na.rm = T)[1]
       print('composite')
@@ -66,6 +67,7 @@ Random_Trait_Background <- function(RNAseq.data,
   cl <- snow::makeSOCKcluster(threads)
   registerDoSNOW(cl)
 
+
   bkgd.modules <- list()
 
   if(missing(Z)) {
@@ -74,11 +76,12 @@ Random_Trait_Background <- function(RNAseq.data,
 
 
   for(Z.size in Z){
+    sampleable_bins <- .Get_Covered_Genomes(RNAseq.data, min_genes = 500 )
     bkgd.modules[[as.character(Z.size)]] <- unlist(.Procedure(RNAseq.data,
                                                               bkgd.individual.Zscores,
                                                               N,
                                                               Z.size,
-                                                              metrics))
+                                                              metrics, sampleable_bins))
   }
 
 
@@ -117,3 +120,19 @@ Random_Trait_Background <- function(RNAseq.data,
                                 sum(which(PA.genome.A == 1)%in%which(PA.genome.B == 1))))
   return(Jaccard_Distance)
 }
+
+
+.Get_Covered_Genomes <- function(RNAseq.data, min_genes = 500){
+  sampleable_bins <- c()
+
+  for(bin in RNAseq.data$features$bins){
+    bin_rows <- RNAseq.data$table[which(RNAseq.data$table$Bin == bin), ]
+
+    if (nrow(bin_rows) >= min_genes) {
+
+      sampleable_bins <- c(sampleable_bins, bin)
+    }
+  }
+  return(sampleable_bins)
+}
+

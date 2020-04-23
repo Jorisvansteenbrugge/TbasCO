@@ -14,8 +14,8 @@ RNAseq.data <- Pre_process_input(args[1],
                                  filter.method       = 'stdev',
                                  filter.low.coverage = F,
                                  filter.genes.zero = args[2])
-
-save(list("RNAseq.data" = RNAseq.data), file = paste(Pre, args[3], sep = "_"))
+pre_ret = list("RNAseq.data" = RNAseq.data)
+save(pre_ret, file = args[4])
 
 PC <- function(rowA, rowB, RNAseq.features){
   return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
@@ -40,7 +40,7 @@ distance.metrics <- list("NRED" = NRED,
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data,
                                                             N       = 5000,
                                                             metrics = distance.metrics,
-                                                            threads = 6)
+                                                            threads = 5)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
@@ -48,18 +48,18 @@ bkgd.traits             <- Random_Trait_Background(RNAseq.data,
                                                    bkgd.individual.Zscores,
                                                    N = 5000,
                                                    metrics = distance.metrics,
-                                                   threads = 6)
+                                                   threads = 5)
 
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,
                                                              distance.metrics,
                                                              bkgd.individual.Zscores,
                                                              show.progress = F,
-                                                             threads = 6)
+                                                             threads = 5)
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data,
                                                      pairwise.distances = pairwise.distances,
-                                                     threads = 6)
+                                                     threads = 5)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits,
                                                   RNAseq.data,

@@ -51,7 +51,8 @@ get_genomes_per_attribute <- function(SigTas){
 
 
 
-plot_data <- matrix(ncol = 5, nrow = 0)
+
+plot_data <- matrix(ncol = 4, nrow = 0)
 
 avg_num_genomes <- data.frame(matrix(ncol=2, nrow = 0), stringsAsFactors = FALSE)
 
@@ -59,34 +60,38 @@ for(benchmark in benchmarking_files){
     data <- load_obj(benchmark)
     
     genes.count <- get_num_genes(data$RNAseq.data)
-    sig_ta_count <- get_sig_tas(data$trait.attributes.pruned)
+    if (is.null(data$trait.attributes.pruned)) {
+        sig_ta_count <- 0
+        ta_count <- 0
+        
+    } else {
+        sig_ta_count <- get_sig_tas(data$trait.attributes.pruned)
+        ta_count <- get_tas(data$trait.attributes)
+
+        counts <- get_genomes_per_attribute(data$trait.attributes.pruned)
+        for (c in counts){
+        avg_num_genomes <- rbind(avg_num_genomes, c(benchmark, c), stringsAsFactors = FALSE)
+        }
+        
+    }
+    
     num_genomes <- get_num_genomes(data$RNAseq.data)
     
-    
-    ta_count <- get_tas(data$trait.attributes)
-    sig_ta_count <- get_sig_tas(data$trait.attributes.pruned)
-   
-    
-    counts <- get_genomes_per_attribute(data$trait.attributes.pruned)
-    for (c in counts){
-        avg_num_genomes <- rbind(avg_num_genomes, c(benchmark, c), stringsAsFactors = FALSE)
-    }
   
     
     
-    plot_data <- rbind(plot_data, c(benchmark, ta_count, 
-                                    sig_ta_count, num_genomes,
-                                    genes.count))
-    
+    plot_data <- rbind(plot_data, c(benchmark, num_genomes, genes.count, sig_ta_count ))
+
 }
 
+
     plot_data %<>% as.data.frame(stringsAsFactors = F) %>% transmute(Label = V1,
-                                                                 TAs = as.numeric(V2),
-                                                                 SigTas = as.numeric(V3),
-                                                                 NumGenomes =  as.numeric(V4),
-                                                                 NumGenes = as.numeric(V5))
+                                                                     NumGenomes = as.numeric(V2),
+                                                                     NumGenes = as.numeric(V3),
+                                                                     SigTas = as.numeric(V4))
 
 colnames(avg_num_genomes) <- c("Benchmark", "Count")
 avg_num_genomes$Count %<>% as.numeric
+#pdf(file = '~/scratch/tbasco/sigTasPrelim.pdf')
 ggplot(data = avg_num_genomes) + geom_violin(aes(x = Benchmark, y = Count))
-    
+#dev.off()
