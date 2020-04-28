@@ -31,7 +31,7 @@ Random_Trait_Background <- function(RNAseq.data,
                          sampleable_bins){
 
     #Runs in parallel
-    result <- foreach::foreach(i = 1:N, .export = c("Random.Annotated.Genes.bkgd",
+    result <- foreach::foreach(i = 1:N, .export = c("Random.Identical.Annotated.Genes.bkgd",
                                                      ".Convert_zscores",
                                                      ".Calc_Jaccard")) %dopar% {
       print('start')

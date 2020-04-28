@@ -40,7 +40,7 @@ distance.metrics <- list("NRED" = NRED,
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data,
                                                             N       = 5000,
                                                             metrics = distance.metrics,
-                                                            threads = 5)
+                                                            threads = 3)
 
 bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
@@ -48,18 +48,18 @@ bkgd.traits             <- Random_Trait_Background(RNAseq.data,
                                                    bkgd.individual.Zscores,
                                                    N = 5000,
                                                    metrics = distance.metrics,
-                                                   threads = 5)
+                                                   threads = 11)
 
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,
                                                              distance.metrics,
                                                              bkgd.individual.Zscores,
                                                              show.progress = F,
-                                                             threads = 5)
+                                                             threads = 11)
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data,
                                                      pairwise.distances = pairwise.distances,
-                                                     threads = 5)
+                                                     threads = 10)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits,
                                                   RNAseq.data,

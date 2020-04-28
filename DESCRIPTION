@@ -13,6 +13,6 @@ Encoding: UTF-8
 LazyData: false
 Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, 
     RColorBrewer, ggplot2, gridExtra, arules, magrittr, reticulate, xlsx
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 biocViews: RCy3
 Suggests: testthat

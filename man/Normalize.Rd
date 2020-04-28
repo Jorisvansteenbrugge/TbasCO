@@ -19,7 +19,7 @@ where ambiguously mapped, or not aligned in their  (obtained from the mapping ou
 package are implemented as well}
 }
 \value{
-The normalized read counts  of \code{Sample 1} ... \code{Sample N}.
+The normalized read counts  of \code{Sample 1} ..\n. \code{Sample N}.
 }
 \description{
 RNAseq raw read counts may by normalized based on various parameters including reads per sample,

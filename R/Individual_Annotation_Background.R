@@ -220,13 +220,14 @@ Random.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes)
 #' Background distribution of two random random genes with the same
 #' random annotation in two random genomes.
 #' @name Random.Identical.Annotated.Genes.bkgd
+#' @export
 #' @author JJM van Steenbrugge
 #' @param RNAseq.data
 #' @param metrics
 #' @param N
 #' @param random.genomes Allows reuse of this function in the module background function @see@seealso \code{\link{Random Background distributions of modules}}
 Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, random.genomes){
-
+  library(magrittr)
   #Pre select N pairs of two random genomes each
   if( missing(random.genomes)) {
     random.genomes <- lapply(1:N, function(x) sample(RNAseq.data$features$bins, 2))
@@ -239,6 +240,11 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
     output[[metric]] <- rep(NA, N)
   }
 
+  used.terms <- list()
+  unique_random.genomes <- random.genomes %>% unlist %>% unique
+  for(genome in unique_random.genomes){
+    used.terms[[as.character(genome)]] <- NA
+  }
 
   for( i in 1:N) {
     positions.genome.A <- RNAseq.data$annotation.only[which(RNAseq.data$annotation.only$Bin == random.genomes[[i]][1]), ]
@@ -249,6 +255,12 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
 
     annotations.overlap <- pool.A[pool.A %in% pool.B]
     random.annotation   <- sample(annotations.overlap, 1)
+
+    A.char <- as.character(random.genomes[[i]][1])
+    B.char <- as.character(random.genomes[[i]][2])
+    used.terms[[A.char]] <- c(used.terms[[A.char]],random.annotation)
+    used.terms[[B.char]] <- c(used.terms[[B.char]],random.annotation)
+
     # Take the first occurence
     position.genome.A <-
       positions.genome.A[which(positions.genome.A$Annotation == random.annotation), ] [1, ]
@@ -274,7 +286,8 @@ Random.Identical.Annotated.Genes.bkgd <- function(RNAseq.data, metrics, N, rando
 
   }
 
-  return(output)
+  return(list("used terms" = used.terms,
+              "scores"  = output))
 
 }
 

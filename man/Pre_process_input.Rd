@@ -10,6 +10,7 @@ Pre_process_input(
   normalize.method = T,
   filter.method = "MAD",
   filter.low.coverage = T,
+  filter.genes.zero = F,
   normalization.features = NULL,
   taxon_file = NULL
 )
@@ -17,7 +18,9 @@ Pre_process_input(
 \arguments{
 \item{normalize.method}{User defined method to normalize data}
 
-\item{filter.low.coverage}{boolean expression to wether we should filter out
+\item{filter.low.coverage}{boolean expression to wether we should filter out}
+
+\item{filter.genes.zero}{False or a number. The number indicates the number of zeros that can max be present. Genes with more zeros than the cut-off get pruned.
 genomes with a low overall expression level.}
 
 \item{filepath}{RNAseq data file}

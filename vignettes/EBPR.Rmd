@@ -56,6 +56,8 @@ does not normalize the data. To indicate if normalization should be performed, t
 # normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
 
 
+# todo calculate the percentage of each genome that passes the filter
+
 RNAseq.data <- Pre_process_input("~/Downloads/2013_R1R2_norm_table.csv",
                                  database = database,
                                  normalize.method    = F,
