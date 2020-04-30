@@ -51,7 +51,6 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
                            RNAseq.features$sample.columns,
                            filter.method)
   }
-  RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
 
   if (isTRUE(filter.low.coverage)) { #Defaults
     cat("Filtering low coverage genomes..\n")
@@ -63,14 +62,14 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
     cat("Filtering low coverage genomes (alt)..\n")
     RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
                                             "features" = RNAseq.features))
-      RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
-                                              "features" = RNAseq.features),
-                                         threshold = filter.low.coverage[1],
-                                         cutoff = filter.low.coverage[2])
+    RNAseq.data <- Filter.Low.Coverage(list("table"    = RNAseq.table,
+                                            "features" = RNAseq.features),
+                                       threshold = filter.low.coverage[1],
+                                       cutoff = filter.low.coverage[2])
 
   }
-    else {
-      cat("Skipping Filter of low coverage genomes..\n")
+  else {
+    cat("Skipping Filter of low coverage genomes..\n")
     RNAseq.data <- list("table"    = RNAseq.table,
                         "features" = RNAseq.features)
   }
@@ -81,6 +80,10 @@ Pre_process_input <- function(file.path, database, normalize.method = T,
   }else{
     cat("Skipping filter of genes with zero counts..\n")
   }
+
+  RNAseq.table     <- Create.Rank.Columns(RNAseq.table, RNAseq.features)
+
+
   #Add trait presence absence later
   #RNAseq.data$features$trait_presence_absence <- Get_trait_presence_absence(RNAseq.data)
 

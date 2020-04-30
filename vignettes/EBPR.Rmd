@@ -191,8 +191,7 @@ trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits,
                                                   pairwise.distances = pairwise.distances,
                                                   bkgd.individual.Zscores = bkgd.individual.Zscores)
 
-sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, 
-                                                        RNAseq.data$features$bins)
+sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, RNAseq.data$features$bins)
 ```
 
 ### Plot background of individual genes
