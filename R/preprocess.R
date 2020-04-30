@@ -413,12 +413,11 @@ Parse_taxonomy <- function(RNAseq.features, taxonfile) {
 #' package are implemented as well
 #' @export
 #' @author BO Oyserman
-#' @return The normalized read counts  of \code{Sample 1} ..\n. \code{Sample N}.
+#' @return The normalized read counts  of \code{Sample 1} ... \code{Sample N}.
 #' @examples RNAseq_Normalize(RNAseq_Annotated_Matrix, no_feature,ambiguous, not_aligned)
 #' @note \preformatted{To remove rows that have a 0 for its read counts:}
 #' \code{RNAseq_Annotated_Matrix[apply(RNAseq_Annotated_Matrix[, SS:SE], 1, function(x) !any(x == 0)), ]}
 #' \preformatted{Where SS and SE are the start and end columns of the samples (raw counts).}
-
 Normalize <- function(RNAseq.table, RNAseq.features, normalization.features, simple){
 
   # normalized by total of non-rRNA reads per sample mapped
