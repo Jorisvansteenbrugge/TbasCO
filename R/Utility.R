@@ -102,13 +102,18 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
 
 
 
-Filter_SBS_Matrix <- function(sbs.trait.attributes,traits=c("M00171", "M00172")){
+# Filter_SBS_Matrix <- function(sbs.trait.attributes,traits=c("M00171", "M00172")){
+#
+# }
 
-}
+#big_modules <- c("M00001", "M00048", "M00009", "M00089", "M00173", "M00003" )
+#small_modules <- which( table(substr(colnames(sbs.trait.attributes), 1, 6)) < 5) %>% names
 
-big_modules <- c("M00001", "M00048", "M00009", "M00089", "M00173", "M00003" )
-df <- sbs.trait.attributes[, -which(substr(colnames(sbs.trait.attributes), 1,6 ) %in% big_modules)]
+#df <- sbs.trait.attributes[, which(substr(colnames(sbs.trait.attributes), 1,6 ) %in% small_modules)]
 #df <- sbs.trait.attributes[,which(substr(colnames(sbs.trait.attributes), 1, 6)=="M00009")]
+
+#edge_list.filtered <- edge_list[which(as.numeric(edge_list[, 3]) >= 200),]
+#write.csv(edge_list, file = "~/Desktop/edge_list_small.csv", row.names = F, quote = F)
 
 Export_EdgeList <- function(df, network_type = 'GA'){
 
