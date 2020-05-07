@@ -101,14 +101,58 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
 
 
 
-#' Network Trait Genomes
+
+Filter_SBS_Matrix <- function(sbs.trait.attributes,traits=c("M00171", "M00172")){
+
+}
+
+big_modules <- c("M00001", "M00048", "M00009", "M00089", "M00173", "M00003" )
+df <- sbs.trait.attributes[, -which(substr(colnames(sbs.trait.attributes), 1,6 ) %in% big_modules)]
+#df <- sbs.trait.attributes[,which(substr(colnames(sbs.trait.attributes), 1, 6)=="M00009")]
+
+Export_EdgeList <- function(df, network_type = 'GA'){
+
+
+  if (network_type == 'GA'){
+    edges <- which(df !=0, arr.ind = T)
+    edge_list <- cbind(rownames(df)[as.numeric(edges[,1])],colnames(df)[as.numeric(edges[,2])])
+    return(edge_list)
+
+  } else if (network_type == 'GG'){
+
+    genome_combs <- combn(rownames(df), m = 2)
+    edge_list <- matrix(ncol = 3, nrow = 0)
+
+    for(i in 1:ncol(genome_combs) ){
+      combination <- genome_combs[,i]
+
+      genomeA <- df[combination[1],]
+      traits.A <- names(genomeA[which(genomeA == 1)])
+
+      genomeB <- df[combination[2],]
+      traits.B <- names(genomeB[which(genomeB == 1)])
+      traits.shared <- intersect(traits.A, traits.B)
+      num.shared <- length(traits.shared)
+
+      edge_list <- rbind(edge_list, c(combination[1], combination[2], num.shared))
+    }
+
+    colnames(edge_list) <- c("GenomeA","GenomeB", "Number_Shared")
+    return(edge_list)
+  }
+
+
+
+}
+
+#' (OLD)Network Trait Genomes
 #' @name Network Trait Genomes
 #' @description Draw a network of trait(-attributes) with its associated genomes
 #' in Cytoscape (\url{http://www.cytoscape.org/}) automatically via Cytoscape's
 #' REST API..
 #' @param trait.names a vector containing the names of traits, as provided in the
 #' RNAseq.data$features$annotation.db$module.dict object
-#' @export
+
 #' @examples Network_Trait_Genomes(c("M00002", "M00007"), trait.attributes.pruned)
 #' \dontrun{
 #' shared_ten_genomes <- c('M00335', 'M00120', 'M00144', 'M00149', 'M00260', 'M00082', 'M00360', 'M00022', 'M00023')
