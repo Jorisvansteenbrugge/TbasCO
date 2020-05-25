@@ -385,12 +385,6 @@ Prune_bins <- function(RNAseq.data, bins.keep){
 }
 
 
-Parse_taxonomy <- function(RNAseq.features, taxonfile) {
-  library(xlsx)
-  if(is.null(taxonfile)){
-    table <- read.xlsx(taxonfile, sheetIndex = 1)
-  }
-}
 
 
 #' Normalized RNAseq raw read counts

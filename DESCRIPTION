@@ -12,7 +12,7 @@ License: some licence
 Encoding: UTF-8
 LazyData: false
 Imports: doSNOW, devtools, randomcoloR, hexbin, igraph, reshape2, 
-    RColorBrewer, ggplot2, gridExtra, arules, magrittr, reticulate, xlsx
+    RColorBrewer, ggplot2, gridExtra, arules, magrittr, reticulate
 RoxygenNote: 7.1.0
 biocViews: RCy3
 Suggests: testthat
