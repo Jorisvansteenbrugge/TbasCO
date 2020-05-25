@@ -7,8 +7,6 @@ This is the rework of the ctr package, work in progress.
 ```{r]
 library(devtools)
 
-# Prerequisites 
-install_github("cytoscape/RCy3")
 
 install_github("jorisvansteenbrugge/TcT")
 
