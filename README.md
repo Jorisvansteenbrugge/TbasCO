@@ -1,6 +1,6 @@
 # Trait-based Comparative Transcriptomics - TcT
 
-This is the rework of the ctr package, work in progress.
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/jorisvsteenbrugge/tbasco?style=for-the-badge)
 
 
 ## Installation
