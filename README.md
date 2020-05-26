@@ -1,15 +1,11 @@
 # Trait-based Comparative Transcriptomics - TcT
 
-This is the rework of the ctr package, work in progress.
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/jorisvsteenbrugge/tbasco?style=for-the-badge)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/jorisvsteenbrugge/tbasco?style=for-the-badge)
 
 
 ## Installation
 ```{r]
 library(devtools)
-
-# Prerequisites 
-install_github("cytoscape/RCy3")
-
-install_github("jorisvansteenbrugge/TcT")
-
+install_github("jorisvansteenbrugge/TbasCO")
 ```
