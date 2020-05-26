@@ -7,8 +7,5 @@
 ## Installation
 ```{r]
 library(devtools)
-
-
-install_github("jorisvansteenbrugge/TcT")
-
+install_github("jorisvansteenbrugge/TbasCO")
 ```
