@@ -1,0 +1,1407 @@
+{
+	"name":"ko02022",
+	"children":[
+	{
+		"name":"OmpR family",
+		"children":[
+		{
+			"name":"PhoR-PhoB (phosphate starvation response)",
+			"children":[
+			{
+				"name":"K07636  phoR; two-component system, OmpR family, phosphate regulon sensor histidine kinase PhoR [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07657  phoB; two-component system, OmpR family, phosphate regulon response regulator PhoB"
+			},
+			{
+				"name":"K07658  phoB1, phoP; two-component system, OmpR family, alkaline phosphatase synthesis response regulator PhoP"
+			}
+			]
+		},
+		{
+			"name":"SenX3-RegX3 (phosphate starvation response)",
+			"children":[
+			{
+				"name":"K07768  senX3; two-component system, OmpR family, sensor histidine kinase SenX3 [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07776  regX3; two-component system, OmpR family, response regulator RegX3"
+			}
+			]
+		},
+		{
+			"name":"PhoQ-PhoP (magnesium transport)",
+			"children":[
+			{
+				"name":"K07637  phoQ; two-component system, OmpR family, sensor histidine kinase PhoQ [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07660  phoP; two-component system, OmpR family, response regulator PhoP"
+			}
+			]
+		},
+		{
+			"name":"EnvZ-OmpR (osmotic stress response)",
+			"children":[
+			{
+				"name":"K07638  envZ; two-component system, OmpR family, osmolarity sensor histidine kinase EnvZ [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07659  ompR; two-component system, OmpR family, phosphate regulon response regulator OmpR"
+			}
+			]
+		},
+		{
+			"name":"RstB-RstA",
+			"children":[
+			{
+				"name":"K07639  rstB; two-component system, OmpR family, sensor histidine kinase RstB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07661  rstA; two-component system, OmpR family, response regulator RstA"
+			}
+			]
+		},
+		{
+			"name":"CpxA-CpxR (envelope stress response)",
+			"children":[
+			{
+				"name":"K07640  cpxA; two-component system, OmpR family, sensor histidine kinase CpxA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07662  cpxR; two-component system, OmpR family, response regulator CpxR"
+			}
+			]
+		},
+		{
+			"name":"CssS-CssR (secretion stress response)",
+			"children":[
+			{
+				"name":"K07650  cssS; two-component system, OmpR family, sensor histidine kinase CssS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07770  cssR; two-component system, OmpR family, response regulator CssR"
+			}
+			]
+		},
+		{
+			"name":"CreC-CreB (phosphate regulation)",
+			"children":[
+			{
+				"name":"K07641  creC; two-component system, OmpR family, sensor histidine kinase CreC [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07663  creB; two-component system, OmpR family, catabolic regulation response regulator CreB"
+			}
+			]
+		},
+		{
+			"name":"BaeS-BaeR (envelope stress response)",
+			"children":[
+			{
+				"name":"K07642  baeS, smeS; two-component system, OmpR family, sensor histidine kinase BaeS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07664  baeR, smeR; two-component system, OmpR family, response regulator BaeR"
+			}
+			]
+		},
+		{
+			"name":"BasS-BasR (antimicrobial peptide resistance)",
+			"children":[
+			{
+				"name":"K07643  basS; two-component system, OmpR family, sensor histidine kinase BasS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07771  basR; two-component system, OmpR family, response regulator BasR"
+			}
+			]
+		},
+		{
+			"name":"CusS-CusR (copper tolerance)",
+			"children":[
+			{
+				"name":"K07644  cusS, copS, silS; two-component system, OmpR family, heavy metal sensor histidine kinase CusS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07665  cusR, copR, silR; two-component system, OmpR family, copper resistance phosphate regulon response regulator CusR"
+			}
+			]
+		},
+		{
+			"name":"QseC-QseB (quorum sensing)",
+			"children":[
+			{
+				"name":"K07645  qseC; two-component system, OmpR family, sensor histidine kinase QseC [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07666  qseB; two-component system, OmpR family, response regulator QseB"
+			}
+			]
+		},
+		{
+			"name":"KdpD-KdpE (potassium transport)",
+			"children":[
+			{
+				"name":"K07646  kdpD; two-component system, OmpR family, sensor histidine kinase KdpD [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07667  kdpE; two-component system, OmpR family, KDP operon response regulator KdpE"
+			}
+			]
+		},
+		{
+			"name":"TorS-TorR (TMAO respiration)",
+			"children":[
+			{
+				"name":"K07647  torS; two-component system, OmpR family, sensor histidine kinase TorS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07772  torR; two-component system, OmpR family, torCAD operon response regulator TorR"
+			}
+			]
+		},
+		{
+			"name":"ArcB-ArcA (anoxic redox control)",
+			"children":[
+			{
+				"name":"K07648  arcB; two-component system, OmpR family, aerobic respiration control sensor histidine kinase ArcB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07773  arcA; two-component system, OmpR family, aerobic respiration control protein ArcA"
+			}
+			]
+		},
+		{
+			"name":"TctE-TctD (tricarboxylic acid transport)",
+			"children":[
+			{
+				"name":"K07649  tctE; two-component system, OmpR family, sensor histidine kinase TctE [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07774  tctD; two-component system, OmpR family, response regulator TctD"
+			}
+			]
+		},
+		{
+			"name":"ResE-ResD (aerobic and anaerobic respiration)",
+			"children":[
+			{
+				"name":"K07651  resE; two-component system, OmpR family, sensor histidine kinase ResE [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07775  resD; two-component system, OmpR family, response regulator ResD"
+			}
+			]
+		},
+		{
+			"name":"VicK-VicR (cell wall metabolism)",
+			"children":[
+			{
+				"name":"K07652  vicK; two-component system, OmpR family, sensor histidine kinase VicK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07668  vicR; two-component system, OmpR family, response regulator VicR"
+			}
+			]
+		},
+		{
+			"name":"MprB-MprA (maintenance of persistent infection)",
+			"children":[
+			{
+				"name":"K07653  mprB; two-component system, OmpR family, sensor histidine kinase MprB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07669  mprA; two-component system, OmpR family, response regulator MprA"
+			}
+			]
+		},
+		{
+			"name":"MtrB-MtrA (osmotic stress response)",
+			"children":[
+			{
+				"name":"K07654  mtrB; two-component system, OmpR family, sensor histidine kinase MtrB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07670  mtrA; two-component system, OmpR family, response regulator MtrA"
+			}
+			]
+		},
+		{
+			"name":"PrrB-PrrA (intracellular multiplication)",
+			"children":[
+			{
+				"name":"K07655  prrB; two-component system, OmpR family, sensor histidine kinase PrrB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07671  prrA; two-component system, OmpR family, response regulator PrrA"
+			}
+			]
+		},
+		{
+			"name":"TrcS-TrcR",
+			"children":[
+			{
+				"name":"K07656  trcS; two-component system, OmpR family, sensor histidine kinase TrcS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07672  trcR; two-component system, OmpR family, response regulator TrcR"
+			}
+			]
+		},
+		{
+			"name":"NrsS-NrsR (nickel tolerance)",
+			"children":[
+			{
+				"name":"K11328  nrsS, rppB; two-component system, OmpR family, Ni(II)-sensor and\/or redox sensor kinase NrsS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11330  nrsR, rppA; two-component system, OmpR family, Ni(II)-responsive and\/or redox-responsive regulator NrsR"
+			}
+			]
+		},
+		{
+			"name":"ManS-ManR (manganese homeostasis)",
+			"children":[
+			{
+				"name":"K11520  manS; two-component system, OmpR family, manganese sensing sensor histidine kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11521  K11521, manR; two-component system, OmpR family, manganese sensing response regulator"
+			}
+			]
+		},
+		{
+			"name":"NblS-NblR (photosynthesis)",
+			"children":[
+			{
+				"name":"K07769  nblS; two-component system, OmpR family, sensor histidine kinase NblS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11332  nblR; two-component system, OmpR family, response regulator NblR"
+			}
+			]
+		},
+		{
+			"name":"SasA-RpaAB (circadian timing mediating)",
+			"children":[
+			{
+				"name":"K08479  sasA; two-component system, OmpR family, clock-associated histidine kinase SasA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K10697  rpaA; two-component system, OmpR family, response regulator RpaA"
+			},
+			{
+				"name":"K11329  rpaB; two-component system, OmpR family, response regulator RpaB"
+			}
+			]
+		},
+		{
+			"name":"SaeS-SaeR (staphylococcal virulence regulation)",
+			"children":[
+			{
+				"name":"K10681  saeS; two-component system, OmpR family, sensor histidine kinase SaeS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K10682  saeR; two-component system, OmpR family, response regulator SaeR"
+			}
+			]
+		},
+		{
+			"name":"BceS-BceR (bacitracin transport)",
+			"children":[
+			{
+				"name":"K11629  bceS; two-component system, OmpR family, bacitracin resistance sensor histidine kinase BceS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11630  bceR; two-component system, OmpR family, bacitracin resistance response regulator BceR"
+			}
+			]
+		},
+		{
+			"name":"BraS-BraR (bacitracin transport)",
+			"children":[
+			{
+				"name":"K19081  braS, bceS; two-component system, OmpR family, sensor histidine kinase BraS\/BceS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19082  braR, bceR; two-component system, OmpR family, response regulator protein BraR\/BceR"
+			}
+			]
+		},
+		{
+			"name":"GraS-GraR (cationic antimicrobial peptide transport)",
+			"children":[
+			{
+				"name":"K19077  graS; two-component system, OmpR family, sensor histidine kinase GraS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19078  graR; two-component system, OmpR family, response regulator protein GraR"
+			}
+			]
+		},
+		{
+			"name":"YxdK-YxdJ (antimicrobial peptide response)",
+			"children":[
+			{
+				"name":"K11633  yxdK; two-component system, OmpR family, sensor histidine kinase YxdK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11634  yxdJ; two-component system, OmpR family, response regulator YxdJ"
+			}
+			]
+		},
+		{
+			"name":"ChvG-ChvI (acidity sensing)",
+			"children":[
+			{
+				"name":"K14980  chvG; two-component system, OmpR family, sensor histidine kinase ChvG [EC:2.7.13.3]"
+			},
+			{
+				"name":"K14981  chvI; two-component system, OmpR family, response regulator ChvI"
+			}
+			]
+		},
+		{
+			"name":"CiaH-CiaR",
+			"children":[
+			{
+				"name":"K14982  ciaH; two-component system, OmpR family, sensor histidine kinase CiaH [EC:2.7.13.3]"
+			},
+			{
+				"name":"K14983  ciaR; two-component system, OmpR family, response regulator CiaR"
+			}
+			]
+		},
+		{
+			"name":"ParS-ParR (polymyxin-adaptive resistance)",
+			"children":[
+			{
+				"name":"K18072  parS; two-component system, OmpR family, sensor kinase ParS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18073  parR; two-component system, OmpR family, response regulator ParR"
+			}
+			]
+		},
+		{
+			"name":"AdeS-AdeR",
+			"children":[
+			{
+				"name":"K18143  adeS; two-component system, OmpR family, sensor histidine kinase AdeS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18144  adeR; two-component system, OmpR family, response regulator AdeR"
+			}
+			]
+		},
+		{
+			"name":"VanS-VanR (VanB type vancomycin resistance)",
+			"children":[
+			{
+				"name":"K18345  vanSB, vanS, vanSD; two-component system, OmpR family, sensor histidine kinase VanS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18344  vanRB, vanR, vanRD; two-component system, OmpR family, response regulator VanR"
+			}
+			]
+		},
+		{
+			"name":"VanS-VanR (VanE type vancomycin resistance)",
+			"children":[
+			{
+				"name":"K18350  vanSC, vanSE, vanSG; two-component system, OmpR family, sensor histidine kinase VanS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18349  vanRC, vanRE, vanRG; two-component system, OmpR family, response regulator VanR"
+			}
+			]
+		},
+		{
+			"name":"VanS-VanR (actinomycete type vancomycin resistance)",
+			"children":[
+			{
+				"name":"K18351  vanSAc; two-component system, OmpR family, sensor histidine kinase VanS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18352  vanRAc; two-component system, OmpR family, response regulator VanR"
+			}
+			]
+		},
+		{
+			"name":"ArlS-ArlR (virulence regulation)",
+			"children":[
+			{
+				"name":"K18940  arlS; two-component system, OmpR family, sensor histidine kinase ArlS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18941  arlR; two-component system, OmpR family, response regulator ArlR"
+			}
+			]
+		},
+		{
+			"name":"Ihk-Irr (virulence regulation)",
+			"children":[
+			{
+				"name":"K18986  ihk; two-component system, OmpR family, sensor kinase Ihk [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18987  irr; two-component system, OmpR family, response regulator Irr"
+			}
+			]
+		},
+		{
+			"name":"PfeS-PfeR (enterobactin-dependent iron acquisition)",
+			"children":[
+			{
+				"name":"K19609  pfeS, pirS; two-component system, OmpR family, sensor histidine kinase PfeS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19610  pfeR, pirR; two-component system, OmpR family, response regulator PfeR"
+			}
+			]
+		},
+		{
+			"name":"NisK-NisR (lantibiotic biosynthesis)",
+			"children":[
+			{
+				"name":"K20487  nisK, spaK; two-component system, OmpR family, lantibiotic biosynthesis sensor histidine kinase NisK\/SpaK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K20488  nisR, spaR; two-component system, OmpR family, lantibiotic biosynthesis response regulator NisR\/SpaR"
+			}
+			]
+		},
+		{
+			"name":"Unclassified",
+			"children":[
+			{
+				"name":"K21603  ftcR; two-component system, OmpR family, flagellar system response regulator FtcR"
+			},
+			{
+				"name":"K02484  K02484; two-component system, OmpR family, sensor kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02483  K02483; two-component system, OmpR family, response regulator"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"NarL family",
+		"children":[
+		{
+			"name":"NarX-NarL (nitrate respiration)",
+			"children":[
+			{
+				"name":"K07673  narX; two-component system, NarL family, nitrate\/nitrite sensor histidine kinase NarX [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07684  narL; two-component system, NarL family, nitrate\/nitrite response regulator NarL"
+			}
+			]
+		},
+		{
+			"name":"NarQ-NarP (nitrate respiration)",
+			"children":[
+			{
+				"name":"K07674  narQ; two-component system, NarL family, nitrate\/nitrite sensor histidine kinase NarQ [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07685  narP; two-component system, NarL family, nitrate\/nitrite response regulator NarP"
+			}
+			]
+		},
+		{
+			"name":"UhpB-UhpA (hexose phosphates uptake)",
+			"children":[
+			{
+				"name":"K07675  uhpB; two-component system, NarL family, sensor histidine kinase UhpB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07686  uhpA; two-component system, NarL family, uhpT operon response regulator UhpA"
+			}
+			]
+		},
+		{
+			"name":"FusK-FusR (virulence regulation)",
+			"children":[
+			{
+				"name":"K20263  fusK; two-component system, NarL family, sensor histidine kinase FusK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K20264  fusR; two-component system, NarL family, response regulator FusR"
+			}
+			]
+		},
+		{
+			"name":"RcsC-RcsD-RcsB (capsule synthesis)",
+			"children":[
+			{
+				"name":"K07677  rcsC; two-component system, NarL family, capsular synthesis sensor histidine kinase RcsC [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07676  rcsD; two-component system, NarL family, sensor histidine kinase RcsD [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07687  rcsB; two-component system, NarL family, captular synthesis response regulator RcsB"
+			}
+			]
+		},
+		{
+			"name":"BarA-UvrY (central carbon metabolism)",
+			"children":[
+			{
+				"name":"K07678  barA, gacS, varS; two-component system, NarL family, sensor histidine kinase BarA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07689  uvrY, gacA, varA; two-component system, NarL family, invasion response regulator UvrY"
+			}
+			]
+		},
+		{
+			"name":"ComP-ComA (competence)",
+			"children":[
+			{
+				"name":"K07680  comP; two-component system, NarL family, sensor histidine kinase ComP [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07691  comA; two-component system, NarL family, competent response regulator ComA"
+			}
+			]
+		},
+		{
+			"name":"EvgS-EvgA (acid and drug tolerance)",
+			"children":[
+			{
+				"name":"K07679  evgS, bvgS; two-component system, NarL family, sensor histidine kinase EvgS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07690  evgA, bvgA; two-component system, NarL family, response regulator EvgA"
+			},
+			{
+				"name":"K07688  fimZ; two-component system, NarL family, response regulator, fimbrial Z protein, FimZ"
+			}
+			]
+		},
+		{
+			"name":"DegS-DegU (multicellular behavior control)",
+			"children":[
+			{
+				"name":"K07777  degS; two-component system, NarL family, sensor histidine kinase DegS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07692  degU; two-component system, NarL family, response regulator DegU"
+			}
+			]
+		},
+		{
+			"name":"DesK-DesR (membrane lipid fluidity regulation)",
+			"children":[
+			{
+				"name":"K07778  desK; two-component system, NarL family, sensor histidine kinase DesK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07693  desR; two-component system, NarL family, response regulator DesR"
+			}
+			]
+		},
+		{
+			"name":"VraS-VraR (cell-wall peptidoglycan synthesis)",
+			"children":[
+			{
+				"name":"K07681  vraS; two-component system, NarL family, vancomycin resistance sensor histidine kinase VraS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07694  vraR; two-component system, NarL family, vancomycin resistance associated response regulator VraR"
+			}
+			]
+		},
+		{
+			"name":"LiaS-LiaR (cell wall stress response)",
+			"children":[
+			{
+				"name":"K11617  liaS; two-component system, NarL family, sensor histidine kinase LiaS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11618  liaR; two-component system, NarL family, response regulator LiaR"
+			}
+			]
+		},
+		{
+			"name":"DevS-DevR (redox response)",
+			"children":[
+			{
+				"name":"K07682  devS; two-component system, NarL family, sensor histidine kinase DevS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07695  devR; two-component system, NarL family, response regulator DevR"
+			}
+			]
+		},
+		{
+			"name":"NreB-NreC (dissimilatory nitrate\/nitrite reduction)",
+			"children":[
+			{
+				"name":"K07683  nreB; two-component system, NarL family, sensor histidine kinase NreB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07696  nreC; two-component system, NarL family, response regulator NreC"
+			}
+			]
+		},
+		{
+			"name":"YdfH-YdfI",
+			"children":[
+			{
+				"name":"K11623  ydfH; two-component system, NarL family, sensor histidine kinase YdfH [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11624  ydfI; two-component system, NarL family, response regulator YdfI"
+			}
+			]
+		},
+		{
+			"name":"SalK-SalR",
+			"children":[
+			{
+				"name":"K14988  salK; two-component system, NarL family, secretion system sensor histidine kinase SalK"
+			},
+			{
+				"name":"K14989  salR; two-component system, NarL family, secretion system response regulator SalR"
+			}
+			]
+		},
+		{
+			"name":"Unclassified",
+			"children":[
+			{
+				"name":"K02480  K02480; two-component system, NarL family, sensor kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02479  K02479; two-component system, NarL family, response regulator"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"Spo family",
+		"children":[
+		{
+			"name":"KinABCDE-Spo0FA (sporulation control)",
+			"children":[
+			{
+				"name":"K02491  kinA; two-component system, sporulation sensor kinase A [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07697  kinB; two-component system, sporulation sensor kinase B [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07698  kinC; two-component system, sporulation sensor kinase C [EC:2.7.13.3]"
+			},
+			{
+				"name":"K13532  kinD; two-component system, sporulation sensor kinase D [EC:2.7.13.3]"
+			},
+			{
+				"name":"K13533  kinE; two-component system, sporulation sensor kinase E [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02490  spo0F; two-component system, response regulator, stage 0 sporulation protein F"
+			},
+			{
+				"name":"K07699  spo0A; two-component system, response regulator, stage 0 sporulation protein A"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"CitB family",
+		"children":[
+		{
+			"name":"CitA-CitB (citrate fermentation)",
+			"children":[
+			{
+				"name":"K07700  dpiB, citA; two-component system, CitB family, cit operon sensor histidine kinase CitA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07702  dpiA, citB; two-component system, CitB family, response regulator CitB"
+			}
+			]
+		},
+		{
+			"name":"CitS-CitT (magnesium-citrate transport)",
+			"children":[
+			{
+				"name":"K11637  citS; two-component system, CitB family, sensor histidine kinase CitS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11638  K11638, citT; two-component system, CitB family, response regulator CitT"
+			}
+			]
+		},
+		{
+			"name":"DcuS-DcuR (C4-dicarboxylate metabolism)",
+			"children":[
+			{
+				"name":"K07701  dcuS; two-component system, CitB family, sensor histidine kinase DcuS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07703  dcuR; two-component system, CitB family, response regulator DcuR"
+			}
+			]
+		},
+		{
+			"name":"DctS-DctR (C4-dicarboxylate transport)",
+			"children":[
+			{
+				"name":"K11691  K11691, dctS; two-component system, CitB family, sensor histidine kinase DctS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11692  K11692, dctR; two-component system, CitB family, response regulator DctR"
+			}
+			]
+		},
+		{
+			"name":"MalK-MalR (malate transport)",
+			"children":[
+			{
+				"name":"K11614  yufL, malK; two-component system, CitB family, sensor histidine kinase MalK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11615  malR; two-component system, CitB family, response regulator MalR"
+			}
+			]
+		},
+		{
+			"name":"Unclassified",
+			"children":[
+			{
+				"name":"K02476  K02476; two-component system, CitB family, sensor kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02475  K02475; two-component system, CitB family, response regulator"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"LytTR family",
+		"children":[
+		{
+			"name":"LysS-LysR",
+			"children":[
+			{
+				"name":"K07704  lytS; two-component system, LytTR family, sensor histidine kinase LytS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07705  lytT, lytR; two-component system, LytTR family, response regulator LytT"
+			}
+			]
+		},
+		{
+			"name":"AlgZ-AlgR (alginate production)",
+			"children":[
+			{
+				"name":"K08082  algZ; two-component system, LytTR family, sensor histidine kinase AlgZ [EC:2.7.13.3]"
+			},
+			{
+				"name":"K08083  algR; two-component system, LytTR family, response regulator AlgR"
+			}
+			]
+		},
+		{
+			"name":"NatK-NatR (sodium extrusion)",
+			"children":[
+			{
+				"name":"K11640  natK; two-component system, LytTR family, sensor histidine kinase NatK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11641  natR; two-component system, LytTR family, response regulator NatR"
+			}
+			]
+		},
+		{
+			"name":"AgrC-AgrA (exoprotein synthesis)",
+			"children":[
+			{
+				"name":"K07706  agrC, blpH, fsrC; two-component system, LytTR family, sensor histidine kinase AgrC [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07707  agrA, blpR, fsrA; two-component system, LytTR family, response regulator AgrA"
+			}
+			]
+		},
+		{
+			"name":"AgrC2-AgrA2 (virulence regulation)",
+			"children":[
+			{
+				"name":"K20339  agrC2; two-component system, LytTR family, sensor histidine kinase AgrC2 [EC:2.7.13.3]"
+			},
+			{
+				"name":"K20340  agrA2; two-component system, LytTR family, response regulator AgrA2"
+			}
+			]
+		},
+		{
+			"name":"ComD-ComE (competence)",
+			"children":[
+			{
+				"name":"K12294  comD; two-component system, LytTR family, sensor histidine kinase ComD [EC:2.7.13.3]"
+			},
+			{
+				"name":"K12295  comE; two-component system, LytTR family, response regulator ComE"
+			}
+			]
+		},
+		{
+			"name":"Unclassified",
+			"children":[
+			{
+				"name":"K02478  K02478; two-component system, LytTR family, sensor kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02477  K02477; two-component system, LytTR family, response regulator"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"NtrC family",
+		"children":[
+		{
+			"name":"GlnL-GlnG (nitrogen regulation)",
+			"children":[
+			{
+				"name":"K07708  glnL, ntrB; two-component system, NtrC family, nitrogen regulation sensor histidine kinase GlnL [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07712  glnG, ntrC; two-component system, NtrC family, nitrogen regulation response regulator GlnG"
+			}
+			]
+		},
+		{
+			"name":"NtrY-NtrX (nitrogen regulation)",
+			"children":[
+			{
+				"name":"K13598  ntrY; two-component system, NtrC family, nitrogen regulation sensor histidine kinase NtrY [EC:2.7.13.3]"
+			},
+			{
+				"name":"K13599  ntrX; two-component system, NtrC family, nitrogen regulation response regulator NtrX"
+			}
+			]
+		},
+		{
+			"name":"HydH-HydG (metal tolerance)",
+			"children":[
+			{
+				"name":"K07709  zraS, hydH; two-component system, NtrC family, sensor histidine kinase HydH [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07713  zraR, hydG; two-component system, NtrC family, response regulator HydG"
+			}
+			]
+		},
+		{
+			"name":"AtoS-AtoC (cPHB biosynthesis)",
+			"children":[
+			{
+				"name":"K07710  atoS; two-component system, NtrC family, sensor histidine kinase AtoS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07714  atoC; two-component system, NtrC family, response regulator AtoC"
+			}
+			]
+		},
+		{
+			"name":"PilS-PilR (type 4 fimbriae synthesis)",
+			"children":[
+			{
+				"name":"K02668  pilS, pehS; two-component system, NtrC family, sensor histidine kinase PilS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02667  pilR, pehR; two-component system, NtrC family, response regulator PilR"
+			}
+			]
+		},
+		{
+			"name":"GlrK-GlrR (amino sugar metabolism)",
+			"children":[
+			{
+				"name":"K07711  glrK, qseE; two-component system, NtrC family, sensor histidine kinase GlrK [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07715  glrR, qseF; two-component system, NtrC family, response regulator GlrR"
+			}
+			]
+		},
+		{
+			"name":"PgtB-PgtA (phosphoglycerate transport)",
+			"children":[
+			{
+				"name":"K08475  pgtB; two-component system, NtrC family, phosphoglycerate transport system sensor histidine kinase PgtB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K08476  pgtA; two-component system, NtrC family, phosphoglycerate transport system response regulator PgtA"
+			}
+			]
+		},
+		{
+			"name":"DctB-DctD (C4-dicarboxylate transport)",
+			"children":[
+			{
+				"name":"K10125  dctB; two-component system, NtrC family, C4-dicarboxylate transport sensor histidine kinase DctB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K10126  dctD; two-component system, NtrC family, C4-dicarboxylate transport response regulator DctD"
+			}
+			]
+		},
+		{
+			"name":"KinB-AlgB (alginate production)",
+			"children":[
+			{
+				"name":"K11383  kinB; two-component system, NtrC family, sensor histidine kinase KinB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11384  algB; two-component system, NtrC family, response regulator AlgB"
+			}
+			]
+		},
+		{
+			"name":"HupT-HupR (hydrogenase synthesis regulation)",
+			"children":[
+			{
+				"name":"K19661  hupT, hoxJ; two-component system, NtrC family, sensor histidine kinase HupT\/HoxJ [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19641  hupR, hoxA; two-component system, NtrC family, response regulator HupR\/HoxA"
+			},
+			{
+				"name":"K19640  hypX, hoxX; putative two-component system protein, hydrogenase maturation factor HypX\/HoxX"
+			}
+			]
+		},
+		{
+			"name":"Unclassified",
+			"children":[
+			{
+				"name":"K02482  K02482; two-component system, NtrC family, sensor kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02481  K02481; two-component system, NtrC family, response regulator"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"CheA family",
+		"children":[
+		{
+			"name":"CheA-CheYBV (chemotaxis)",
+			"children":[
+			{
+				"name":"K03407  cheA; two-component system, chemotaxis family, sensor kinase CheA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K03413  cheY; two-component system, chemotaxis family, chemotaxis protein CheY"
+			},
+			{
+				"name":"K03412  cheB; two-component system, chemotaxis family, protein-glutamate methylesterase\/glutaminase [EC:3.1.1.61 3.5.1.44]"
+			},
+			{
+				"name":"K13924  cheBR; two-component system, chemotaxis family, CheB\/CheR fusion protein [EC:2.1.1.80 3.1.1.61]"
+			},
+			{
+				"name":"K03415  cheV; two-component system, chemotaxis family, chemotaxis protein CheV"
+			}
+			]
+		},
+		{
+			"name":"ChpA-ChpB\/PilGH (chemosensory)",
+			"children":[
+			{
+				"name":"K06596  chpA; chemosensory pili system protein ChpA (sensor histidine kinase\/response regulator)"
+			},
+			{
+				"name":"K02657  pilG; twitching motility two-component system response regulator PilG"
+			},
+			{
+				"name":"K02658  pilH; twitching motility two-component system response regulator PilH"
+			},
+			{
+				"name":"K06597  chpB; chemosensory pili system protein ChpB (putative protein-glutamate methylesterase)"
+			}
+			]
+		},
+		{
+			"name":"PixL-PixGH (positive phototaxis)",
+			"children":[
+			{
+				"name":"K11526  pixL; two-component system, chemotaxis family, sensor histidine kinase and response regulator PixL"
+			},
+			{
+				"name":"K11522  pixG; two-component system, chemotaxis family, response regulator PixG"
+			},
+			{
+				"name":"K11523  pixH; two-component system, chemotaxis family, response regulator PixH"
+			}
+			]
+		},
+		{
+			"name":"WspE-WspRF (chemosensory)",
+			"children":[
+			{
+				"name":"K13490  wspE; two-component system, chemotaxis family, sensor histidine kinase and response regulator WspE"
+			},
+			{
+				"name":"K11444  wspR; two-component system, chemotaxis family, response regulator WspR [EC:2.7.7.65]"
+			},
+			{
+				"name":"K13491  wspF; two-component system, chemotaxis family, response regulator WspF [EC:3.1.1.61]"
+			}
+			]
+		},
+		{
+			"name":"Cph1-Rcp1 (light response)",
+			"children":[
+			{
+				"name":"K11354  cph1; two-component system, chemotaxis family, sensor kinase Cph1 [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11355  rcp1; two-component system, chemotaxis family, response regulator Rcp1"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"Cell cycle family",
+		"children":[
+		{
+			"name":"PleC-PleD (cell fate control)",
+			"children":[
+			{
+				"name":"K07716  pleC; two-component system, cell cycle sensor histidine kinase PleC [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11357  divJ; two-component system, cell cycle sensor histidine kinase DivJ [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02488  pleD; two-component system, cell cycle response regulator [EC:2.7.7.65]"
+			},
+			{
+				"name":"K11443  divK; two-component system, cell cycle response regulator DivK"
+			},
+			{
+				"name":"K13591  popA; two-component system, cell cycle response regulator PopA"
+			}
+			]
+		},
+		{
+			"name":"CckA-CtrA\/CpdR (cell cycle control)",
+			"children":[
+			{
+				"name":"K13587  cckA; two-component system, cell cycle sensor histidine kinase and response regulator CckA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K13584  ctrA; two-component system, cell cycle response regulator CtrA"
+			},
+			{
+				"name":"K13589  cpdR; two-component system, cell cycle response regulator CpdR"
+			}
+			]
+		},
+		{
+			"name":"Hk1-Rrp1 (glycerol uptake and utilization)",
+			"children":[
+			{
+				"name":"K02489  hk1; two-component system, glycerol uptake and utilization sensor kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K18444  rrp1; two-component system, glycerol uptake and utilization response regulator"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"Lux family",
+		"children":[
+		{
+			"name":"LuxQN\/CqsS-LuxU-LuxO (quorum sensing)",
+			"children":[
+			{
+				"name":"K10909  luxQ; two-component system, autoinducer 2 sensor kinase\/phosphatase LuxQ [EC:2.7.13.3 3.1.3.-]"
+			},
+			{
+				"name":"K10916  cqsS; two-component system, CAI-1 autoinducer sensor kinase\/phosphatase CqsS [EC:2.7.13.3 3.1.3.-]"
+			},
+			{
+				"name":"K15850  luxN; two-component system, autoinducer 1 sensor kinase\/phosphatase LuxN [EC:2.7.13.3 3.1.3.-]"
+			},
+			{
+				"name":"K10911  luxU; two-component system, phosphorelay protein LuxU"
+			},
+			{
+				"name":"K10912  luxO; two-component system, repressor protein LuxO"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"LuxR family",
+		"children":[
+		{
+			"name":"DctS-DctR (C4-dicarboxylate transport)",
+			"children":[
+			{
+				"name":"K11711  dctS; two-component system, LuxR family, sensor histidine kinase DctS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11712  dctR; two-component system, LuxR family, response regulator DctR"
+			}
+			]
+		},
+		{
+			"name":"TtrS-TtrR (tetrathionate respiration)",
+			"children":[
+			{
+				"name":"K13040  ttrS; two-component system, LuxR family, sensor histidine kinase TtrS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K13041  ttrR; two-component system, LuxR family, response regulator TtrR"
+			}
+			]
+		},
+		{
+			"name":"FixL-FixJ (nitrogen fixation)",
+			"children":[
+			{
+				"name":"K14986  fixL; two-component system, LuxR family, sensor kinase FixL [EC:2.7.13.3]"
+			},
+			{
+				"name":"K14987  fixJ; two-component system, LuxR family, response regulator FixJ"
+			}
+			]
+		},
+		{
+			"name":"SsrA-SsrB",
+			"children":[
+			{
+				"name":"K14978  ssrA; two-component system, LuxR family, secretion system sensor histidine kinase SsrA"
+			},
+			{
+				"name":"K14979  ssrB; two-component system, LuxR family, secretion system response regulator SsrB"
+			}
+			]
+		}
+		]
+	},
+	{
+		"name":"Other families",
+		"children":[
+		{
+			"name":"FlrB-FlrC (polar flagellar synthesis)",
+			"children":[
+			{
+				"name":"K10942  flrB, fleS; two-component system, sensor histidine kinase FlrB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K10943  flrC, fleR; two-component system, response regulator FlrC"
+			}
+			]
+		},
+		{
+			"name":"AauS-AauR (acidic amino acids utilization)",
+			"children":[
+			{
+				"name":"K17060  aauS; two-component system, sensor histidine kinase AauS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K17061  aauR; two-component system, response regulator AauR"
+			}
+			]
+		},
+		{
+			"name":"SLN1-YPD1-SSK1\/SKN7 (osmosensing)",
+			"children":[
+			{
+				"name":"K11231  SLN1; osomolarity two-component system, sensor histidine kinase SLN1 [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19690  CHK1; osomolarity two-component system, sensor histidine kinase CHK1 [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19691  NIK1, TCSC; osomolarity two-component system, sensor histidine kinase NIK1 [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19692  TCSA; osomolarity two-component system, sensor histidine kinase TcsA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K11232  YPD1; osomolarity two-component system, phosphorelay intermediate protein YPD1"
+			},
+			{
+				"name":"K11233  SSK1; osomolarity two-component system, response regulator SSK1"
+			},
+			{
+				"name":"K15859  SKN7; osomolarity two-component system, response regulator SKN7"
+			}
+			]
+		},
+		{
+			"name":"RpfC-RpfG (cell-to-cell signaling)",
+			"children":[
+			{
+				"name":"K10715  rpfC; two-component system, sensor histidine kinase RpfC [EC:2.7.13.3]"
+			},
+			{
+				"name":"K13815  rpfG; two-component system, response regulator RpfG"
+			}
+			]
+		},
+		{
+			"name":"GlnK-GlnL (glutamine utilization)",
+			"children":[
+			{
+				"name":"K07717  ycbA, glnK; two-component system, sensor histidine kinase YcbA [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07719  ycbB, glnL; two-component system, response regulator YcbB"
+			}
+			]
+		},
+		{
+			"name":"YesM-YesN",
+			"children":[
+			{
+				"name":"K07718  yesM; two-component system, sensor histidine kinase YesM [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07720  yesN; two-component system, response regulator YesN"
+			}
+			]
+		},
+		{
+			"name":"CikA",
+			"children":[
+			{
+				"name":"K11356  cikA; two-component system, sensor histidine kinase and response regulator [EC:2.7.13.3]"
+			}
+			]
+		},
+		{
+			"name":"RegB-RegA (redox response)",
+			"children":[
+			{
+				"name":"K15011  regB, regS, actS; two-component system, sensor histidine kinase RegB [EC:2.7.13.3]"
+			},
+			{
+				"name":"K15012  regA, regR, actR; two-component system, response regulator RegA"
+			}
+			]
+		},
+		{
+			"name":"FitF-FitH (insecticidal toxin regulation)",
+			"children":[
+			{
+				"name":"K19616  fitF; two-component system, sensor histidine kinase and response regulator FitF [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19617  fitH; two-component system, response regulator FitH"
+			}
+			]
+		},
+		{
+			"name":"PhcS-PhcRQ",
+			"children":[
+			{
+				"name":"K19621  phcS; two-component system, sensor histidine kinase PhcS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K19622  phcR; two-component system, response regulator PhcR"
+			},
+			{
+				"name":"K19623  phcQ; two-component system, probable response regulator PhcQ"
+			}
+			]
+		},
+		{
+			"name":"SagS-HptB-HsbR (swarming activity and biofilm formation)",
+			"children":[
+			{
+				"name":"K20973  sagS; two-component system, sensor histidine kinase SagS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K20974  K20974; two-component system, sensor histidine kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K20975  K20975; two-component system, sensor histidine kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K20976  hptB; histidine phosphotransfer protein HptB"
+			},
+			{
+				"name":"K20977  hsbR; two-component system, HptB-dependent secretion and biofilm response regulator"
+			}
+			]
+		},
+		{
+			"name":"PdtaS-PdtaR",
+			"children":[
+			{
+				"name":"K00936  pdtaS; two-component system, sensor histidine kinase PdtaS [EC:2.7.13.3]"
+			},
+			{
+				"name":"K22010  pdtaR; two-component system, response regulator PdtaR"
+			}
+			]
+		},
+		{
+			"name":"NasS-NasT",
+			"children":[
+			{
+				"name":"K22067  nasS; two-component system, oxyanion-binding sensor"
+			},
+			{
+				"name":"K07183  nasT; two-component system, response regulator \/ RNA-binding antiterminator"
+			}
+			]
+		},
+		{
+			"name":"Unclassified",
+			"children":[
+			{
+				"name":"K19694  chiS; two-component system, sensor histidine kinase ChiS"
+			},
+			{
+				"name":"K20971  ladS; two-component system, sensor histidine kinase LadS"
+			},
+			{
+				"name":"K20972  retS; two-component system, sensor histidine kinase RetS"
+			},
+			{
+				"name":"K02486  K02486; two-component system, sensor kinase [EC:2.7.13.3]"
+			},
+			{
+				"name":"K02485  rssB, hnr; two-component system, response regulator"
+			},
+			{
+				"name":"K11527  K11527; two-component system, sensor histidine kinase and response regulator [EC:2.7.13.3]"
+			},
+			{
+				"name":"K07814  K07814; putative two-component system response regulator"
+			}
+			]
+		}
+		]
+	}
+	]
+}
+

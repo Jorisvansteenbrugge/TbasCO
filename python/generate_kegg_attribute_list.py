@@ -26,5 +26,5 @@ def Parse_json(data):
 
 
 if __name__ == '__main__':
-    data = Load_json('/home/joris/tools/TbasCO/data/kegg_categories_2020_05.json')
+    data = Load_json('data/kegg_categories_2020_05.json')
     Parse_json(data)
