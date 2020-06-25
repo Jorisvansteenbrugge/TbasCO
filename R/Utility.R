@@ -90,7 +90,7 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
 
 
 
-      counts_specific[1,] %>% as.numeric %>% plot(type="l", main = anno)
+      counts_specific[1,] %>% as.numeric %>% plot(type="l", main = anno, ylim = c(0,1))
       for (i in 2:nrow(counts_specific)){
         counts_specific[i,] %>% as.numeric %>%  points(type="l", main = anno)
       }
@@ -101,10 +101,30 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
 
 
 
+#' Create_Filtered_SBS_Matrix
+#' @name Create_Filtered_SBS_Matrix
+#' @description Filters pruned trait attributes for attributes with a specific name. Then returns a sbs matrix of those
+#' traits.
+Create_Filtered_SBS_Matrix <- function(trait.attributes.pruned,
+                                       RNAseq.data,
+                                       traits=c("M00171", "M00172"))
+{
+  filtered_attributes <- list()
 
-# Filter_SBS_Matrix <- function(sbs.trait.attributes,traits=c("M00171", "M00172")){
-#
-# }
+  for (trait in traits)
+  {
+    if(startsWith(trait, 'M0')) # not implemented
+    {
+      next
+    } else {
+      filtered_attributes[[trait]] <- trait.attributes.pruned[[trait]]
+    }
+  }
+
+  sbs_matrix <- Traitattributes_To_Sbsmatrix(filtered_attributes,
+                                             RNAseq.data$features$bins)
+  return(sbs_matrix)
+}
 
 #big_modules <- c("M00001", "M00048", "M00009", "M00089", "M00173", "M00003" )
 #small_modules <- which( table(substr(colnames(sbs.trait.attributes), 1, 6)) < 5) %>% names
@@ -120,7 +140,8 @@ Export_EdgeList <- function(df, network_type = 'GA'){
 
   if (network_type == 'GA'){
     edges <- which(df !=0, arr.ind = T)
-    edge_list <- cbind(rownames(df)[as.numeric(edges[,1])],colnames(df)[as.numeric(edges[,2])])
+    edge_list <- cbind(
+      rownames(df)[as.numeric(edges[,1])],colnames(df)[as.numeric(edges[,2])])
     return(edge_list)
 
   } else if (network_type == 'GG'){
@@ -145,9 +166,6 @@ Export_EdgeList <- function(df, network_type = 'GA'){
     colnames(edge_list) <- c("GenomeA","GenomeB", "Number_Shared")
     return(edge_list)
   }
-
-
-
 }
 
 #' Plot_Background_Individual_Genes
@@ -1350,6 +1368,7 @@ Go_Fish <- function(RNAseq.data){
 #' @export
 #' @author BO Oyserman
 #'
+
 Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,bkgd.traits) {
 
 
@@ -1373,10 +1392,10 @@ Model_Module <- function(RNAseq.data, trait.attributes, Model_Bin, Module_Names,
   Fish_Backgrounds_trimmed <- NULL
 
   # Using non-disjunctive form
-  # Module_lengths           <- lapply(annotation.db$module.dict[Module_Names],
-  #                                    length) %>% as.numeric
+   Module_lengths           <- lapply(annotation.db$module.dict[Module_Names],
+                                      length) %>% as.numeric
 
-  Module_lengths           <- d_module_size_range_all[which(names(annotation.db$module.dict)%in%Module_Names)]
+ # Module_lengths           <- d_module_size_range_all[which(names(annotation.db$module.dict)%in%Module_Names)]
 
   Module_background_distribution_index <- match(as.numeric(Module_lengths),
                                                 as.numeric(names(bkgd.traits)))
