@@ -1,0 +1,17 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+### Custom Traits
+PHA:
+
+- K00626  	acetyl-CoA C-acetyltransferase
+- K00023  	acetoacetyl-CoA reductase
+- K03821  	polyhydroxyalkanoate synthase subunit PhaC
+
+```{r}
+traits <- list("PHA" = c("K00626", "K00023", "K03821"))
+Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics)
+```
