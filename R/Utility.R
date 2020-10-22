@@ -55,6 +55,41 @@ calcmfrow <- function(x) {
 }
 
 
+#' Add Custom Trait
+#' @name Add Custom Trait
+#' @description Add a custom trait to an existing trait library
+#' @param RNAseq.data
+#' @export
+#' @author JJM van Steenbrugge
+Add_Custom_Trait <- function(RNAseq.data, Custom.traits, pairwise.distances, distance.metrics, bkgd.traits){
+  nbins <- length(RNAseq.data$features$bins)
+  for(custom.trait in names(Custom.traits)){
+    KO_terms <- Custom.traits[[custom.trait]]
+
+    for(KO in KO_terms){
+      pairwise.distances[[KO]] <- Pairwise_Distance(KO, nbins, RNAseq.data, distance.metrics)
+    }
+  }
+
+  Custom_annotation_db <- list('module.dict' = Custom.traits)
+  Custom_TAs <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, pairwise.distances =  pairwise.distances, annotation.db = Custom_annotation_db,3)
+
+  trait_PA <- Get_trait_presence_absence(RNAseq.data, module.dict = Custom.traits)
+
+
+  return(Prune_Trait_Attributes(
+    trait.attributes = Custom_TAs,
+    annotation.db = Custom_annotation_db,
+    bkgd.traits = bkgd.traits,
+    RNAseq.data = RNAseq.data,
+    pairwise.distances = pairwise.distances,
+    bkgd.individual.Zscores,
+    trait_presence_absence = trait_PA,
+    filter_complete = F
+  ))
+}
+
+
 #' Plot Trait Attribute
 #' @name Plot Trait Attribute
 #' @description Plot the expression profile for all genomes expressing that
@@ -78,7 +113,10 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
   n.annotations <- length(annotations)
 
 
-  par(mfrow = c(n.att, n.annotations), mar = c(1,1,1,1))
+  par(mfrow = c(n.att, n.annotations), mar = c(5, 4, 4, 2) + 0.1)
+
+
+  #plot.df <- data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = F)
 
 
   for (attribute in names(t.data)){
@@ -86,20 +124,28 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
     for (anno in annotations){
       print(anno)
       counts <- RNAseq.data$table[which(RNAseq.data$table$Annotation == anno), ]
-      counts_specific <- counts[which(counts$Bin %in% attribute.data$genomes), RNAseq.data$features$rank.columns]
+      counts_specific <- counts[which(counts$Bin %in% attribute.data$genomes), RNAseq.data$features$sample.columns] %>% log2
 
 
 
-      counts_specific[1,] %>% as.numeric %>% plot(type="l", main = anno, ylim = c(0,1))
+      datapoints <- counts_specific[1,] %>% as.numeric
+      datapoints <- datapoints - min(datapoints)
+      datapoints %>% plot(type="l", main = anno, ylim = c(0,8), ylab = "Δ(Log2(NC))")
+
+
+
       for (i in 2:nrow(counts_specific)){
-        counts_specific[i,] %>% as.numeric %>%  points(type="l", main = anno)
+        datapoints <- counts_specific[i,] %>% as.numeric
+        datapoints <- datapoints - min(datapoints)
+
+        datapoints %>%  points(type="l", main = anno)
       }
     }
   }
 
 }
 
-
+Plot_Trait_Attribute_Expression("Phosphate transporter", trait.attributes.pruned = ret$trait.attributes.pruned, ret$RNAseq.data)
 
 #' Create_Filtered_SBS_Matrix
 #' @name Create_Filtered_SBS_Matrix
@@ -107,8 +153,7 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
 #' traits.
 Create_Filtered_SBS_Matrix <- function(trait.attributes.pruned,
                                        RNAseq.data,
-                                       traits=c("M00171", "M00172"))
-{
+                                       traits=c("M00171", "M00172")){
   filtered_attributes <- list()
 
   for (trait in traits)
@@ -131,6 +176,10 @@ Create_Filtered_SBS_Matrix <- function(trait.attributes.pruned,
 
 #df <- sbs.trait.attributes[, which(substr(colnames(sbs.trait.attributes), 1,6 ) %in% small_modules)]
 #df <- sbs.trait.attributes[,which(substr(colnames(sbs.trait.attributes), 1, 6)=="M00009")]
+
+
+large_genomes <- which(rowSums(sbs.trait.attributes) >= 2000)
+df <- df[large_genomes,]
 
 #edge_list.filtered <- edge_list[which(as.numeric(edge_list[, 3]) >= 200),]
 #write.csv(edge_list, file = "~/Desktop/edge_list_small.csv", row.names = F, quote = F)

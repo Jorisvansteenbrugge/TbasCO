@@ -170,20 +170,20 @@ bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
 
 bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
                                                    bkgd.individual.Zscores,
-                                                   N = 100, 
+                                                   N = 5000, 
                                                    metrics = distance.metrics,
-                                                   threads = 10)
+                                                   threads = 4)
 
 pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
                                                              RNAseq.data$features$annotation.db,
                                                              distance.metrics,
                                                              bkgd.individual.Zscores,
                                                              show.progress = F,
-                                                             threads = 6)
+                                                             threads = 4)
 
 trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
                                                      pairwise.distances = pairwise.distances,
-                                                     threads = 5)
+                                                     threads = 4)
 
 trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
                                                   RNAseq.data,
@@ -260,28 +260,22 @@ module_categories <- Get_module_categories(kegg_categories_script)
 a <- getMetricDistModule(metric = 'PC', module_categories)
 ```
 
-
-## Apriori
 ```{r}
+attribute_list <- read.csv2("../data/attribute_list_combined.csv", stringsAsFactors = F) 
+subset_attribute_list <- attribute_list[attribute_list$L2 == 'KEGG - Secretion Systems', ]
+subset_names <- subset_attribute_list[,1]
 
-rules <- Association_Rules(sbs.trait.attributes, N = 30,
-                           rhs= c('PHA.1', 'PHA.2'))
+sbs.trait.attributes.secretion <- Create_Filtered_SBS_Matrix(
+                                        trait.attributes.pruned,
+                                        RNAseq.data,
+                                        subset_names)
 
-Network_Association_Rules(as(rules, 'data.frame'),annotation.db = RNAseq.data$features$annotation.db,
-             N = 30)
+
+Export_EdgeList(sbs.trait.attributes.secretion) %>% write.csv2(file = 'C:/Users/joris/Desktop/TbasCO Networks/network_secretion_names.csv',
+                                                               quote = F, row.names = F)
+
 ```
 
-
-## Experimental
-```{r}
-Go_Fish(RNAseq.data)
-# Retrieving all M00009 attributes
-M00009 <- names(trait.attributes.pruned) %>% grep("M00009", .)
-M00009_attributes <- trait.attributes.pruned[M00009] %>% 
-                          sapply(length) %>% `!=` (0) %>% which %>% names
-
-trait.attributes.pruned[M00009_attributes]
-```
 
 ## Publication figure creating
 ```{r}

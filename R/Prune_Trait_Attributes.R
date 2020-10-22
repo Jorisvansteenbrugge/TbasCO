@@ -9,7 +9,7 @@
 #' @author JJM van Steenbrugge
 Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
                                    p.threshold = 0.05, pairwise.distances, bkgd.individual.Zscores,
-                                   annotation.db, trait_presence_absence){
+                                   annotation.db, trait_presence_absence, filter_complete = TRUE){
 
   features <- RNAseq.data$features
 
@@ -67,14 +67,18 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
     for(cluster in clusters){
       bins.cluster <- bins[which(trait.attributes.current$clusters$membership == cluster)]
 
-      # Filter for completion
-      bins_remove <- .Filter_Completion(features, trait, bins.cluster)
 
-      if ( length(bins_remove) == length(bins.cluster) ) {
-        next()
-      } else if( length(bins_remove) > 0 ) {
-        bins.cluster <- bins.cluster[!bins.cluster %in% bins_remove]
+      if(filter_complete){
+        # Filter for completion
+        bins_remove <- .Filter_Completion(features, trait, bins.cluster)
+
+        if ( length(bins_remove) == length(bins.cluster) ) {
+          next()
+        } else if( length(bins_remove) > 0 ) {
+          bins.cluster <- bins.cluster[!bins.cluster %in% bins_remove]
+        }
       }
+
 
 
 
@@ -94,7 +98,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
           silent = T
         )
 
-        p.val <- p.adjust(p.val, method = 'BH', length(clusters))
+        #p.val <- p.adjust(p.val, method = 'BH', length(clusters))
 
       }
 

@@ -177,9 +177,13 @@ Get_annotation_presence_absence <- function(RNAseq.table, bins, annotation.db){
 }
 
 
-Get_trait_presence_absence <- function(RNAseq.data){
+Get_trait_presence_absence <- function(RNAseq.data, module.dict){
 
-  trait_pa <- sapply(RNAseq.data$features$annotation.db$module.dict, Get_trait_pa,
+  if(missing(module.dict)){
+    module.dict <- RNAseq.data$features$annotation.db$module.dict
+  }
+
+  trait_pa <- sapply(module.dict, Get_trait_pa,
                      RNAseq.data = RNAseq.data, cutoff_fraction = 0.8) %>% rbind
   return(trait_pa)
 
