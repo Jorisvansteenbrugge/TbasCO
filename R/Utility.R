@@ -113,39 +113,62 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
   n.annotations <- length(annotations)
 
 
-  par(mfrow = c(n.att, n.annotations), mar = c(5, 4, 4, 2) + 0.1)
-
-
-  #plot.df <- data.frame(matrix(ncol = 3, nrow = 0), stringsAsFactors = F)
-
-
-  for (attribute in names(t.data)){
-    attribute.data <- t.data[[attribute]]
-    for (anno in annotations){
-      print(anno)
-      counts <- RNAseq.data$table[which(RNAseq.data$table$Annotation == anno), ]
-      counts_specific <- counts[which(counts$Bin %in% attribute.data$genomes), RNAseq.data$features$sample.columns] %>% log2
 
 
 
-      datapoints <- counts_specific[1,] %>% as.numeric
-      datapoints <- datapoints - min(datapoints)
-      datapoints %>% plot(type="l", main = anno, ylim = c(0,8), ylab = "Δ(Log2(NC))")
+  plots <- list()
+
+  for(i in 1:length(t.data)){
+
+  plot.df <- matrix(ncol = 4, nrow = 0)
+  trait.genomes <- t.data[[i]]$genomes
+
+  for(genome in trait.genomes){
+
+    for(annotation in annotations){
+      expr_values <- RNAseq.data$table[which(RNAseq.data$table$Annotation == annotation),]
+      expr_values <- expr_values[ which(expr_values$Bin == genome), RNAseq.data$features$sample.columns]
 
 
+      if(nrow(expr_values) >= 2) expr_values <- expr_values[1,]
+      else if(nrow(expr_values) == 0) next
 
-      for (i in 2:nrow(counts_specific)){
-        datapoints <- counts_specific[i,] %>% as.numeric
-        datapoints <- datapoints - min(datapoints)
 
-        datapoints %>%  points(type="l", main = anno)
+      if(! NA %in% expr_values){
+        expr_values <- log2(expr_values)
+        expr_values <- expr_values-min(expr_values)
       }
+
+
+      for (timepoint in 1:length(expr_values)){
+
+          tp_expr <- expr_values[timepoint] %>% as.numeric
+          row <- c(genome,  annotation, paste0("TP",timepoint) , tp_expr)
+          print(row)
+          plot.df <- rbind(plot.df, row )
+
+      }
+
     }
+
   }
+
+
+  plot.df <- data.frame(plot.df, stringsAsFactors = FALSE)
+  colnames(plot.df) <- c("Genome", "KID", "TimePoint", "Expr")
+
+  plot.df$Expr %<>% as.numeric
+  plots[[i]] <- ggplot(plot.df) + geom_line(aes(x = TimePoint, y = Expr, group = Genome, color = Genome)) + facet_wrap(~KID, nrow = 1)
+
+
+
+  }
+  gridExtra::grid.arrange(grobs = plots, nrow = 2)
+
 
 }
 
-Plot_Trait_Attribute_Expression("Phosphate transporter", trait.attributes.pruned = ret$trait.attributes.pruned, ret$RNAseq.data)
+#Plot_Trait_Attribute_Expression("Phosphate transporter", trait.attributes.pruned = ret$trait.attributes.pruned, ret$RNAseq.data)
 
 #' Create_Filtered_SBS_Matrix
 #' @name Create_Filtered_SBS_Matrix
@@ -178,8 +201,8 @@ Create_Filtered_SBS_Matrix <- function(trait.attributes.pruned,
 #df <- sbs.trait.attributes[,which(substr(colnames(sbs.trait.attributes), 1, 6)=="M00009")]
 
 
-large_genomes <- which(rowSums(sbs.trait.attributes) >= 2000)
-df <- df[large_genomes,]
+#large_genomes <- which(rowSums(sbs.trait.attributes) >= 2000)
+#df <- df[large_genomes,]
 
 #edge_list.filtered <- edge_list[which(as.numeric(edge_list[, 3]) >= 200),]
 #write.csv(edge_list, file = "~/Desktop/edge_list_small.csv", row.names = F, quote = F)

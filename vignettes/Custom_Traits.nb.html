@@ -1751,26 +1751,48 @@ summary {
 <!-- rnb-text-begin -->
 <div id="custom-traits" class="section level3">
 <h3>Custom Traits</h3>
-<p>PHA:</p>
-<ul>
-<li>K00626 acetyl-CoA C-acetyltransferase</li>
-<li>K00023 acetoacetyl-CoA reductase</li>
-<li>K03821 polyhydroxyalkanoate synthase subunit PhaC</li>
-</ul>
+<p>PHA: PHA K01895 PHA K00925 PHA K00625 PHA K00626 PHA K00023 PHA K03821</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVEFzIDwtIEFkZF9DdXN0b21fVHJhaXQoUk5Bc2VxLmRhdGEsIHRyYWl0cywgcGFpcndpc2UuZGlzdGFuY2VzLCBkaXN0YW5jZS5tZXRyaWNzKVxuXG5gYGAifQ== -->
 <pre class="r"><code>TAs &lt;- Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gUk5Bc2VxLmRhdGEkZmVhdHVyZXMkYW5ub3RhdGlvbl9wcmVzZW5jZV9hYnNlbmNlW21vZHVsZV9rb3MsICA6IFxuICBpbnZhbGlkIHN1YnNjcmlwdCB0eXBlICdsaXN0J1xuIn0= -->
-<pre><code>Error in RNAseq.data$features$annotation_presence_absence[module_kos,  : 
-  invalid subscript type &#39;list&#39;</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiUEhBXCJcblsxXSBcIlBIQVwiXG4gWzFdIFwiMzMwMDAwOTUxNy1iaW4uMVwiICBcIjMzMDAwMDk1MTctYmluLjM1XCIgXCIzMzAwMDA5NTE3LWJpbi40NVwiIFwiMzMwMDAwOTUxNy1iaW4uNDlcIiBcIjMzMDAwMjYzMDItYmluLjMwXCIgXCIzMzAwMDI2MzAyLWJpbi40M1wiXG4gWzddIFwiMzMwMDAyNjMwMi1iaW4uNlwiICBcIm1lZ2FoaXQtYmluLjQwXCIgICAgXCJzcGFkZXMtYmluLjEwNFwiICAgIFwic3BhZGVzLWJpbi4xMDVcIiAgICBcInNwYWRlcy1iaW4uNFwiICAgICAgXCJzcGFkZXMtYmluLjQ1XCIgICAgXG5bMTNdIFwic3BhZGVzLWJpbi41N1wiICAgICBcInNwYWRlcy1iaW4uNThcIiAgICAgXCJzcGFkZXMtYmluLjg0XCIgICAgXG5bMV0gXCJQSEFcIlxuIFsxXSBcIjMzMDAwMDk1MTctYmluLjEzXCIgXCIzMzAwMDA5NTE3LWJpbi4zOFwiIFwiMzMwMDAwOTUxNy1iaW4uNDZcIiBcIjMzMDAwMDk1MTctYmluLjZcIiAgXCIzMzAwMDI2Mjg2LWJpbi4yMlwiIFwiMzMwMDAyNjI4Ni1iaW4uMzFcIlxuIFs3XSBcIjMzMDAwMjYyODYtYmluLjdcIiAgXCIzMzAwMDI2MzAyLWJpbi40NVwiIFwibWVnYWhpdC1iaW4uMTEwXCIgICBcIm1lZ2FoaXQtYmluLjMwXCIgICAgXCJtZWdhaGl0LWJpbi41MFwiICAgIFwibWVnYWhpdC1iaW4uNzVcIiAgIFxuWzEzXSBcInNwYWRlcy1iaW4uMjhcIiAgICAgXCJzcGFkZXMtYmluLjM2XCIgICAgIFwic3BhZGVzLWJpbi41MlwiICAgICBcInNwYWRlcy1iaW4uNTZcIiAgICAgXCJzcGFkZXMtYmluLjYwXCIgICAgIFwic3BhZGVzLWJpbi42OFwiICAgIFxuWzE5XSBcInNwYWRlcy1iaW4uNjFcIiAgICAgXCJzcGFkZXMtYmluLjkzXCIgICAgIFwic3BhZGVzLWJpbi45OVwiICAgIFxuIn0= -->
+<pre><code>[1] &quot;PHA&quot;
+[1] &quot;PHA&quot;
+ [1] &quot;3300009517-bin.1&quot;  &quot;3300009517-bin.35&quot; &quot;3300009517-bin.45&quot; &quot;3300009517-bin.49&quot; &quot;3300026302-bin.30&quot; &quot;3300026302-bin.43&quot;
+ [7] &quot;3300026302-bin.6&quot;  &quot;megahit-bin.40&quot;    &quot;spades-bin.104&quot;    &quot;spades-bin.105&quot;    &quot;spades-bin.4&quot;      &quot;spades-bin.45&quot;    
+[13] &quot;spades-bin.57&quot;     &quot;spades-bin.58&quot;     &quot;spades-bin.84&quot;    
+[1] &quot;PHA&quot;
+ [1] &quot;3300009517-bin.13&quot; &quot;3300009517-bin.38&quot; &quot;3300009517-bin.46&quot; &quot;3300009517-bin.6&quot;  &quot;3300026286-bin.22&quot; &quot;3300026286-bin.31&quot;
+ [7] &quot;3300026286-bin.7&quot;  &quot;3300026302-bin.45&quot; &quot;megahit-bin.110&quot;   &quot;megahit-bin.30&quot;    &quot;megahit-bin.50&quot;    &quot;megahit-bin.75&quot;   
+[13] &quot;spades-bin.28&quot;     &quot;spades-bin.36&quot;     &quot;spades-bin.52&quot;     &quot;spades-bin.56&quot;     &quot;spades-bin.60&quot;     &quot;spades-bin.68&quot;    
+[19] &quot;spades-bin.61&quot;     &quot;spades-bin.93&quot;     &quot;spades-bin.99&quot;    </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoicmVzdGFydGluZyBpbnRlcnJ1cHRlZCBwcm9taXNlIGV2YWx1YXRpb25cbiJ9 -->
+<pre><code>restarting interrupted promise evaluation</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiUEhBXCJcbiBbMV0gXCIzMzAwMDA5NTE3LWJpbi40OFwiIFwiMzMwMDAwOTUxNy1iaW4uNVwiICBcIjMzMDAwMjYyODYtYmluLjM2XCIgXCIzMzAwMDI2MzAyLWJpbi4xNFwiIFwiMzMwMDAyNjMwMi1iaW4uMjNcIiBcIjMzMDAwMjYzMDItYmluLjNcIiBcbiBbN10gXCIzMzAwMDI2MzAyLWJpbi4zMVwiIFwiMzMwMDAyNjMwMi1iaW4uNTRcIiBcIm1lZ2FoaXQtYmluLjM4XCIgICAgXCJzcGFkZXMtYmluLjEwXCIgICAgIFwic3BhZGVzLWJpbi4xN1wiICAgICBcInNwYWRlcy1iaW4uMjlcIiAgICBcblsxM10gXCJzcGFkZXMtYmluLjNcIiAgICAgIFwic3BhZGVzLWJpbi41MFwiICAgICBcInNwYWRlcy1iaW4uNzRcIiAgICBcbiJ9 -->
+<pre><code>[1] &quot;PHA&quot;
+ [1] &quot;3300009517-bin.48&quot; &quot;3300009517-bin.5&quot;  &quot;3300026286-bin.36&quot; &quot;3300026302-bin.14&quot; &quot;3300026302-bin.23&quot; &quot;3300026302-bin.3&quot; 
+ [7] &quot;3300026302-bin.31&quot; &quot;3300026302-bin.54&quot; &quot;megahit-bin.38&quot;    &quot;spades-bin.10&quot;     &quot;spades-bin.17&quot;     &quot;spades-bin.29&quot;    
+[13] &quot;spades-bin.3&quot;      &quot;spades-bin.50&quot;     &quot;spades-bin.74&quot;    </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoicmVzdGFydGluZyBpbnRlcnJ1cHRlZCBwcm9taXNlIGV2YWx1YXRpb25cbiJ9 -->
+<pre><code>restarting interrupted promise evaluation</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSA8LSByZWFkLmNzdjJcbmBgYCJ9 -->
+<pre class="r"><code>data &lt;- read.csv2</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCiMjIyBDdXN0b20gVHJhaXRzDQpQSEE6DQoNCi0gSzAwNjI2ICAJYWNldHlsLUNvQSBDLWFjZXR5bHRyYW5zZmVyYXNlDQotIEswMDAyMyAgCWFjZXRvYWNldHlsLUNvQSByZWR1Y3Rhc2UNCi0gSzAzODIxICAJcG9seWh5ZHJveHlhbGthbm9hdGUgc3ludGhhc2Ugc3VidW5pdCBQaGFDDQoNCmBgYHtyfQ0KdHJhaXRzIDwtIGxpc3QoIlBIQSIgPSBjKCJLMDA2MjYiLCAiSzAwMDIzIiwgIkswMzgyMSIpKQ0KVEFzIDwtIEFkZF9DdXN0b21fVHJhaXQoUk5Bc2VxLmRhdGEsIHRyYWl0cywgcGFpcndpc2UuZGlzdGFuY2VzLCBkaXN0YW5jZS5tZXRyaWNzKQ0KYGBgDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCiMjIyBDdXN0b20gVHJhaXRzDQpQSEE6DQpQSEEJSzAxODk1DQpQSEEJSzAwOTI1DQpQSEEJSzAwNjI1DQpQSEEJSzAwNjI2DQpQSEEJSzAwMDIzDQpQSEEJSzAzODIxDQpgYGB7cn0NCnRyYWl0cyA8LSBsaXN0KCJQSEEiID0gYygiSzAxODk1IiwgIkswMDkyNSIsICJLMDA2MjUiLCAiSzAwNjI2IiwgIkswMDAyMyIsICJLMDM4MjEiKSkNClRBcyA8LSBBZGRfQ3VzdG9tX1RyYWl0KFJOQXNlcS5kYXRhLCB0cmFpdHMsIHBhaXJ3aXNlLmRpc3RhbmNlcywgZGlzdGFuY2UubWV0cmljcykNCmBgYA0KYGBge3J9DQpkYXRhIDwtIHJlYWQuY3N2Mg0KYGBgDQoNCg==</div>
 
 
 

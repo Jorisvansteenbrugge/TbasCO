@@ -13,7 +13,8 @@ Prune_Trait_Attributes(
   pairwise.distances,
   bkgd.individual.Zscores,
   annotation.db,
-  trait_presence_absence
+  trait_presence_absence,
+  filter_complete = TRUE
 )
 }
 \arguments{

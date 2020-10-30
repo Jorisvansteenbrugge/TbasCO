@@ -96,6 +96,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
         try(
           {p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value},
           silent = T
+
         )
 
         #p.val <- p.adjust(p.val, method = 'BH', length(clusters))
@@ -108,7 +109,8 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
           if( p.val <= p.threshold){
             cluster.attributes[[cluster]] <- list("genomes"= unique(bins.cluster),
                                                   "p-val"  = p.val)
-            }
+          }
+
           },
         error = function(cond) {
         })
@@ -118,9 +120,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
 
 
-
-
-
+    print(cluster.attributes)
 
     return(cluster.attributes)
   }
@@ -131,16 +131,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
   for(i in 1: length(trait.names)) {
     print( trait.names[i] )
     trait.attribute <- .Calc_P( trait.names[i], p.threshold, annotation.db )
-   # Backup check if there are not sig attributes
-   # if (length(trait.attribute) == 0){
-   #   pos.sig <- Identify_Significance_Trait(trait.names[i],
-   #                                          RNAseq.data,
-   #                                          pairwise.distances,
-   #                                          bkgd.traits)
-   #   if (length(pos.sig) > 0) {
-   #     trait.attribute <- list('1' = pos.sig)
-   #   }
-   # }
+
     trait.attributes.pruned[[i]] <-  trait.attribute
   }
 

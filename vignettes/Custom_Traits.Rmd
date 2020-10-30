@@ -6,12 +6,20 @@ output: html_notebook
 
 ### Custom Traits
 PHA:
-
-- K00626  	acetyl-CoA C-acetyltransferase
-- K00023  	acetoacetyl-CoA reductase
-- K03821  	polyhydroxyalkanoate synthase subunit PhaC
-
+PHA	K01895
+PHA	K00925
+PHA	K00625
+PHA	K00626
+PHA	K00023
+PHA	K03821
 ```{r}
-traits <- list("PHA" = c("K00626", "K00023", "K03821"))
-Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics)
+traits <- list("PHA" = c("K01895", "K00925", "K00625", "K00626", "K00023", "K03821"))
+TAs <- Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics)
 ```
+```{r}
+library(ggplot2)
+data <- read.csv2("C:/Users/joris/Downloads/test_plotdata.csv", stringsAsFactors = F)
+
+ggplot(data) + geom_line(aes(x = TimePoint, y = Expr, group = Genome, color = Genome)) + facet_wrap(~KID)
+```
+
