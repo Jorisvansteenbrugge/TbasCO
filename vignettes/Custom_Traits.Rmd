@@ -14,12 +14,7 @@ PHA	K00023
 PHA	K03821
 ```{r}
 traits <- list("PHA" = c("K01895", "K00925", "K00625", "K00626", "K00023", "K03821"))
-TAs <- Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics)
+TAs <- Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics, bkgd.traits)
 ```
-```{r}
-library(ggplot2)
-data <- read.csv2("C:/Users/joris/Downloads/test_plotdata.csv", stringsAsFactors = F)
 
-ggplot(data) + geom_line(aes(x = TimePoint, y = Expr, group = Genome, color = Genome)) + facet_wrap(~KID)
-```
 

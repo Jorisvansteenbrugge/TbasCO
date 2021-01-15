@@ -67,7 +67,10 @@ Add_Custom_Trait <- function(RNAseq.data, Custom.traits, pairwise.distances, dis
     KO_terms <- Custom.traits[[custom.trait]]
 
     for(KO in KO_terms){
-      pairwise.distances[[KO]] <- Pairwise_Distance(KO, nbins, RNAseq.data, distance.metrics)
+      distances <- Pairwise_Distance(KO, nbins, RNAseq.data, distance.metrics)
+      rownames(distances) <- RNAseq.data$features$bins
+      colnames(distances) <- RNAseq.data$features$bins
+      pairwise.distances[[KO]] <- distances
     }
   }
 
@@ -85,7 +88,7 @@ Add_Custom_Trait <- function(RNAseq.data, Custom.traits, pairwise.distances, dis
     pairwise.distances = pairwise.distances,
     bkgd.individual.Zscores,
     trait_presence_absence = trait_PA,
-    filter_complete = F
+    filter_complete = T
   ))
 }
 
@@ -207,6 +210,8 @@ Create_Filtered_SBS_Matrix <- function(trait.attributes.pruned,
 #edge_list.filtered <- edge_list[which(as.numeric(edge_list[, 3]) >= 200),]
 #write.csv(edge_list, file = "~/Desktop/edge_list_small.csv", row.names = F, quote = F)
 
+
+#' @export
 Export_EdgeList <- function(df, network_type = 'GA'){
 
 

@@ -23,8 +23,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
   .Filter_Completion <- function(features, trait, bins){
 
-    print(trait)
-    print(bins)
+
     bin.completions <- as.logical(trait_presence_absence[as.character(bins)], trait)
     return(features$bins[!bin.completions])
 
@@ -93,36 +92,29 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
         bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
         p.val <- 1
-        try(
-          {p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value},
-          silent = T
+        p.val <- t.test(bin.zscores,bkgd.traits[[as.character(n.genes)]], alternative = 'less')$p.value
 
-        )
+
+
 
         #p.val <- p.adjust(p.val, method = 'BH', length(clusters))
 
       }
 
-      print(p.val)
+          if( p.val <= 0.05){
 
-      tryCatch(
-        {
-          if( p.val <= p.threshold){
             cluster.attributes[[cluster]] <- list("genomes"= unique(bins.cluster),
                                                   "p-val"  = p.val)
           }
 
-          },
-        error = function(cond) {
-          print('err')
-        })
+
 
 
       }
 
 
 
-    print(cluster.attributes)
+
 
     return(cluster.attributes)
   }
