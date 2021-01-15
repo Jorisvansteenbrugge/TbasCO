@@ -103,6 +103,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
       }
 
+      print(p.val)
 
       tryCatch(
         {
@@ -113,6 +114,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
           },
         error = function(cond) {
+          print('err')
         })
 
 
