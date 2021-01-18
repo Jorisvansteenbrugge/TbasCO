@@ -211,6 +211,14 @@ Create_Filtered_SBS_Matrix <- function(trait.attributes.pruned,
 #write.csv(edge_list, file = "~/Desktop/edge_list_small.csv", row.names = F, quote = F)
 
 
+
+
+
+#' Export_EdgeList
+#' @name Export_EdgeList
+#' @description Creates a network file you can export to cytoscape
+#' @param df A (subset) of the sbs.trait.attributes variable
+#' @param network_type Use 'GA'
 #' @export
 Export_EdgeList <- function(df, network_type = 'GA'){
 
