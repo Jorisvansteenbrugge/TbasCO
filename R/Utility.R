@@ -79,8 +79,7 @@ Add_Custom_Trait <- function(RNAseq.data, Custom.traits, pairwise.distances, dis
 
   trait_PA <- Get_trait_presence_absence(RNAseq.data, module.dict = Custom.traits)
 
-
-  return(Prune_Trait_Attributes(
+  trait.var <- Prune_Trait_Attributes(
     trait.attributes = Custom_TAs,
     annotation.db = Custom_annotation_db,
     bkgd.traits = bkgd.traits,
@@ -89,7 +88,10 @@ Add_Custom_Trait <- function(RNAseq.data, Custom.traits, pairwise.distances, dis
     bkgd.individual.Zscores,
     trait_presence_absence = trait_PA,
     filter_complete = T
-  ))
+  )
+
+
+  return(trait.var)
 }
 
 
@@ -134,7 +136,10 @@ Plot_Trait_Attribute_Expression <- function(trait.attribute = "M00793_1",
 
 
       if(nrow(expr_values) >= 2) expr_values <- expr_values[1,]
-      else if(nrow(expr_values) == 0) next
+      else if(nrow(expr_values) == 0){
+        print(paste(genome, "lacks", annotation))
+        next
+      }
 
 
       if(! NA %in% expr_values){

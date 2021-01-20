@@ -21,11 +21,11 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
   }
 
 
-  .Filter_Completion <- function(features, trait, bins){
+  .Get_complete_bins <- function(cbins, trait){
 
 
-    bin.completions <- as.logical(trait_presence_absence[as.character(bins)], trait)
-    return(features$bins[!bin.completions])
+    bin.completions <- trait_presence_absence[cbins, trait]
+    return(cbins[bin.completions])
 
   }
 
@@ -69,16 +69,9 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
       if(filter_complete){
         # Filter for completion
-        bins_remove <- .Filter_Completion(features, trait, bins.cluster)
+        bins.cluster <- .Get_complete_bins(bins.cluster, trait )
 
-        if ( length(bins_remove) == length(bins.cluster) ) {
-          next()
-        } else if( length(bins_remove) > 0 ) {
-          bins.cluster <- bins.cluster[!bins.cluster %in% bins_remove]
-        }
       }
-
-
 
 
       # number of bins <= 2 would end up with only 1 avg zscore which is not enough for a t.test
@@ -89,6 +82,7 @@ Prune_Trait_Attributes <- function(trait.attributes, bkgd.traits, RNAseq.data,
 
       }
       else {
+        print(bins.cluster)
         bin.zscores  <- trait.attributes.current$avg.zscore.module[bins.cluster,bins.cluster]
 
         p.val <- 1

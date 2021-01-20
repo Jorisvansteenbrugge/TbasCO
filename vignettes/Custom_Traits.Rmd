@@ -13,8 +13,22 @@ PHA	K00626
 PHA	K00023
 PHA	K03821
 ```{r}
-traits <- list("PHA" = c("K01895", "K00925", "K00625", "K00626", "K00023", "K03821"))
-TAs <- Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics, bkgd.traits)
+
+traits <- list("PhosphatePhoU" = c(RNAseq.data$features$annotation.db$module.dict$`Phosphate transporter`, "K02039"))
+
+custom_traits <- Add_Custom_Trait(RNAseq.data, traits, pairwise.distances, distance.metrics, bkgd.traits)
+
+#Incorporate the custom traits into the existing library
+trait.attributes.pruned <- c(trait.attributes.pruned, custom_traits)
+#Incorporate the custom trait definition into the annotation.db
+RNAseq.data$features$annotation.db$module.dict <- c(RNAseq.data$features$annotation.db$module.dict, traits)
+
+```
+
+
+
+```{r}
+Plot_Trait_Attribute_Expression("PhosphatePhoU", trait.attributes.pruned, RNAseq.data)
 ```
 
 
