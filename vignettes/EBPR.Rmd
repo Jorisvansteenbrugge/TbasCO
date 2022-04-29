@@ -1,7 +1,6 @@
 ---
 title: "Trait-based Comparative Transcriptomics Analysis"
 author: "Joris van Steenbrugge & Ben Oyserman"
-date: "August 23, 2017"
 output: html_document
 ---
 ```{r,results='hide'}
@@ -43,32 +42,23 @@ database <- Combine_databases(kegg_brite_20191208, kegg_module_20190723)
 
 
 ### Normalization
-The package supports different options for normalization. By default the `Pre_process_input` function
-does not normalize the data. To indicate if normalization should be performed, the function parameter 
-`normalize.var` may be used. The variable can either be left out, set to 'default', or to a custom user-defined function.
+All of the preprocessing is handled by the `Pre_process_input` function.
+This function consecutively performs the following tasks:
+
+1. Data Loading
+2. Normalization -> Default normalization method between samples and by bin
+3. Filtering -> the choice between Mean Absolute Deviation ('MAD') and based on Standard Deviation ('stdev')
 ```{r Preprocessing}
-# normalization.features <- list(
-#   'no_feature'   = c(9159700, 4459877, 9826273, 8171512, 9542765, 10522313),
-#   'ambiguous'    = c(3940698, 2023389, 4675033, 3308789, 6446272, 5966543),
-#   'library_size' = c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166),
-#   'not_aligned'  = c(0, 0, 0, 0, 0, 0))
 
-# normalization.features <- c(234232896, 183166236, 228746720, 198024002, 231567992, 259156166)
-
-
-# todo calculate the percentage of each genome that passes the filter
-
-RNAseq.data <- Pre_process_input("~/Downloads/2013_R1R2_norm_table.csv",
-                                 database = database,
-                                 normalize.method    = F,
-                                 normalization.features = normalization.features,
-                                 filter.method       ='stdev',
-                                 filter.low.coverage = F,
-                                filter.genes.zero =1)
+RNAseq.data <- Pre_process_input(file.path,
+                                 database = annotation.db.path,
+                                 normalize.method    = T,
+                                 filter.method       ='MAD',
+                                 filter.low.coverage = T)
 
 
 
-# Phylum: Run this for Ben's dataset
+
 genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
                          '11' = 'p__Proteobacteria',
                          '16' = 'p__Proteobacteria',
@@ -89,45 +79,6 @@ genome.taxonomy.phylum <- list('8'  = 'p__Bacteroidetes',
                          '48' = 'p__Proteobacteria',
                          '53' = 'p__Bacteroidetes'
                          )
-# Phylum: Run this for Elizabeth's dataset
-# genome.taxonomy.phylum <- list("3300026302-bin.46" = "p__Proteobacteria",
-#                                "3300026282-bin.4"  = "p__Proteobacteria",
-#                                "3300026302-bin.32" = "p__Bacteroidota",
-#                                "3300009517-bin.31" = "p__Bacteroidota",
-#                                "3300026288-bin.43" = "p__Actinobacteriota",
-#                                "3300009517-bin.6"  = "p__Proteobacteria",
-#                                "3300026303-bin.42" = "p__Bacteroidota",
-#                                "3300009517-bin.1"  = "p__Bacteroidota",
-#                                "3300009517-bin.42" = "p__Proteobacteria",
-#                                "3300026284-bin.9"  = "p__Proteobacteria",
-#                                "3300026302-bin.62" = "p__Cyanobacteriota",
-#                                "3300009517-bin.3"  = "p__Bacteroidota",
-#                                "3300009517-bin.47" = "p__Proteobacteria",
-#                                "3300009517-bin.13" = "p__Proteobacteria",
-#                                "3300009517-bin.12" = "p__Bacteroidota",
-#                                "3300026302-bin.10" = "p__Proteobacteria"
-#                                )
-
-# genome.taxonomy.family <- list('8'  = 'f_Cytophagaceae',
-#                          '11' = 'f__Rubrivivax',
-#                          '16' = 'f_Rhodocyclaceae',
-#                          '17' = '.',
-#                          '19' = 'f_Cytophagaceae',
-#                          '20' = '.',
-#                          '22' = 'f_Comamonadaceae',
-#                          '25' = 'f_Chitinophagaceae',
-#                          '26' = 'o_Actinomycetales',
-#                          '28' = 'p_bacteroidetes',
-#                          '29' = 'f_Comamonadaceae',
-#                          '31' = 'f_Rhodobacteraceae',
-#                          '32' = 'f_Xanthomonadaceae',
-#                          '36' = 'o_Actinomycetales',
-#                          '39' = 'f_Rhodocyclaceae',
-#                          '42' = 'p_Bacteroidetes',
-#                          '45' = 'f_Flavobacteriaceae',
-#                          '48' = 'c_Alphaproteobacteria',
-#                          '53' = 'f_Flavobacteriaceae'
-#                          )
 
 ```
 
@@ -159,7 +110,7 @@ distance.metrics <- list("NRED" = NRED,
                          "PC"   = PC)
 ```
 
-### Actual Analysis
+### Main Pipeline
 ```{r Main Analysis}
 bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
                                                             N       = 5000, 
@@ -211,10 +162,10 @@ Plot_Background_Modules(bkgd.traits)
 
 ### Model_Module Figure
 ```{r bunch_o_figs, fig.height=8, fig.width=12}
-Module_Names <- RNAseq.data$features$trait_presence_absence[,'3300026284-bin.9'] %>% which(. == T) %>% names
+Module_Names <- RNAseq.data$features$trait_presence_absence[,'39'] %>% which(. == T) %>% names
 margins =c(5,23)
-Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, 39, Module_Names, bkgd.traits)
-Plot_Model_Module(Model_Module_List_All, 39, Module_Names, margins, sortbygenome="3300026282-bin.4")
+Model_Module_List_All <- Model_Module(RNAseq.data, trait.attributes, '39', Module_Names, bkgd.traits)
+Plot_Model_Module(Model_Module_List_All, '39', Module_Names, margins, sortbygenome="16")
 
 ```
 
@@ -271,7 +222,7 @@ sbs.trait.attributes.secretion <- Create_Filtered_SBS_Matrix(
                                         subset_names)
 
 
-Export_EdgeList(sbs.trait.attributes.secretion) %>% write.csv2(file = 'C:/Users/joris/Desktop/TbasCO Networks/network_secretion_names.csv',
+Export_EdgeList(sbs.trait.attributes.secretion) %>% write.csv2(file = '/output/path.csv',
                                                                quote = F, row.names = F)
 
 ```
