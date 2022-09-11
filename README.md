@@ -2,7 +2,7 @@
 
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/jorisvsteenbrugge/tbasco?style=for-the-badge)
 
-<b> Table of Contents <b> <br>
+<b> Table of Contents </b> <br>
 [Overview](https://github.com/Jorisvansteenbrugge/TbasCO#overview) <br>
 [Installation](https://github.com/Jorisvansteenbrugge/TbasCO#installation) <br>
 [Preprocessing Metatranscriptomes and Functional Annotation](https://github.com/Jorisvansteenbrugge/TbasCO#preprocessing-metatranscriptomes-and-functional-annotation) <br>
