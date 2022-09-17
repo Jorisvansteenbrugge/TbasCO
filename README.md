@@ -159,6 +159,7 @@ finalcounts <- rownames_to_column(counts, var="ID")
 From the txi dataframe, you can then create tables or raw and normalized counts. TbasCO performs its' own normalization calculation by default to control for the abundance/differing transcript counts mapping back to each genome. The example below includes creating a `Bin` column based off of the locus tag provided to kallisto, and renaming columns based on the samples names. 
 
 ```
+# raw
 rawcounts <- as.data.frame(txi.kallisto$counts)
 rawTable <- rownames_to_column(rawcounts, var="ID")
 rawTable.split <- rawTable %>% separate(ID, c("genome"), sep='_') %>% cbind(rawTable$ID)
@@ -181,8 +182,6 @@ You can then merge your count table with your deduplicated functional annotation
 
 ```
 library(tidyverse)
-
-
 # merge counts and annotations
 
 countsFile = read.csv("raw-data/ebpr-raw-counts-names.tsv", header=FALSE, sep="\t")
@@ -195,17 +194,15 @@ countsTable <- rawTable[,c(2:8,9,1)]
 # check to see merged correctly 
 annotCounts <- countsTable %>% select(Bin, Annotation) %>% group_by(Bin) %>% mutate(Annotation.count = n()) %>% slice(1) %>% unique()
 
-
 # save files
 write.table(countsTable, "raw-data/full-tbasco-input-table.tsv", sep=";", row.names=FALSE, quote=FALSE)
 ```
 
-by default TbasCO accepts tables with the `;` separator. This merged table now serves as your input into TbasCO.
+By default TbasCO accepts tables with the `;` separator. This merged table now serves as your input into TbasCO.
 
 ## TbasCO Quick-Start 
 
 #Loading and Preprocessing Data
-
 
 All of the preprocessing is handled by the `Pre_process_input` function.
 This function consequtively performs the following tasks:
@@ -213,7 +210,6 @@ This function consequtively performs the following tasks:
 1. Data Loading
 2. Normalization
 3. Filtering
-
 
 ### Data loading
 The data set should contain the following elements:
@@ -226,7 +222,6 @@ The data set should contain the following elements:
 Additional columns may be present but are not used in the analysis.
 Loading of data is done by assigning a file.path to the function's `filepath`
 variable.
-
 
 ## Databases
 ```{r}
@@ -305,3 +300,5 @@ trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits,
                                                   bkgd.individual.Zscores = bkgd.individual.Zscores)
 sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, RNAseq.data$features$bins)
 ```
+
+This `sbs.trait.attributes` table is then used for downstream exploration of expression profiles and trait attributes across organisms. 
