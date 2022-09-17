@@ -5,7 +5,7 @@
 <b> Table of Contents </b> <br>
 [Overview](https://github.com/Jorisvansteenbrugge/TbasCO#overview) <br>
 [Installation](https://github.com/Jorisvansteenbrugge/TbasCO#installation) <br>
-[Preprocessing Metatranscriptomes and Functional Annotation](https://github.com/Jorisvansteenbrugge/TbasCO#preprocessing-metatranscriptomes-and-functional-annotation) <br>
+[Preprocessing Metatranscriptomes and Functional Annotations](https://github.com/Jorisvansteenbrugge/TbasCO#preprocessing-metatranscriptomes-and-functional-annotation) <br>
 [TbasCO Quick-Start](https://github.com/Jorisvansteenbrugge/TbasCO#tbasco-quick-start) <br>
 
 ## Overview
@@ -156,9 +156,152 @@ finalcounts <- rownames_to_column(counts, var="ID")
 
 ```
 
-To use in TbasCO, you can either use raw counts or normalized TPM counts. TbasCO performs its' own normalization calculation to control for the abundance/differing transcript counts mapping back to each genome. 
+From the txi dataframe, you can then create tables or raw and normalized counts. TbasCO performs its' own normalization calculation by default to control for the abundance/differing transcript counts mapping back to each genome. The example below includes creating a `Bin` column based off of the locus tag provided to kallisto, and renaming columns based on the samples names. 
+
+```
+rawcounts <- as.data.frame(txi.kallisto$counts)
+rawTable <- rownames_to_column(rawcounts, var="ID")
+rawTable.split <- rawTable %>% separate(ID, c("genome"), sep='_') %>% cbind(rawTable$ID)
+colnames(rawTable.split) <- c('Bin', 'B_15min_Anaerobic', 'D_52min_Anaerobic', 'F_92min_Anaerobic', 'H_11min_Aerobic', 'J_51min_Aerobic', 'N_134min_Aerobic', 'Locus_Tag')
+rawOut <- rawTable.split %>% select(Bin, Locus_Tag, B_15min_Anaerobic, D_52min_Anaerobic, F_92min_Anaerobic, H_11min_Aerobic, J_51min_Aerobic, N_134min_Aerobic)
+# write csv 
+
+# normalized
+normcounts <- as.data.frame(txi.kallisto$abundance)
+normTable <- rownames_to_column(normcounts, var='ID')
+norm.split <- normTable %>% separate(ID, c("genome"), sep='_') %>% cbind(normTable$ID)
+colnames(norm.split) <- c('Bin', 'B_15min_Anaerobic', 'D_52min_Anaerobic', 'F_92min_Anaerobic', 'H_11min_Aerobic', 'J_51min_Aerobic', 'N_134min_Aerobic', 'Locus_Tag')
+normOut <- norm.split %>% select(Bin, Locus_Tag, B_15min_Anaerobic, D_52min_Anaerobic, F_92min_Anaerobic, H_11min_Aerobic, J_51min_Aerobic, N_134min_Aerobic)
+# write csv
+```
 
 ### Merging Count Table with Functional Annotations
 
+You can then merge your count table with your deduplicated functional annotation table with `tidyverse`. Input either the raw or normalized counts table, and the KofamKOALA annotations. The below changes the sample names to numbers instead of the specific sample names above. 
+
+```
+library(tidyverse)
+
+
+# merge counts and annotations
+
+countsFile = read.csv("raw-data/ebpr-raw-counts-names.tsv", header=FALSE, sep="\t")
+annotFile = read.csv("raw-data/ebpr-kofamAnnotations.txt", header=FALSE, sep="\t")
+colnames(countsFile) <- c("Bin", "Locus_Tag", "Sample1", "Sample2", "Sample3", "Sample4", "Sample5", "Sample6")
+colnames(annotFile) <- c("Locus_Tag", "Annotation")
+rawTable <- left_join(countsFile, annotFile)
+countsTable <- rawTable[,c(2:8,9,1)]
+
+# check to see merged correctly 
+annotCounts <- countsTable %>% select(Bin, Annotation) %>% group_by(Bin) %>% mutate(Annotation.count = n()) %>% slice(1) %>% unique()
+
+
+# save files
+write.table(countsTable, "raw-data/full-tbasco-input-table.tsv", sep=";", row.names=FALSE, quote=FALSE)
+```
+
+by default TbasCO accepts tables with the `;` separator. This merged table now serves as your input into TbasCO.
 
 ## TbasCO Quick-Start 
+
+#Loading and Preprocessing Data
+
+
+All of the preprocessing is handled by the `Pre_process_input` function.
+This function consequtively performs the following tasks:
+
+1. Data Loading
+2. Normalization
+3. Filtering
+
+
+### Data loading
+The data set should contain the following elements:
+
+* A column named **Gene**
+* Multiple expression data columns that have at least the word **Sample** in it
+* A column named **Annotation**
+* A column named **Bin**
+
+Additional columns may be present but are not used in the analysis.
+Loading of data is done by assigning a file.path to the function's `filepath`
+variable.
+
+
+## Databases
+```{r}
+
+database <- Combine_databases(kegg_brite_20191208, kegg_module_20190723)
+```
+
+### Normalization
+All of the preprocessing is handled by the `Pre_process_input` function.
+This function consecutively performs the following tasks:
+
+1. Data Loading
+2. Normalization -> Default normalization method between samples and by bin
+3. Filtering -> the choice between Mean Absolute Deviation ('MAD') and based on Standard Deviation ('stdev')
+
+```{r Preprocessing}
+RNAseq.data <- Pre_process_input(file.path,
+                                 database = annotation.db.path,
+                                 normalize.method    = T,
+                                 filter.method       ='MAD',
+                                 filter.low.coverage = T)
+ ```                                
+
+### Define the distance metrics to be used
+In this vignette, the Pearson Correlation and the Normalized Rank Euclidean Distance are used.
+The user is free to implement different metrics, as long as the function parameters
+are identical to the ones in the example PC and NRED functions.
+In these examples, rowA and rowB are rows from RNAseq.data$table.
+
+```{r Defining Distance Metrics}
+# Calculates the Pearson Correlation
+PC <- function(rowA, rowB, RNAseq.features){
+  return(cor(as.numeric(rowA[RNAseq.features$sample.columns]),
+             as.numeric(rowB[RNAseq.features$sample.columns])
+             )
+         )
+}
+# Calculates the Normalized Rank Euclidean Distance
+NRED <- function(rowA, rowB, RNAseq.features) {
+  r.A <- as.numeric(rowA[ RNAseq.features$rank.columns ])
+  r.B <- as.numeric(rowB[ RNAseq.features$rank.columns ])
+  return(
+    sum((r.A - r.B) * (r.A - r.B))
+  )
+}
+# Combine multiple distance metrics to complement each other.
+distance.metrics <- list("NRED" = NRED,
+                         "PC"   = PC)
+```
+
+### Main Pipeline
+```{r Main Analysis}
+bkgd.individual         <- Individual_Annotation_Background(RNAseq.data, 
+                                                            N       = 5000, 
+                                                            metrics = distance.metrics,
+                                                            threads = 3)
+bkgd.individual.Zscores <- Calc_Z_scores(bkgd.individual, distance.metrics)
+bkgd.traits             <- Random_Trait_Background(RNAseq.data, 
+                                                   bkgd.individual.Zscores,
+                                                   N = 5000, 
+                                                   metrics = distance.metrics,
+                                                   threads = 4)
+pairwise.distances      <- Calc_Pairwise_Annotation_Distance(RNAseq.data,
+                                                             RNAseq.data$features$annotation.db,
+                                                             distance.metrics,
+                                                             bkgd.individual.Zscores,
+                                                             show.progress = F,
+                                                             threads = 4)
+trait.attributes        <- Identify_Trait_Attributes(RNAseq.data = RNAseq.data, 
+                                                     pairwise.distances = pairwise.distances,
+                                                     threads = 4)
+trait.attributes.pruned <- Prune_Trait_Attributes(trait.attributes, bkgd.traits, 
+                                                  RNAseq.data,
+                                                  p.threshold = 0.05,
+                                                  pairwise.distances = pairwise.distances,
+                                                  bkgd.individual.Zscores = bkgd.individual.Zscores)
+sbs.trait.attributes    <- Traitattributes_To_Sbsmatrix(trait.attributes.pruned, RNAseq.data$features$bins)
+```
